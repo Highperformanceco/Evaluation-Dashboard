@@ -30,6 +30,147 @@
             margin: 0 auto;
         }
 
+        /* --- LOGIN SCREEN --- */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        #loginScreen.hidden {
+            display: none;
+        }
+
+        .login-card {
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 40px 48px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-card .logo i {
+            font-size: 48px;
+            color: #6aaa6a;
+            background: #2a2a2a;
+            padding: 16px;
+            border-radius: 50%;
+            border: 2px solid #3a3a3a;
+        }
+
+        .login-card .logo h2 {
+            margin-top: 12px;
+            font-weight: 600;
+            font-size: 22px;
+            color: #eee;
+        }
+
+        .login-card .logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 16px;
+        }
+
+        .login-card .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .login-card .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #333;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s;
+            background: #1a1a1a;
+            color: #ddd;
+        }
+
+        .login-card .form-group input:focus {
+            border-color: #555;
+            background: #222;
+            outline: none;
+        }
+
+        .login-card .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s;
+            background: #3a3a3a;
+            color: #fff;
+            border: 1px solid #555;
+            margin-top: 8px;
+        }
+
+        .login-card .login-btn:hover {
+            background: #4a4a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-card .login-btn i {
+            margin-right: 8px;
+        }
+
+        .login-card .login-error {
+            color: #c07a7a;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .login-card .login-error.show {
+            display: block;
+        }
+
+        .login-card .role-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .role-badge.admin {
+            background: #2a3a2a;
+            color: #6aaa6a;
+            border: 1px solid #3a5a3a;
+        }
+
+        .role-badge.user {
+            background: #2a2a3a;
+            color: #7a9ac8;
+            border: 1px solid #3a4a6a;
+        }
+
         /* --- HEADER --- */
         .dashboard-header {
             display: flex;
@@ -61,6 +202,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .btn {
@@ -124,7 +266,27 @@
             border-color: #555;
         }
 
-        /* --- EVAL CTA (Single Button) --- */
+        .btn-danger {
+            background: #3a2a2a;
+            color: #d4a0a0;
+            border-color: #5a3a3a;
+        }
+
+        .btn-danger:hover {
+            background: #4a2a2a;
+        }
+
+        .btn-warning {
+            background: #3a3a2a;
+            color: #d4c8a0;
+            border-color: #5a5a3a;
+        }
+
+        .btn-warning:hover {
+            background: #4a4a2a;
+        }
+
+        /* --- EVAL CTA --- */
         .eval-cta-group {
             display: flex;
             justify-content: center;
@@ -209,6 +371,51 @@
         .stat-card.accent-red i { color: #c07a7a; }
         .stat-card.accent-gold i { color: #c8b87a; }
         .stat-card.accent-blue i { color: #7a9ac8; }
+
+        /* --- RETENTION INFO --- */
+        .retention-info {
+            background: #1a1a2a;
+            border: 1px solid #2a3a3a;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .retention-info .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .retention-info .left i {
+            color: #6aaa6a;
+            font-size: 18px;
+        }
+
+        .retention-info .left span {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .retention-info .left strong {
+            color: #6aaa6a;
+        }
+
+        .retention-info .right {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .retention-info .right i {
+            margin-right: 4px;
+        }
 
         /* --- CHARTS ROW --- */
         .charts-row {
@@ -490,6 +697,11 @@
             background: #4a2a2a;
         }
 
+        .btn-sm.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .text-muted {
             color: #666;
             font-size: 13px;
@@ -711,7 +923,7 @@
             font-weight: 600;
         }
 
-        /* --- Edit Action Dropdown Modal --- */
+        /* --- EDIT ACTION DROPDOWN MODAL --- */
         .edit-action-modal .modal-card {
             max-width: 480px;
         }
@@ -721,7 +933,75 @@
             padding: 12px 16px;
         }
 
-        /* responsive */
+        /* --- NOTIFICATION --- */
+        .cleanup-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #2a2a2a;
+            border: 1px solid #4a7a4a;
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: #a0c0a0;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            animation: slideIn 0.5s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        .cleanup-notification .content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cleanup-notification .content i {
+            font-size: 24px;
+            color: #6aaa6a;
+        }
+
+        .cleanup-notification .content .text {
+            flex: 1;
+        }
+
+        .cleanup-notification .content .text strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .cleanup-notification .content .text p {
+            margin: 0;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .cleanup-notification .close-notif {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+        }
+
+        .cleanup-notification .close-notif:hover {
+            color: #aaa;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- RESPONSIVE --- */
         @media (max-width: 820px) {
             .charts-row {
                 grid-template-columns: 1fr;
@@ -753,6 +1033,15 @@
                 align-items: stretch;
                 gap: 10px;
             }
+
+            .login-card {
+                padding: 24px;
+            }
+
+            .retention-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
         @media (max-width: 480px) {
@@ -762,6 +1051,11 @@
 
             .chart-pie-group {
                 flex-direction: column;
+            }
+
+            .header-actions .btn {
+                font-size: 12px;
+                padding: 8px 14px;
             }
         }
 
@@ -792,11 +1086,65 @@
             background: #444;
             border-radius: 10px;
         }
+
+        /* User role indicator */
+        .user-role-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .user-role-badge.admin {
+            background: #2a3a2a;
+            color: #6aaa6a;
+            border: 1px solid #3a5a3a;
+        }
+
+        .user-role-badge.user {
+            background: #2a2a3a;
+            color: #7a9ac8;
+            border: 1px solid #3a4a6a;
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard-wrapper">
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            <h2>Evaluator Dashboard</h2>
+            <p>Sign in to access the system</p>
+        </div>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email / Username</label>
+                <input type="text" id="loginEmail" placeholder="Enter your email" value="admin@dashboard.com" />
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" value="Admin123!" />
+            </div>
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+            <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
+        </form>
+        <div style="margin-top: 16px; text-align: center; font-size: 12px; color: #555; border-top: 1px solid #2a2a2a; padding-top: 16px;">
+            <span style="color: #444;">Demo credentials:</span><br>
+            <span style="color: #666;">Admin: admin@dashboard.com / Admin123!</span><br>
+            <span style="color: #666;">User: user@dashboard.com / User123!</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DASHBOARD WRAPPER ===== -->
+<div class="dashboard-wrapper" id="dashboardWrapper" style="display: none;">
 
     <!-- ===== HEADER ===== -->
     <div class="dashboard-header">
@@ -805,19 +1153,45 @@
             Evaluator Dashboard
         </h1>
         <div class="header-actions">
+            <span class="user-role-badge" id="userRoleBadge">User</span>
             <button class="btn btn-outline" id="viewActionPlanBtn">
                 <i class="fas fa-list-ul"></i> Action Plan
             </button>
             <button class="btn btn-outline" id="viewMatrixBtn">
                 <i class="fas fa-table"></i> Action Matrix
             </button>
-            <button class="btn btn-success" id="saveToSheetBtn">
-                <i class="fas fa-save"></i> Save to Sheet
+            <button class="btn btn-primary" id="downloadCsvBtn">
+                <i class="fas fa-file-csv"></i> CSV
+            </button>
+            <button class="btn btn-success" id="downloadExcelBtn">
+                <i class="fas fa-file-excel"></i> Excel
+            </button>
+            <button class="btn btn-danger" id="logoutBtn" style="font-size: 12px; padding: 8px 16px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </div>
     </div>
 
-    <!-- ===== EVALUATION CTA (SINGLE BUTTON) ===== -->
+    <!-- ===== ADMIN CONTROLS (visible only to admin) ===== -->
+    <div id="adminControls" style="display: none; background: #1a1a2a; border: 1px solid #2a3a3a; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; display: none; flex-wrap: wrap; align-items: center; gap: 12px;">
+        <span style="color: #6aaa6a; font-size: 13px; font-weight: 600;">
+            <i class="fas fa-shield-alt"></i> Admin Controls
+        </span>
+        <button class="btn btn-warning" id="clearOldDataBtn" style="background: #4a5a2a; color: #a0c0a0; border-color: #5a6a3a;">
+            <i class="fas fa-clock"></i> Remove > 6 Months
+        </button>
+        <button class="btn btn-danger" id="clearAllDataBtn">
+            <i class="fas fa-trash-alt"></i> Clear All Data
+        </button>
+        <button class="btn btn-outline" id="exportBeforeCleanupBtn" style="font-size: 12px; padding: 6px 14px;">
+            <i class="fas fa-download"></i> Export Before Cleanup
+        </button>
+        <span style="font-size: 11px; color: #666; margin-left: auto;">
+            <i class="fas fa-database"></i> <span id="adminRecordCount">0</span> records
+        </span>
+    </div>
+
+    <!-- ===== EVALUATION CTA ===== -->
     <div class="eval-cta-group">
         <button class="eval-cta" id="openEvalFormBtn">
             <i class="fas fa-plus-circle"></i> New Evaluation
@@ -853,17 +1227,35 @@
         </div>
     </div>
 
+    <!-- ===== RETENTION POLICY INFO ===== -->
+    <div class="retention-info">
+        <div class="left">
+            <i class="fas fa-calendar-alt"></i>
+            <span>
+                <strong>📋 Retention Policy:</strong> 
+                Data older than <strong>6 months</strong> is automatically removed.
+                <span style="color: #666; font-size: 12px; margin-left: 10px;">
+                    (Last cleanup: <span id="lastCleanupDisplay">Today</span>)
+                </span>
+            </span>
+        </div>
+        <div class="right">
+            <span><i class="fas fa-database"></i> <span id="totalRecordsDisplay">0</span> records</span>
+            <span><i class="fas fa-clock"></i> <span id="oldestRecordDisplay">—</span></span>
+            <span id="expiringWarning" style="color: #c8b87a; display: none;">
+                <i class="fas fa-exclamation-triangle"></i> Expiring soon
+            </span>
+        </div>
+    </div>
+
     <!-- ===== CHARTS ROW ===== -->
     <div class="charts-row">
-        <!-- Bar Chart: Actions Distribution -->
         <div class="chart-card">
             <h4><i class="fas fa-chart-bar"></i> Action Distribution</h4>
             <div class="chart-bars" id="actionChart">
                 <!-- injected by JS -->
             </div>
         </div>
-
-        <!-- Pie Chart: Escalation Status -->
         <div class="chart-card">
             <h4><i class="fas fa-chart-pie"></i> Escalation Status</h4>
             <div class="chart-pie-group" id="escalationPie">
@@ -1108,114 +1500,266 @@
 
 <script>
     // ================================================================
-    // 1. DATA STORE
+    // 1. USER MANAGEMENT (Login/Logout)
     // ================================================================
 
-    let evaluations = [
-        {
-            cancellationDate: '2026-08-18',
-            chatId: '869feec7-d211-4c50-b76d-4ac7cad0ef3a',
-            contactReason: 'Refuse to accept order',
-            cancelReason: 'CST - Refuse to receive the order',
-            agent: 'wesam.shakir.2527',
-            violation: 'Order Delay - Should choose LATE-OWNER Cancellation',
-            evaluatorComment: 'Valid Escalation',
-            action: 'Coaching / Written Memo'
+    // User database
+    const USERS = {
+        'admin@dashboard.com': {
+            password: 'Admin123!',
+            role: 'admin',
+            name: 'Admin User'
         },
-        {
-            cancellationDate: '2026-08-18',
-            chatId: '46cc7168-69f4-4858-9992-e21c59875ce5',
-            contactReason: 'Checking status',
-            cancelReason: 'CST - Refuse to receive the order',
-            agent: 'wesam.shakir.2527',
-            violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial',
-            evaluatorComment: 'Invalid Escalation - Reversal Required',
-            action: '1-Day Deduction'
-        },
-        {
-            cancellationDate: '2026-08-18',
-            chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531',
-            contactReason: 'Unable to contact',
-            cancelReason: 'CST - doesn\'t response',
-            agent: 'wesam.shakir.2527',
-            violation: 'No Trials - Agent Should make 2 Trials To The Customer',
-            evaluatorComment: 'Valid Escalation',
-            action: '2-Days Deduction + Final Warning'
-        },
-        {
-            cancellationDate: '2026-08-19',
-            chatId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-            contactReason: 'Customer requested cancellation',
-            cancelReason: 'CST - Customer requested',
-            agent: 'sara.ahmed.101',
-            violation: 'No call attempted before cancellation',
-            evaluatorComment: 'Invalid Escalation - Reversal Required',
-            action: 'Coaching / Written Memo'
-        },
-        {
-            cancellationDate: '2026-08-19',
-            chatId: 'z9y8x7w6-v5u4-3210-zyxw-vutsrqponmlk',
-            contactReason: 'Late Owner',
-            cancelReason: 'CST - Late Owner',
-            agent: 'khalid.hassan.89',
-            violation: 'Incorrect Contact Reason selected (should be LATE-OWNER)',
-            evaluatorComment: 'Valid Escalation',
-            action: 'Coaching / Written Memo'
-        },
-        {
-            cancellationDate: '2026-08-20',
-            chatId: 'new-001-xyz',
-            contactReason: 'Late Owner',
-            cancelReason: 'CST - Late Owner',
-            agent: 'fatima.ali.45',
-            violation: 'Incorrect contact reason (selected Refuse instead of Late Owner)',
-            evaluatorComment: 'Valid Escalation',
-            action: '1-Day Deduction'
-        },
-        {
-            cancellationDate: '2026-08-20',
-            chatId: 'new-002-abc',
-            contactReason: 'Unable to contact',
-            cancelReason: 'CST - doesn\'t response',
-            agent: 'ahmed.khan.12',
-            violation: 'Only 1 trial call made (requires 2)',
-            evaluatorComment: 'Invalid Escalation - Reversal Required',
-            action: 'Coaching / Written Memo'
+        'user@dashboard.com': {
+            password: 'User123!',
+            role: 'user',
+            name: 'Regular User'
         }
-    ];
+    };
 
-    // Action Plan Data
-    const actionPlanData = [
-        { issue: 'Agents cancelling orders without calling the customer 2 times with a 3-minute gap',
-          correction: 'Re-communicate the mandatory cancellation procedure to all agents through a process refresher and acknowledgement',
-          owner: 'Operations / Training', timeline: 'Immediate', success: '100% agents briefed' },
-        { issue: 'Same issue recurring after refresher',
-          correction: 'Conduct targeted coaching for agents identified through QA audits and apply action matrix accordingly.',
-          owner: 'Team Leaders', timeline: 'Daily', success: 'Reduction in cancellation violations' },
-        { issue: 'Incorrect Contact Reason selected for Late Owner cases',
-          correction: 'Conduct a short refresher covering Late Owner scenarios and the correct contact reason mapping',
-          owner: 'Training / QA', timeline: 'Within 1–2 days', success: '≥95% correct contact reason selection' },
-        { issue: 'Agents confused between similar contact reasons',
-          correction: 'Prepare and share a one-page contact reason guide with examples/scenarios and paste them on agents cluster.',
-          owner: 'Team Leaders', timeline: 'Immediate', success: 'Reduction in miscoding errors' },
-        { issue: 'Repeat offenders',
-          correction: 'Place repeat-error agents on an individual improvement plan with focused coaching and increased monitoring',
-          owner: 'Operations / TL', timeline: 'Weekly review', success: 'No repeat critical error after coaching' },
-        { issue: 'Live Tracker for Outliers',
-          correction: 'QA to share a daily tracker showing agent name, violation type, order ID, error, and corrective action.',
-          owner: 'QA/TL', timeline: 'Daily', success: 'Daily visibility of violations' },
-        { issue: 'Quiz',
-          correction: 'Run quick knowledge checks after refresher sessions',
-          owner: 'Training / QA', timeline: 'Weekly', success: '≥90% assessment score' },
-        { issue: 'Overall compliance',
-          correction: 'Review cancellation and Late Owner contact reason trends in daily/weekly operations meetings',
-          owner: 'Operations / QA', timeline: 'Daily & Weekly', success: 'Week-on-week reduction in errors' }
-    ];
+    let currentUser = null;
+
+    function handleLogin(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const errorEl = document.getElementById('loginError');
+        
+        if (USERS[email] && USERS[email].password === password) {
+            currentUser = {
+                email: email,
+                role: USERS[email].role,
+                name: USERS[email].name
+            };
+            
+            // Save session
+            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Hide login, show dashboard
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardWrapper').style.display = 'block';
+            
+            // Update UI based on role
+            updateUIForRole(currentUser.role);
+            
+            // Initialize dashboard
+            initDashboard();
+            
+            errorEl.classList.remove('show');
+        } else {
+            errorEl.classList.add('show');
+            setTimeout(() => errorEl.classList.remove('show'), 3000);
+        }
+        
+        return false;
+    }
+
+    function checkExistingSession() {
+        const saved = sessionStorage.getItem('currentUser');
+        if (saved) {
+            try {
+                currentUser = JSON.parse(saved);
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('dashboardWrapper').style.display = 'block';
+                updateUIForRole(currentUser.role);
+                initDashboard();
+                return true;
+            } catch (e) {
+                sessionStorage.removeItem('currentUser');
+            }
+        }
+        return false;
+    }
+
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            sessionStorage.removeItem('currentUser');
+            currentUser = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('dashboardWrapper').style.display = 'none';
+        }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    function updateUIForRole(role) {
+        const isAdmin = role === 'admin';
+        const badge = document.getElementById('userRoleBadge');
+        const adminControls = document.getElementById('adminControls');
+        
+        badge.textContent = isAdmin ? '👑 Admin' : '👤 User';
+        badge.className = 'user-role-badge ' + (isAdmin ? 'admin' : 'user');
+        
+        // Show/hide admin controls
+        if (isAdmin) {
+            adminControls.style.display = 'flex';
+        } else {
+            adminControls.style.display = 'none';
+        }
+    }
 
     // ================================================================
-    // 2. RENDER FUNCTIONS
+    // 2. DATA STORE
     // ================================================================
 
+    // Load data from localStorage or use default
+    function loadData() {
+        const saved = localStorage.getItem('evaluationData');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                return getDefaultData();
+            }
+        }
+        return getDefaultData();
+    }
+
+    function saveData(data) {
+        localStorage.setItem('evaluationData', JSON.stringify(data));
+        // Also update admin record count
+        document.getElementById('adminRecordCount').textContent = data.length;
+    }
+
+    function getDefaultData() {
+        return [
+            {
+                cancellationDate: '2026-08-18',
+                chatId: '869feec7-d211-4c50-b76d-4ac7cad0ef3a',
+                contactReason: 'Refuse to accept order',
+                cancelReason: 'CST - Refuse to receive the order',
+                agent: 'wesam.shakir.2527',
+                violation: 'Order Delay - Should choose LATE-OWNER Cancellation',
+                evaluatorComment: 'Valid Escalation',
+                action: 'Coaching / Written Memo'
+            },
+            {
+                cancellationDate: '2026-08-18',
+                chatId: '46cc7168-69f4-4858-9992-e21c59875ce5',
+                contactReason: 'Checking status',
+                cancelReason: 'CST - Refuse to receive the order',
+                agent: 'wesam.shakir.2527',
+                violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial',
+                evaluatorComment: 'Invalid Escalation - Reversal Required',
+                action: '1-Day Deduction'
+            },
+            {
+                cancellationDate: '2026-08-18',
+                chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531',
+                contactReason: 'Unable to contact',
+                cancelReason: 'CST - doesn\'t response',
+                agent: 'wesam.shakir.2527',
+                violation: 'No Trials - Agent Should make 2 Trials To The Customer',
+                evaluatorComment: 'Valid Escalation',
+                action: '2-Days Deduction + Final Warning'
+            },
+            {
+                cancellationDate: '2026-08-19',
+                chatId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+                contactReason: 'Customer requested cancellation',
+                cancelReason: 'CST - Customer requested',
+                agent: 'sara.ahmed.101',
+                violation: 'No call attempted before cancellation',
+                evaluatorComment: 'Invalid Escalation - Reversal Required',
+                action: 'Coaching / Written Memo'
+            },
+            {
+                cancellationDate: '2026-08-19',
+                chatId: 'z9y8x7w6-v5u4-3210-zyxw-vutsrqponmlk',
+                contactReason: 'Late Owner',
+                cancelReason: 'CST - Late Owner',
+                agent: 'khalid.hassan.89',
+                violation: 'Incorrect Contact Reason selected (should be LATE-OWNER)',
+                evaluatorComment: 'Valid Escalation',
+                action: 'Coaching / Written Memo'
+            },
+            {
+                cancellationDate: '2026-08-20',
+                chatId: 'new-001-xyz',
+                contactReason: 'Late Owner',
+                cancelReason: 'CST - Late Owner',
+                agent: 'fatima.ali.45',
+                violation: 'Incorrect contact reason (selected Refuse instead of Late Owner)',
+                evaluatorComment: 'Valid Escalation',
+                action: '1-Day Deduction'
+            },
+            {
+                cancellationDate: '2026-08-20',
+                chatId: 'new-002-abc',
+                contactReason: 'Unable to contact',
+                cancelReason: 'CST - doesn\'t response',
+                agent: 'ahmed.khan.12',
+                violation: 'Only 1 trial call made (requires 2)',
+                evaluatorComment: 'Invalid Escalation - Reversal Required',
+                action: 'Coaching / Written Memo'
+            }
+        ];
+    }
+
+    // ================================================================
+    // 3. 6-MONTH AUTO-CLEANUP POLICY
+    // ================================================================
+
+    const RETENTION_DAYS = 180; // 6 months
+
+    function autoCleanupOldData(data) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
+        
+        const oldRecords = data.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            return recordDate < cutoffDate;
+        });
+        
+        const newRecords = data.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            return recordDate >= cutoffDate;
+        });
+        
+        if (oldRecords.length > 0) {
+            console.log(`🗑️ Auto-cleanup: Removed ${oldRecords.length} record(s) older than 6 months.`);
+            console.log(`📊 ${newRecords.length} record(s) remain.`);
+            showCleanupNotification(oldRecords.length, newRecords.length);
+        }
+        
+        return newRecords;
+    }
+
+    function showCleanupNotification(removed, remaining) {
+        // Remove any existing notification
+        const existing = document.querySelector('.cleanup-notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = 'cleanup-notification';
+        notification.innerHTML = `
+            <div class="content">
+                <i class="fas fa-recycle"></i>
+                <div class="text">
+                    <strong>🧹 Auto-Cleanup Complete</strong>
+                    <p>Removed ${removed} record(s) older than 6 months. ${remaining} record(s) remain.</p>
+                </div>
+                <button class="close-notif" onclick="this.closest('.cleanup-notification').remove()">×</button>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 8 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+            }
+        }, 8000);
+    }
+
+    // ================================================================
+    // 4. RENDER FUNCTIONS
+    // ================================================================
+
+    let evaluations = [];
     let currentPage = 1;
     const rowsPerPage = 5;
     let editTargetId = null;
@@ -1301,6 +1845,43 @@
 
         const deduction = evaluations.filter(e => e.action === '1-Day Deduction').length;
         document.getElementById('deductionCount').textContent = deduction;
+
+        // Update retention info
+        document.getElementById('totalRecordsDisplay').textContent = evaluations.length;
+        document.getElementById('adminRecordCount').textContent = evaluations.length;
+        
+        if (evaluations.length > 0) {
+            const oldest = evaluations.reduce((a, b) => {
+                const dateA = new Date(a.cancellationDate || '2099-01-01');
+                const dateB = new Date(b.cancellationDate || '2099-01-01');
+                return dateA < dateB ? a : b;
+            });
+            document.getElementById('oldestRecordDisplay').textContent = 
+                new Date(oldest.cancellationDate).toLocaleDateString();
+            
+            // Check for expiring records
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS + 30); // 30 days warning
+            const expiring = evaluations.filter(e => {
+                const recordDate = new Date(e.cancellationDate);
+                return recordDate < cutoffDate;
+            });
+            
+            const warningEl = document.getElementById('expiringWarning');
+            if (expiring.length > 0) {
+                warningEl.style.display = 'inline';
+                warningEl.textContent = `⚠️ ${expiring.length} record(s) expiring soon`;
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
+        
+        // Last cleanup
+        const lastCleanup = localStorage.getItem('lastAutoCleanup');
+        if (lastCleanup) {
+            const date = new Date(parseInt(lastCleanup));
+            document.getElementById('lastCleanupDisplay').textContent = date.toLocaleDateString();
+        }
     }
 
     function renderTable() {
@@ -1337,8 +1918,8 @@
                                 row.action === '1-Day Deduction' ? 'tag-danger' :
                                 row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
                                 row.action === 'Termination' ? 'tag-termination' : 'tag-info';
-                // Format date for display
                 const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
+                const isAdmin = currentUser && currentUser.role === 'admin';
                 return `
                     <tr>
                         <td>${displayDate}</td>
@@ -1351,7 +1932,7 @@
                         <td><span class="action-tag ${tagClass}">${row.action}</span></td>
                         <td>
                             <button class="btn-sm primary-sm" onclick="openEditModal('${row.chatId}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn-sm danger-sm" onclick="deleteRow('${row.chatId}')"><i class="fas fa-trash-alt"></i></button>
+                            ${isAdmin ? `<button class="btn-sm danger-sm" onclick="deleteRow('${row.chatId}')"><i class="fas fa-trash-alt"></i></button>` : ''}
                         </td>
                     </tr>
                 `;
@@ -1365,16 +1946,16 @@
 
         renderStats();
         renderCharts();
+        saveData(evaluations);
     }
 
     // ================================================================
-    // 3. EVALUATION FORM
+    // 5. EVALUATION FORM
     // ================================================================
 
     function openEvalForm() {
         document.getElementById('evalFormOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
-        // Set default date to today
         document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('evalForm').reset();
         document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
@@ -1427,7 +2008,7 @@
     });
 
     // ================================================================
-    // 4. EDIT ACTION WITH DROPDOWN MODAL
+    // 6. EDIT ACTION WITH DROPDOWN MODAL
     // ================================================================
 
     function openEditModal(chatId) {
@@ -1468,7 +2049,6 @@
         closeEditModal();
         renderTable();
 
-        // Show feedback
         const btn = document.getElementById('saveEditBtn');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
@@ -1476,18 +2056,204 @@
     });
 
     // ================================================================
-    // 5. DELETE ROW
+    // 7. DELETE ROW (Admin Only)
     // ================================================================
 
     window.deleteRow = function(chatId) {
-        if (!confirm('Delete this case permanently?')) return;
-        evaluations = evaluations.filter(e => e.chatId !== chatId);
-        renderTable();
+        if (currentUser && currentUser.role === 'admin') {
+            if (!confirm('Delete this case permanently?')) return;
+            evaluations = evaluations.filter(e => e.chatId !== chatId);
+            renderTable();
+        } else {
+            alert('⚠️ Only administrators can delete records.');
+        }
     };
 
     // ================================================================
-    // 6. ACTION PLAN MODAL
+    // 8. ADMIN CONTROLS (6-Month Cleanup)
     // ================================================================
+
+    document.getElementById('clearOldDataBtn').addEventListener('click', function() {
+        if (currentUser && currentUser.role !== 'admin') {
+            alert('⚠️ Only administrators can perform this action.');
+            return;
+        }
+        
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
+        
+        const oldRecords = evaluations.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            return recordDate < cutoffDate;
+        });
+        
+        const newRecords = evaluations.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            return recordDate >= cutoffDate;
+        });
+        
+        if (oldRecords.length === 0) {
+            alert('ℹ️ No records older than 6 months found.\n\n' +
+                  `📊 ${evaluations.length} record(s) total (all within the last 6 months).`);
+            return;
+        }
+        
+        if (!confirm(
+            `⚠️ 6-Month Retention Policy\n\n` +
+            `📅 Records older than: ${cutoffDate.toLocaleDateString()}\n` +
+            `🗑️ Records to remove: ${oldRecords.length}\n` +
+            `📊 Records to keep: ${newRecords.length}\n\n` +
+            `This action cannot be undone. Continue?`
+        )) {
+            return;
+        }
+        
+        evaluations = newRecords;
+        renderTable();
+        
+        alert(`✅ Removed ${oldRecords.length} record(s) older than 6 months.\n` +
+              `📊 ${evaluations.length} record(s) remain.`);
+    });
+
+    document.getElementById('clearAllDataBtn').addEventListener('click', function() {
+        if (currentUser && currentUser.role !== 'admin') {
+            alert('⚠️ Only administrators can perform this action.');
+            return;
+        }
+        
+        const count = evaluations.length;
+        if (count === 0) {
+            alert('ℹ️ No data to delete.');
+            return;
+        }
+        
+        if (!confirm(`⚠️⚠️⚠️ DANGER: You are about to delete ALL ${count} record(s). This is IRREVERSIBLE.`)) {
+            return;
+        }
+        if (!confirm(`⚠️ FINAL WARNING: Delete ${count} record(s)? Type "DELETE ALL" to confirm.`)) {
+            return;
+        }
+        
+        const confirmation = prompt('Type "DELETE ALL" to confirm:');
+        if (confirmation !== 'DELETE ALL') {
+            alert('✅ Operation cancelled.');
+            return;
+        }
+        
+        evaluations = [];
+        renderTable();
+        alert(`✅ All ${count} record(s) have been permanently deleted.`);
+    });
+
+    // ================================================================
+    // 9. EXPORT FUNCTIONS (CSV & Excel)
+    // ================================================================
+
+    document.getElementById('downloadCsvBtn').addEventListener('click', function() {
+        if (evaluations.length === 0) {
+            alert('⚠️ No data to export.');
+            return;
+        }
+        
+        const headers = ['Cancellation Date', 'Chat ID', 'Contact Reason', 'Cancellation Reason', 'Agent Email', 'Non Compliant Reason', 'Evaluator Comment', 'Action'];
+        const rows = evaluations.map(e => [e.cancellationDate || '', e.chatId || '', e.contactReason || '', e.cancelReason || '', e.agent || '', e.violation || '', e.evaluatorComment || '', e.action || '']);
+        
+        let csvContent = headers.join(',') + '\n';
+        rows.forEach(row => {
+            const escapedRow = row.map(cell => {
+                if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+                    return `"${cell.replace(/"/g, '""')}"`;
+                }
+                return cell;
+            });
+            csvContent += escapedRow.join(',') + '\n';
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `evaluations_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('downloadExcelBtn').addEventListener('click', function() {
+        if (evaluations.length === 0) {
+            alert('⚠️ No data to export.');
+            return;
+        }
+        
+        const headers = ['Cancellation Date', 'Chat ID', 'Contact Reason', 'Cancellation Reason', 'Agent Email', 'Non Compliant Reason', 'Evaluator Comment', 'Action'];
+        
+        let tableHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+        tableHtml += '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Evaluations</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>';
+        tableHtml += '<body><table>';
+        
+        tableHtml += '<tr>';
+        headers.forEach(h => {
+            tableHtml += `<th style="font-weight:bold; background:#333; color:#fff; padding:8px;">${h}</th>`;
+        });
+        tableHtml += '</tr>';
+        
+        evaluations.forEach(e => {
+            tableHtml += '<tr>';
+            tableHtml += `<td>${e.cancellationDate || ''}</td>`;
+            tableHtml += `<td>${e.chatId || ''}</td>`;
+            tableHtml += `<td>${e.contactReason || ''}</td>`;
+            tableHtml += `<td>${e.cancelReason || ''}</td>`;
+            tableHtml += `<td>${e.agent || ''}</td>`;
+            tableHtml += `<td>${e.violation || ''}</td>`;
+            tableHtml += `<td>${e.evaluatorComment || ''}</td>`;
+            tableHtml += `<td>${e.action || ''}</td>`;
+            tableHtml += '</tr>';
+        });
+        
+        tableHtml += '</table></body></html>';
+        
+        const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `evaluations_${new Date().toISOString().slice(0,10)}.xls`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
+
+    // ================================================================
+    // 10. ACTION PLAN & MATRIX MODALS
+    // ================================================================
+
+    const actionPlanData = [
+        { issue: 'Agents cancelling orders without calling the customer 2 times with a 3-minute gap',
+          correction: 'Re-communicate the mandatory cancellation procedure to all agents through a process refresher and acknowledgement',
+          owner: 'Operations / Training', timeline: 'Immediate', success: '100% agents briefed' },
+        { issue: 'Same issue recurring after refresher',
+          correction: 'Conduct targeted coaching for agents identified through QA audits and apply action matrix accordingly.',
+          owner: 'Team Leaders', timeline: 'Daily', success: 'Reduction in cancellation violations' },
+        { issue: 'Incorrect Contact Reason selected for Late Owner cases',
+          correction: 'Conduct a short refresher covering Late Owner scenarios and the correct contact reason mapping',
+          owner: 'Training / QA', timeline: 'Within 1–2 days', success: '≥95% correct contact reason selection' },
+        { issue: 'Agents confused between similar contact reasons',
+          correction: 'Prepare and share a one-page contact reason guide with examples/scenarios and paste them on agents cluster.',
+          owner: 'Team Leaders', timeline: 'Immediate', success: 'Reduction in miscoding errors' },
+        { issue: 'Repeat offenders',
+          correction: 'Place repeat-error agents on an individual improvement plan with focused coaching and increased monitoring',
+          owner: 'Operations / TL', timeline: 'Weekly review', success: 'No repeat critical error after coaching' },
+        { issue: 'Live Tracker for Outliers',
+          correction: 'QA to share a daily tracker showing agent name, violation type, order ID, error, and corrective action.',
+          owner: 'QA/TL', timeline: 'Daily', success: 'Daily visibility of violations' },
+        { issue: 'Quiz',
+          correction: 'Run quick knowledge checks after refresher sessions',
+          owner: 'Training / QA', timeline: 'Weekly', success: '≥90% assessment score' },
+        { issue: 'Overall compliance',
+          correction: 'Review cancellation and Late Owner contact reason trends in daily/weekly operations meetings',
+          owner: 'Operations / QA', timeline: 'Daily & Weekly', success: 'Week-on-week reduction in errors' }
+    ];
 
     function renderActionPlan() {
         const grid = document.getElementById('actionPlanGrid');
@@ -1521,10 +2287,6 @@
         if (e.target === this) closeActionPlan();
     });
 
-    // ================================================================
-    // 7. ACTION MATRIX MODAL
-    // ================================================================
-
     document.getElementById('viewMatrixBtn').addEventListener('click', function() {
         document.getElementById('matrixOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1542,7 +2304,7 @@
     });
 
     // ================================================================
-    // 8. FILTERS, PAGINATION, SEARCH
+    // 11. FILTERS, PAGINATION, SEARCH
     // ================================================================
 
     document.getElementById('searchInput').addEventListener('input', function() {
@@ -1570,54 +2332,60 @@
     });
 
     // ================================================================
-    // 9. SAVE TO GOOGLE SHEET
+    // 12. INIT DASHBOARD
     // ================================================================
 
-    document.getElementById('saveToSheetBtn').addEventListener('click', function() {
-        const SCRIPT_URL = 'https://script.google.com/a/macros/talabat.com/s/AKfycbzUHROpT4TcNqj97qTmZMw2zpZbXh6imZuLqxwj4SjTHd73AUxkus_WEXaUiqr5TD6T/exec';
+    function initDashboard() {
+        // Load data
+        evaluations = loadData();
+        
+        // Run auto-cleanup on load
+        const beforeCleanup = evaluations.length;
+        evaluations = autoCleanupOldData(evaluations);
+        if (evaluations.length < beforeCleanup) {
+            // Update last cleanup timestamp
+            localStorage.setItem('lastAutoCleanup', Date.now().toString());
+        }
+        
+        // Save cleaned data
+        saveData(evaluations);
+        
+        // Render everything
+        renderTable();
+    }
 
-        // Prepare data in the exact column order
-        const sheetData = evaluations.map(e => ({
-            cancellationDate: e.cancellationDate || '',
-            chatId: e.chatId || '',
-            contactReason: e.contactReason || '',
-            cancelReason: e.cancelReason || '',
-            agent: e.agent || '',
-            violation: e.violation || '',
-            evaluatorComment: e.evaluatorComment || '',
-            action: e.action || ''
-        }));
+    // ================================================================
+    // 13. CHECK EXISTING SESSION ON PAGE LOAD
+    // ================================================================
 
-        const payload = {
-            data: sheetData,
-            actionPlan: actionPlanData,
-            actionCounts: getActionCounts(),
-            escalationStats: getEscalationStats(),
-            timestamp: new Date().toISOString()
-        };
+    // Check if user is already logged in
+    if (!checkExistingSession()) {
+        // Show login screen
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('dashboardWrapper').style.display = 'none';
+    }
 
-        console.log('📤 Payload to send:', payload);
+    // ================================================================
+    // 14. KEYBOARD SHORTCUT: Ctrl+Shift+A for admin quick access
+    // ================================================================
 
-        alert('✅ Data ready to be saved to Google Sheet.\n\n' +
-              'Column Order (matching your header):\n' +
-              '1. Cancellation Date\n' +
-              '2. Chat ID\n' +
-              '3. Contact Reason\n' +
-              '4. Cancellation Reason\n' +
-              '5. Agent Email\n' +
-              '6. Non Compliant Reason\n' +
-              '7. Evaluator Comment\n' +
-              '8. Action\n\n' +
-              'Replace SCRIPT_URL with your Apps Script URL.');
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+            e.preventDefault();
+            if (currentUser && currentUser.role === 'admin') {
+                document.getElementById('adminControls').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('⚠️ Admin access required. Please login as admin.');
+            }
+        }
     });
 
     // ================================================================
-    // 10. INIT
+    // 15. EXPOSE FOR DEBUGGING
     // ================================================================
 
-    renderTable();
-
     window.__evaluations = evaluations;
+    window.__currentUser = currentUser;
 </script>
 
 </body>
