@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evaluator Dashboard · Action Matrix System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Evaluator Dashboard</title>
 
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -18,23 +18,19 @@
         }
 
         body {
-            background: #1a1a1a;
+            background: #0d0d0d;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            padding: 20px;
             color: #e8e8e8;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .dashboard-wrapper {
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
-        /* --- LOGIN SCREEN --- */
+        /* --- LOGIN SCREEN (Mobile-First App Style) --- */
         #loginScreen {
             position: fixed;
             inset: 0;
-            background: #1a1a1a;
+            background: #0d0d0d;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -47,34 +43,39 @@
         }
 
         .login-card {
-            background: #222;
-            border: 1px solid #333;
-            border-radius: 16px;
-            padding: 40px 48px;
-            max-width: 420px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 24px;
+            padding: 32px 28px;
+            max-width: 400px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
         }
 
         .login-card .logo {
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
-        .login-card .logo i {
-            font-size: 48px;
-            color: #6aaa6a;
+        .login-card .logo .icon-wrapper {
+            display: inline-block;
             background: #2a2a2a;
-            padding: 16px;
+            padding: 18px;
             border-radius: 50%;
             border: 2px solid #3a3a3a;
         }
 
+        .login-card .logo .icon-wrapper i {
+            font-size: 40px;
+            color: #6aaa6a;
+        }
+
         .login-card .logo h2 {
-            margin-top: 12px;
-            font-weight: 600;
-            font-size: 22px;
-            color: #eee;
+            margin-top: 16px;
+            font-weight: 700;
+            font-size: 24px;
+            color: #fff;
+            letter-spacing: -0.5px;
         }
 
         .login-card .logo p {
@@ -91,47 +92,57 @@
             display: block;
             font-weight: 500;
             font-size: 13px;
-            color: #aaa;
-            margin-bottom: 4px;
+            color: #888;
+            margin-bottom: 6px;
         }
 
         .login-card .form-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid #333;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 14px 16px;
+            border: 1.5px solid #2a2a2a;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: 'Inter', sans-serif;
             transition: 0.2s;
-            background: #1a1a1a;
+            background: #111;
             color: #ddd;
+            -webkit-appearance: none;
         }
 
         .login-card .form-group input:focus {
-            border-color: #555;
-            background: #222;
+            border-color: #4a7a4a;
+            background: #1a1a1a;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 122, 74, 0.15);
+        }
+
+        .login-card .form-group input::placeholder {
+            color: #444;
         }
 
         .login-card .login-btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.25s;
-            background: #3a3a3a;
+            background: #2a3a2a;
             color: #fff;
-            border: 1px solid #555;
+            border: 1px solid #3a5a3a;
             margin-top: 8px;
         }
 
         .login-card .login-btn:hover {
-            background: #4a4a4a;
+            background: #3a4a3a;
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-card .login-btn:active {
+            transform: scale(0.98);
         }
 
         .login-card .login-btn i {
@@ -150,36 +161,43 @@
             display: block;
         }
 
-        /* --- HEADER --- */
+        /* --- DASHBOARD WRAPPER --- */
+        .dashboard-wrapper {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 12px 12px 80px 12px;
+        }
+
+        /* --- HEADER (Mobile-First) --- */
         .dashboard-header {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 28px;
-            gap: 16px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #333;
+            margin-bottom: 20px;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2a2a2a;
         }
 
         .dashboard-header h1 {
             font-weight: 700;
-            font-size: 28px;
+            font-size: 20px;
             letter-spacing: -0.5px;
             color: #ffffff;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
         }
 
         .dashboard-header h1 i {
-            color: #888;
-            font-size: 30px;
+            color: #6aaa6a;
+            font-size: 22px;
         }
 
         .header-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -188,39 +206,33 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 22px;
+            gap: 6px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-weight: 500;
-            font-size: 13px;
+            font-size: 12px;
             border: none;
             background: #2a2a2a;
             color: #cccccc;
             transition: all 0.25s ease;
             cursor: pointer;
-            border: 1px solid #3a3a3a;
-            letter-spacing: 0.2px;
+            border: 1px solid #333;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .btn:hover {
-            background: #3a3a3a;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        .btn:active {
+            transform: scale(0.95);
         }
 
         .btn i {
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .btn-primary {
-            background: #3a3a3a;
-            color: #ffffff;
-            border-color: #555;
-        }
-
-        .btn-primary:hover {
-            background: #4a4a4a;
-            border-color: #777;
+            background: #2a3a2a;
+            color: #a0c0a0;
+            border-color: #3a5a3a;
         }
 
         .btn-success {
@@ -229,20 +241,10 @@
             border-color: #3a5a3a;
         }
 
-        .btn-success:hover {
-            background: #3a4a3a;
-            border-color: #4a7a4a;
-        }
-
         .btn-outline {
             background: transparent;
-            border: 1.5px solid #3a3a3a;
-            color: #aaaaaa;
-        }
-
-        .btn-outline:hover {
-            background: #2a2a2a;
-            border-color: #555;
+            border: 1px solid #333;
+            color: #888;
         }
 
         .btn-danger {
@@ -251,32 +253,46 @@
             border-color: #5a3a3a;
         }
 
-        .btn-danger:hover {
-            background: #4a2a2a;
-        }
-
         .btn-warning {
             background: #3a3a2a;
             color: #d4c8a0;
             border-color: #5a5a3a;
         }
 
-        .btn-warning:hover {
-            background: #4a4a2a;
+        .user-role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .user-role-badge.admin {
+            background: #2a3a2a;
+            color: #6aaa6a;
+            border: 1px solid #3a5a3a;
+        }
+
+        .user-role-badge.user {
+            background: #2a2a3a;
+            color: #7a9ac8;
+            border: 1px solid #3a4a6a;
         }
 
         /* --- EVAL CTA --- */
         .eval-cta-group {
             display: flex;
             justify-content: center;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
         }
 
         .eval-cta {
             background: #2a2a2a;
             color: #ffffff;
-            padding: 14px 40px;
-            border-radius: 10px;
+            padding: 14px 32px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 15px;
             border: 1px solid #444;
@@ -284,61 +300,88 @@
             transition: 0.25s;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .eval-cta:hover {
-            background: #3a3a3a;
-            border-color: #666;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+        .eval-cta:active {
+            transform: scale(0.97);
         }
 
         .eval-cta i {
-            font-size: 18px;
+            font-size: 16px;
             color: #888;
         }
 
-        /* --- DATE RANGE FILTER --- */
+        /* --- ADMIN CONTROLS --- */
+        #adminControls {
+            background: #1a1a2a;
+            border: 1px solid #2a3a3a;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            display: none;
+        }
+
+        #adminControls .admin-label {
+            color: #6aaa6a;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        #adminControls .btn {
+            font-size: 11px;
+            padding: 6px 12px;
+        }
+
+        /* --- DATE FILTER --- */
         .date-filter {
             background: #1a1a2a;
             border: 1px solid #2a3a3a;
-            border-radius: 10px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
         }
 
         .date-filter label {
-            font-size: 13px;
-            color: #aaa;
+            font-size: 12px;
+            color: #888;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .date-filter label i {
-            color: #666;
+            color: #555;
         }
 
         .date-filter input[type="date"] {
-            padding: 7px 12px;
-            border: 1.5px solid #333;
-            border-radius: 6px;
+            padding: 8px 12px;
+            border: 1.5px solid #2a2a2a;
+            border-radius: 8px;
             font-size: 13px;
-            background: #1a1a1a;
+            background: #111;
             color: #ccc;
             font-family: 'Inter', sans-serif;
             outline: none;
             transition: 0.2s;
+            flex: 1;
+            min-width: 120px;
+            -webkit-appearance: none;
         }
 
         .date-filter input[type="date"]:focus {
-            border-color: #555;
-            background: #222;
+            border-color: #4a7a4a;
+            background: #1a1a1a;
         }
 
         .date-filter .filter-actions {
@@ -348,54 +391,47 @@
         }
 
         .date-filter .filter-actions .btn-sm {
-            padding: 6px 16px;
+            padding: 6px 14px;
             font-size: 12px;
+            border-radius: 8px;
         }
 
-        .date-filter .filter-actions .btn-sm.clear-btn {
-            background: #2a2a2a;
-            color: #888;
-            border: 1px solid #333;
-        }
-
-        .date-filter .filter-actions .btn-sm.clear-btn:hover {
-            background: #3a2a2a;
-            color: #c07a7a;
+        .date-filter .filter-status {
+            font-size: 11px;
+            color: #555;
+            width: 100%;
+            text-align: center;
+            padding-top: 4px;
+            border-top: 1px solid #1a1a1a;
         }
 
         /* --- STATS ROW --- */
         .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 14px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
         .stat-card {
-            background: #222;
-            padding: 16px 20px;
+            background: #1a1a1a;
+            padding: 12px 14px;
             border-radius: 12px;
-            border: 1px solid #333;
+            border: 1px solid #2a2a2a;
             display: flex;
             align-items: center;
-            gap: 14px;
-            transition: 0.2s;
-        }
-
-        .stat-card:hover {
-            border-color: #555;
-            background: #262626;
+            gap: 10px;
         }
 
         .stat-card i {
-            font-size: 24px;
-            color: #777;
-            width: 36px;
+            font-size: 18px;
+            color: #555;
+            width: 28px;
             text-align: center;
         }
 
         .stat-card .stat-number {
-            font-size: 26px;
+            font-size: 20px;
             font-weight: 700;
             letter-spacing: -0.3px;
             color: #ffffff;
@@ -403,8 +439,8 @@
         }
 
         .stat-card .stat-label {
-            font-size: 12px;
-            color: #888;
+            font-size: 9px;
+            color: #666;
             font-weight: 400;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -419,30 +455,27 @@
         .retention-info {
             background: #1a1a2a;
             border: 1px solid #2a3a3a;
-            border-radius: 10px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
+            font-size: 11px;
         }
 
         .retention-info .left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            color: #888;
         }
 
         .retention-info .left i {
             color: #6aaa6a;
-            font-size: 18px;
-        }
-
-        .retention-info .left span {
-            font-size: 13px;
-            color: #aaa;
+            font-size: 14px;
         }
 
         .retention-info .left strong {
@@ -451,72 +484,70 @@
 
         .retention-info .right {
             display: flex;
-            gap: 16px;
-            font-size: 12px;
-            color: #888;
+            gap: 12px;
+            color: #666;
         }
 
         .retention-info .right i {
-            margin-right: 4px;
+            margin-right: 3px;
         }
 
         /* --- CHARTS ROW --- */
         .charts-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .chart-card {
-            background: #222;
+            background: #1a1a1a;
             border-radius: 12px;
-            padding: 20px 22px 22px 22px;
-            border: 1px solid #333;
+            padding: 14px 16px 16px 16px;
+            border: 1px solid #2a2a2a;
         }
 
         .chart-card h4 {
             font-weight: 600;
-            font-size: 14px;
-            color: #aaa;
+            font-size: 11px;
+            color: #888;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .chart-card h4 i {
-            color: #666;
+            color: #555;
         }
 
         .chart-bars {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 6px;
         }
 
         .chart-bar-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .chart-bar-item .label {
-            font-size: 13px;
-            color: #bbb;
-            min-width: 140px;
+            font-size: 11px;
+            color: #999;
+            min-width: 80px;
             font-weight: 400;
         }
 
         .chart-bar-item .bar-track {
             flex: 1;
-            height: 22px;
+            height: 18px;
             background: #2a2a2a;
             border-radius: 4px;
             overflow: hidden;
-            position: relative;
         }
 
         .chart-bar-item .bar-fill {
@@ -534,10 +565,10 @@
         .chart-bar-item .bar-fill.orange { background: #7a5a3a; }
 
         .chart-bar-item .bar-value {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
-            color: #ddd;
-            min-width: 36px;
+            color: #bbb;
+            min-width: 28px;
             text-align: right;
         }
 
@@ -546,7 +577,7 @@
             justify-content: space-around;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .pie-item {
@@ -557,14 +588,14 @@
         }
 
         .pie-circle {
-            width: 72px;
-            height: 72px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 14px;
             color: #fff;
             border: 3px solid #444;
         }
@@ -573,17 +604,17 @@
         .pie-circle.red { border-color: #7a4a4a; color: #c07a7a; }
 
         .pie-label {
-            font-size: 12px;
-            color: #888;
+            font-size: 10px;
+            color: #666;
             text-align: center;
         }
 
         /* --- TABLE --- */
         .table-container {
-            background: #222;
+            background: #1a1a1a;
             border-radius: 12px;
-            padding: 18px 0 6px 0;
-            border: 1px solid #333;
+            padding: 12px 0 4px 0;
+            border: 1px solid #2a2a2a;
             overflow-x: auto;
         }
 
@@ -592,77 +623,79 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px 14px 20px;
-            border-bottom: 1px solid #333;
+            padding: 0 12px 10px 12px;
+            border-bottom: 1px solid #2a2a2a;
+            gap: 8px;
         }
 
         .table-header-tools h3 {
             font-weight: 600;
-            font-size: 16px;
-            color: #ccc;
+            font-size: 14px;
+            color: #aaa;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .table-header-tools h3 i {
-            color: #666;
+            color: #555;
         }
 
         .table-header-tools .filter-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             flex-wrap: wrap;
         }
 
         .table-header-tools .filter-group input,
         .table-header-tools .filter-group select {
-            padding: 7px 14px;
-            border-radius: 6px;
-            border: 1.5px solid #333;
-            font-size: 13px;
-            background: #1a1a1a;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1.5px solid #2a2a2a;
+            font-size: 12px;
+            background: #111;
             font-family: 'Inter', sans-serif;
             outline: none;
             transition: 0.2s;
             color: #ccc;
+            max-width: 120px;
         }
 
         .table-header-tools .filter-group input:focus,
         .table-header-tools .filter-group select:focus {
-            border-color: #555;
-            background: #222;
+            border-color: #4a7a4a;
+            background: #1a1a1a;
         }
 
         .table-header-tools .filter-group input::placeholder {
-            color: #555;
+            color: #444;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            min-width: 1100px;
+            font-size: 12px;
+            min-width: 800px;
         }
 
         th {
             text-align: left;
-            padding: 12px 14px;
-            background: #1a1a1a;
-            color: #888;
+            padding: 8px 10px;
+            background: #111;
+            color: #666;
             font-weight: 600;
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            border-bottom: 1.5px solid #333;
+            border-bottom: 1.5px solid #2a2a2a;
         }
 
         td {
-            padding: 12px 14px;
-            border-bottom: 1px solid #2a2a2a;
+            padding: 8px 10px;
+            border-bottom: 1px solid #222;
             vertical-align: middle;
-            color: #ddd;
+            color: #ccc;
         }
 
         tr:last-child td {
@@ -670,25 +703,25 @@
         }
 
         tr:hover td {
-            background: #2a2a2a;
+            background: #222;
         }
 
         .agent-badge {
             background: #2a2a2a;
-            padding: 3px 12px;
+            padding: 2px 10px;
             border-radius: 4px;
             font-weight: 500;
-            font-size: 12px;
-            color: #ccc;
+            font-size: 11px;
+            color: #aaa;
             display: inline-block;
         }
 
         .action-tag {
             display: inline-block;
-            padding: 3px 14px;
+            padding: 2px 10px;
             border-radius: 4px;
             font-weight: 500;
-            font-size: 11.5px;
+            font-size: 10px;
             letter-spacing: 0.2px;
         }
 
@@ -699,55 +732,41 @@
         .tag-info { background: #2a2a3a; color: #8a9ac8; }
         .tag-termination { background: #3a2a2a; color: #d48a8a; }
 
-        /* --- CHAT ID STYLING (Full ID visible) --- */
         .chat-id-full {
             font-family: 'Courier New', monospace;
-            font-size: 12px;
-            background: #1a1a1a;
-            padding: 3px 10px;
+            font-size: 11px;
+            background: #111;
+            padding: 2px 8px;
             border-radius: 4px;
             color: #8aaa8a;
             word-break: break-all;
             display: inline-block;
-            max-width: 220px;
+            max-width: 150px;
             white-space: normal;
-            line-height: 1.4;
-        }
-
-        .chat-id-full:hover {
-            background: #2a2a2a;
-            color: #a0d0a0;
+            line-height: 1.3;
         }
 
         .btn-sm {
-            padding: 4px 12px;
-            font-size: 12px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 6px;
             border: 1px solid #333;
             font-weight: 500;
             cursor: pointer;
             transition: 0.15s;
             background: #2a2a2a;
             color: #aaa;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .btn-sm:hover {
-            background: #3a3a3a;
-            border-color: #555;
-        }
-
-        .btn-sm i {
-            margin-right: 4px;
+        .btn-sm:active {
+            transform: scale(0.95);
         }
 
         .btn-sm.primary-sm {
-            background: #3a3a3a;
-            color: #ddd;
-            border-color: #555;
-        }
-
-        .btn-sm.primary-sm:hover {
-            background: #4a4a4a;
+            background: #2a3a2a;
+            color: #8aaa8a;
+            border-color: #3a5a3a;
         }
 
         .btn-sm.danger-sm {
@@ -756,18 +775,9 @@
             border-color: #5a3a3a;
         }
 
-        .btn-sm.danger-sm:hover {
-            background: #4a2a2a;
-        }
-
-        .btn-sm.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
         .text-muted {
-            color: #666;
-            font-size: 13px;
+            color: #555;
+            font-size: 11px;
         }
 
         /* --- MODAL --- */
@@ -775,12 +785,12 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
 
         .modal-overlay.active {
@@ -788,15 +798,15 @@
         }
 
         .modal-card {
-            background: #222;
-            max-width: 740px;
+            background: #1a1a1a;
+            max-width: 600px;
             width: 100%;
-            max-height: 92vh;
-            border-radius: 16px;
-            padding: 32px 36px;
+            max-height: 90vh;
+            border-radius: 20px;
+            padding: 24px 20px;
             overflow-y: auto;
-            border: 1px solid #333;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
             animation: slideUp 0.3s ease;
         }
 
@@ -809,50 +819,45 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 16px;
-            margin-bottom: 22px;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
         }
 
         .modal-header h2 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 600;
             color: #eee;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .modal-header h2 i {
-            color: #666;
+            color: #555;
         }
 
         .close-modal {
             background: #2a2a2a;
             border: 1px solid #333;
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
-            font-size: 20px;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            font-size: 18px;
             cursor: pointer;
             transition: 0.2s;
             color: #888;
         }
 
-        .close-modal:hover {
-            background: #3a3a3a;
-            transform: rotate(90deg);
-        }
-
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
             display: block;
             font-weight: 500;
-            font-size: 13px;
-            color: #aaa;
+            font-size: 12px;
+            color: #888;
             margin-bottom: 4px;
         }
 
@@ -866,84 +871,78 @@
         .form-group textarea {
             width: 100%;
             padding: 10px 14px;
-            border: 1.5px solid #333;
-            border-radius: 8px;
+            border: 1.5px solid #2a2a2a;
+            border-radius: 10px;
             font-size: 14px;
             font-family: 'Inter', sans-serif;
             transition: 0.2s;
-            background: #1a1a1a;
+            background: #111;
             color: #ddd;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: #555;
-            background: #222;
+            border-color: #4a7a4a;
+            background: #1a1a1a;
             outline: none;
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 60px;
+            min-height: 50px;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 12px;
         }
 
         .form-actions {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            padding-top: 18px;
-            border-top: 1px solid #333;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #2a2a2a;
             justify-content: flex-end;
         }
 
-        /* --- ACTION PLAN MODAL --- */
+        /* --- ACTION PLAN --- */
         .action-plan-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px 20px;
+            gap: 12px;
         }
 
         .action-item {
-            background: #1a1a1a;
-            padding: 14px 18px;
+            background: #111;
+            padding: 12px 14px;
             border-radius: 10px;
             border-left: 4px solid #555;
-            border: 1px solid #2a2a2a;
-            transition: 0.2s;
-        }
-
-        .action-item:hover {
-            background: #222;
-            border-color: #444;
+            border: 1px solid #222;
         }
 
         .action-item .issue {
             font-weight: 600;
-            color: #ddd;
-            font-size: 14px;
+            color: #ccc;
+            font-size: 13px;
             margin-bottom: 3px;
         }
 
         .action-item .correction {
-            font-size: 13px;
-            color: #aaa;
-            margin-bottom: 5px;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
             line-height: 1.4;
         }
 
         .action-item .meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px 18px;
-            font-size: 12px;
-            color: #666;
+            gap: 8px 12px;
+            font-size: 11px;
+            color: #555;
             margin-top: 4px;
         }
 
@@ -954,30 +953,29 @@
         }
 
         .action-item .meta i {
-            color: #555;
-            width: 14px;
+            color: #444;
+            width: 12px;
         }
 
-        /* --- MATRIX MODAL --- */
         .matrix-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .matrix-table th {
-            background: #1a1a1a;
-            color: #888;
-            padding: 12px 16px;
+            background: #111;
+            color: #666;
+            padding: 10px 12px;
             text-align: center;
-            border: 1px solid #333;
+            border: 1px solid #2a2a2a;
         }
 
         .matrix-table td {
-            padding: 12px 16px;
+            padding: 10px 12px;
             text-align: center;
-            border: 1px solid #333;
-            color: #ddd;
+            border: 1px solid #2a2a2a;
+            color: #ccc;
         }
 
         .matrix-table .highlight-cell {
@@ -986,47 +984,36 @@
             font-weight: 600;
         }
 
-        /* --- EDIT ACTION DROPDOWN MODAL --- */
-        .edit-action-modal .modal-card {
-            max-width: 480px;
-        }
-
-        .edit-action-modal .form-group select {
-            font-size: 15px;
-            padding: 12px 16px;
-        }
-
         /* --- NOTIFICATION --- */
         .cleanup-notification {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #2a2a2a;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: #1a1a1a;
             border: 1px solid #4a7a4a;
             border-radius: 12px;
-            padding: 16px 24px;
+            padding: 14px 18px;
             color: #a0c0a0;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
             z-index: 9999;
             animation: slideIn 0.5s ease;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
         }
 
         .cleanup-notification .content {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .cleanup-notification .content i {
-            font-size: 24px;
+            font-size: 20px;
             color: #6aaa6a;
         }
 
         .cleanup-notification .content .text {
             flex: 1;
+            font-size: 13px;
         }
 
         .cleanup-notification .content .text strong {
@@ -1037,7 +1024,7 @@
         .cleanup-notification .content .text p {
             margin: 0;
             color: #888;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .cleanup-notification .close-notif {
@@ -1049,61 +1036,63 @@
             padding: 4px 8px;
         }
 
-        .cleanup-notification .close-notif:hover {
-            color: #aaa;
-        }
-
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* --- RESPONSIVE --- */
-        @media (max-width: 820px) {
-            .charts-row {
-                grid-template-columns: 1fr;
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
             }
 
-            .action-plan-grid {
-                grid-template-columns: 1fr;
+            .stat-card {
+                padding: 10px 8px;
+                flex-direction: column;
+                text-align: center;
+                gap: 2px;
+            }
+
+            .stat-card i {
+                font-size: 16px;
+                width: auto;
+            }
+
+            .stat-card .stat-number {
+                font-size: 18px;
+            }
+
+            .stat-card .stat-label {
+                font-size: 8px;
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .chart-card {
+                padding: 10px 12px;
+            }
+
+            .chart-bar-item .label {
+                font-size: 10px;
+                min-width: 60px;
+            }
+
+            .chat-id-full {
+                max-width: 100px;
+                font-size: 10px;
             }
 
             .form-row {
                 grid-template-columns: 1fr;
             }
 
-            .modal-card {
-                padding: 20px;
-            }
-
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .stats-row {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .table-header-tools {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .login-card {
-                padding: 24px;
-            }
-
-            .retention-info {
-                flex-direction: column;
-                align-items: flex-start;
+            .action-plan-grid {
+                grid-template-columns: 1fr;
             }
 
             .date-filter {
@@ -1113,36 +1102,96 @@
 
             .date-filter .filter-actions {
                 margin-left: 0;
+                justify-content: center;
             }
 
-            .chat-id-full {
-                max-width: 140px;
-                font-size: 11px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-pie-group {
+            .retention-info {
                 flex-direction: column;
+                align-items: flex-start;
+                font-size: 10px;
+            }
+
+            .retention-info .right {
+                flex-wrap: wrap;
+            }
+
+            .table-header-tools {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table-header-tools .filter-group {
+                justify-content: stretch;
+            }
+
+            .table-header-tools .filter-group input,
+            .table-header-tools .filter-group select {
+                flex: 1;
+                max-width: none;
             }
 
             .header-actions .btn {
-                font-size: 12px;
-                padding: 8px 14px;
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 17px;
+            }
+
+            .modal-card {
+                padding: 16px;
+            }
+
+            .login-card {
+                padding: 24px 20px;
+            }
+
+            .login-card .logo h2 {
+                font-size: 20px;
+            }
+
+            .eval-cta {
+                font-size: 14px;
+                padding: 12px 24px;
+            }
+
+            #adminControls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #adminControls .btn {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
             }
 
             .chat-id-full {
-                max-width: 100px;
+                max-width: 80px;
+                font-size: 9px;
+            }
+
+            .header-actions .btn {
+                font-size: 9px;
+                padding: 4px 8px;
+            }
+
+            .header-actions .btn i {
                 font-size: 10px;
             }
         }
 
         .modal-card::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
 
         .modal-card::-webkit-scrollbar-track {
@@ -1156,12 +1205,12 @@
         }
 
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+            background: #111;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -1169,27 +1218,9 @@
             border-radius: 10px;
         }
 
-        /* User role indicator */
-        .user-role-badge {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .user-role-badge.admin {
-            background: #2a3a2a;
-            color: #6aaa6a;
-            border: 1px solid #3a5a3a;
-        }
-
-        .user-role-badge.user {
-            background: #2a2a3a;
-            color: #7a9ac8;
-            border: 1px solid #3a4a6a;
+        /* Hide demo credentials from the page */
+        .demo-credentials {
+            display: none !important;
         }
     </style>
 </head>
@@ -1199,29 +1230,26 @@
 <div id="loginScreen">
     <div class="login-card">
         <div class="logo">
-            <i class="fas fa-clipboard-check"></i>
+            <div class="icon-wrapper">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
             <h2>Evaluator Dashboard</h2>
             <p>Sign in to access the system</p>
         </div>
         <form id="loginForm" onsubmit="return handleLogin(event)">
             <div class="form-group">
                 <label><i class="fas fa-envelope"></i> Email / Username</label>
-                <input type="text" id="loginEmail" placeholder="Enter your email" value="" required />
+                <input type="text" id="loginEmail" placeholder="Enter your email" value="" required autocomplete="username" />
             </div>
             <div class="form-group">
                 <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" value="" required />
+                <input type="password" id="loginPassword" placeholder="Enter your password" value="" required autocomplete="current-password" />
             </div>
             <button type="submit" class="login-btn">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
             <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
         </form>
-        <div style="margin-top: 16px; text-align: center; font-size: 12px; color: #555; border-top: 1px solid #2a2a2a; padding-top: 16px;">
-            <span style="color: #444;">Demo credentials:</span><br>
-            <span style="color: #666;">Admin: waqas@dashboard.com / waqas1982</span><br>
-            <span style="color: #666;">User: user@dashboard.com / User123!</span>
-        </div>
     </div>
 </div>
 
@@ -1232,68 +1260,65 @@
     <div class="dashboard-header">
         <h1>
             <i class="fas fa-clipboard-check"></i>
-            Evaluator Dashboard
+            Dashboard
         </h1>
         <div class="header-actions">
             <span class="user-role-badge" id="userRoleBadge">User</span>
-            <button class="btn btn-outline" id="viewActionPlanBtn">
-                <i class="fas fa-list-ul"></i> Action Plan
+            <button class="btn btn-outline" id="viewActionPlanBtn" title="Action Plan">
+                <i class="fas fa-list-ul"></i>
             </button>
-            <button class="btn btn-outline" id="viewMatrixBtn">
-                <i class="fas fa-table"></i> Action Matrix
+            <button class="btn btn-outline" id="viewMatrixBtn" title="Action Matrix">
+                <i class="fas fa-table"></i>
             </button>
-            <button class="btn btn-primary" id="downloadCsvBtn">
-                <i class="fas fa-file-csv"></i> CSV
+            <button class="btn btn-primary" id="downloadCsvBtn" title="Download CSV">
+                <i class="fas fa-file-csv"></i>
             </button>
-            <button class="btn btn-success" id="downloadExcelBtn">
-                <i class="fas fa-file-excel"></i> Excel
+            <button class="btn btn-success" id="downloadExcelBtn" title="Download Excel">
+                <i class="fas fa-file-excel"></i>
             </button>
-            <button class="btn btn-danger" id="logoutBtn" style="font-size: 12px; padding: 8px 16px;">
-                <i class="fas fa-sign-out-alt"></i> Logout
+            <button class="btn btn-danger" id="logoutBtn" title="Logout" style="font-size: 11px; padding: 6px 10px;">
+                <i class="fas fa-sign-out-alt"></i>
             </button>
         </div>
     </div>
 
     <!-- ===== ADMIN CONTROLS ===== -->
-    <div id="adminControls" style="display: none; background: #1a1a2a; border: 1px solid #2a3a3a; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; gap: 12px;">
-        <span style="color: #6aaa6a; font-size: 13px; font-weight: 600;">
-            <i class="fas fa-shield-alt"></i> Admin Controls
-        </span>
-        <button class="btn btn-warning" id="clearOldDataBtn" style="background: #4a5a2a; color: #a0c0a0; border-color: #5a6a3a;">
+    <div id="adminControls">
+        <span class="admin-label"><i class="fas fa-shield-alt"></i> Admin</span>
+        <button class="btn btn-warning" id="clearOldDataBtn">
             <i class="fas fa-clock"></i> Remove > 6 Months
         </button>
         <button class="btn btn-danger" id="clearAllDataBtn">
-            <i class="fas fa-trash-alt"></i> Clear All Data
+            <i class="fas fa-trash-alt"></i> Clear All
         </button>
-        <span style="font-size: 11px; color: #666; margin-left: auto;">
-            <i class="fas fa-database"></i> <span id="adminRecordCount">0</span> records
+        <span style="font-size: 10px; color: #555; margin-left: auto;">
+            <i class="fas fa-database"></i> <span id="adminRecordCount">0</span>
         </span>
     </div>
 
     <!-- ===== DATE RANGE FILTER ===== -->
     <div class="date-filter">
-        <label><i class="fas fa-calendar-alt"></i> From:</label>
+        <label><i class="fas fa-calendar-alt"></i> From</label>
         <input type="date" id="dateFrom" />
-        <label><i class="fas fa-calendar-alt"></i> To:</label>
+        <label><i class="fas fa-calendar-alt"></i> To</label>
         <input type="date" id="dateTo" />
         <div class="filter-actions">
             <button class="btn-sm primary-sm" id="applyDateFilterBtn">
                 <i class="fas fa-filter"></i> Apply
             </button>
-            <button class="btn-sm clear-btn" id="clearDateFilterBtn">
-                <i class="fas fa-times"></i> Clear
+            <button class="btn-sm" id="clearDateFilterBtn" style="background:#2a2a2a;color:#666;border-color:#333;">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-        <span style="font-size: 12px; color: #666; margin-left: auto;" id="dateFilterStatus">
+        <div class="filter-status" id="dateFilterStatus">
             <i class="fas fa-info-circle"></i> All dates
-        </span>
+        </div>
     </div>
 
     <!-- ===== EVALUATION CTA ===== -->
     <div class="eval-cta-group">
         <button class="eval-cta" id="openEvalFormBtn">
             <i class="fas fa-plus-circle"></i> New Evaluation
-            <span style="font-size: 11px; color: #666; font-weight: 400;">(Form)</span>
         </button>
     </div>
 
@@ -1301,47 +1326,41 @@
     <div class="stats-row" id="statsRow">
         <div class="stat-card accent-blue">
             <i class="fas fa-users"></i>
-            <div><div class="stat-number" id="totalAgents">0</div><div class="stat-label">Total Agents</div></div>
+            <div><div class="stat-number" id="totalAgents">0</div><div class="stat-label">Agents</div></div>
         </div>
         <div class="stat-card">
             <i class="fas fa-file-alt"></i>
-            <div><div class="stat-number" id="totalCases">0</div><div class="stat-label">Total Cases</div></div>
+            <div><div class="stat-number" id="totalCases">0</div><div class="stat-label">Cases</div></div>
         </div>
         <div class="stat-card accent-green">
             <i class="fas fa-check-circle"></i>
-            <div><div class="stat-number" id="validEscalations">0</div><div class="stat-label">Valid Escalations</div></div>
+            <div><div class="stat-number" id="validEscalations">0</div><div class="stat-label">Valid</div></div>
         </div>
         <div class="stat-card accent-red">
             <i class="fas fa-times-circle"></i>
-            <div><div class="stat-number" id="invalidEscalations">0</div><div class="stat-label">Invalid / Reversal</div></div>
+            <div><div class="stat-number" id="invalidEscalations">0</div><div class="stat-label">Invalid</div></div>
         </div>
         <div class="stat-card accent-gold">
             <i class="fas fa-user-graduate"></i>
-            <div><div class="stat-number" id="coachingCount">0</div><div class="stat-label">Coaching / Written Memo</div></div>
+            <div><div class="stat-number" id="coachingCount">0</div><div class="stat-label">Coaching</div></div>
         </div>
         <div class="stat-card accent-red">
             <i class="fas fa-dollar-sign"></i>
-            <div><div class="stat-number" id="deductionCount">0</div><div class="stat-label">1-Day Deduction</div></div>
+            <div><div class="stat-number" id="deductionCount">0</div><div class="stat-label">Deduction</div></div>
         </div>
     </div>
 
-    <!-- ===== RETENTION POLICY INFO ===== -->
+    <!-- ===== RETENTION INFO ===== -->
     <div class="retention-info">
         <div class="left">
             <i class="fas fa-calendar-alt"></i>
-            <span>
-                <strong>📋 Retention Policy:</strong> 
-                Data older than <strong>6 months</strong> is automatically removed.
-                <span style="color: #666; font-size: 12px; margin-left: 10px;">
-                    (Last cleanup: <span id="lastCleanupDisplay">Today</span>)
-                </span>
-            </span>
+            <span><strong>6 months</strong> retention · last cleanup: <span id="lastCleanupDisplay">Today</span></span>
         </div>
         <div class="right">
-            <span><i class="fas fa-database"></i> <span id="totalRecordsDisplay">0</span> records</span>
+            <span><i class="fas fa-database"></i> <span id="totalRecordsDisplay">0</span></span>
             <span><i class="fas fa-clock"></i> <span id="oldestRecordDisplay">—</span></span>
             <span id="expiringWarning" style="color: #c8b87a; display: none;">
-                <i class="fas fa-exclamation-triangle"></i> Expiring soon
+                <i class="fas fa-exclamation-triangle"></i> Expiring
             </span>
         </div>
     </div>
@@ -1350,29 +1369,25 @@
     <div class="charts-row">
         <div class="chart-card">
             <h4><i class="fas fa-chart-bar"></i> Action Distribution</h4>
-            <div class="chart-bars" id="actionChart">
-                <!-- injected by JS -->
-            </div>
+            <div class="chart-bars" id="actionChart"></div>
         </div>
         <div class="chart-card">
             <h4><i class="fas fa-chart-pie"></i> Escalation Status</h4>
-            <div class="chart-pie-group" id="escalationPie">
-                <!-- injected by JS -->
-            </div>
+            <div class="chart-pie-group" id="escalationPie"></div>
         </div>
     </div>
 
     <!-- ===== TABLE ===== -->
     <div class="table-container">
         <div class="table-header-tools">
-            <h3><i class="fas fa-table"></i> Case Evaluations</h3>
+            <h3><i class="fas fa-table"></i> Evaluations</h3>
             <div class="filter-group">
-                <input type="text" id="searchInput" placeholder="🔍 Search agent or chat..." />
+                <input type="text" id="searchInput" placeholder="🔍 Search..." />
                 <select id="actionFilter">
-                    <option value="">All Actions</option>
-                    <option value="Coaching / Written Memo">Coaching / Written Memo</option>
+                    <option value="">All</option>
+                    <option value="Coaching / Written Memo">Coaching</option>
                     <option value="1-Day Deduction">1-Day Deduction</option>
-                    <option value="2-Days Deduction + Final Warning">2-Days + Final Warning</option>
+                    <option value="2-Days Deduction + Final Warning">2-Days + Final</option>
                     <option value="Termination">Termination</option>
                     <option value="Pending">Pending</option>
                 </select>
@@ -1386,29 +1401,27 @@
             <table id="evaluationTable">
                 <thead>
                     <tr>
-                        <th>Cancellation Date</th>
+                        <th>Date</th>
                         <th>Chat ID</th>
-                        <th>Contact Reason</th>
-                        <th>Cancellation Reason</th>
-                        <th>Agent Email</th>
-                        <th>Non Compliant Reason</th>
-                        <th>Evaluator Comment</th>
+                        <th>Contact</th>
+                        <th>Cancel Reason</th>
+                        <th>Agent</th>
+                        <th>Violation</th>
+                        <th>Comment</th>
                         <th>Action</th>
-                        <th style="width: 100px;">Actions</th>
+                        <th style="width: 80px;">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- injected by JS -->
-                </tbody>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
 
-        <div style="padding: 12px 20px; border-top: 1px solid #333; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; align-items: center;">
+        <div style="padding: 10px 12px; border-top: 1px solid #2a2a2a; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; align-items: center;">
             <span class="text-muted" id="rowCount">0 rows</span>
-            <div style="display: flex; gap: 6px;">
-                <button class="btn-sm" id="prevPageBtn"><i class="fas fa-chevron-left"></i> Prev</button>
-                <span style="padding: 4px 14px; background: #1a1a1a; border-radius: 4px; font-size: 13px; color: #888;" id="pageIndicator">1 / 1</span>
-                <button class="btn-sm" id="nextPageBtn">Next <i class="fas fa-chevron-right"></i></button>
+            <div style="display: flex; gap: 4px;">
+                <button class="btn-sm" id="prevPageBtn"><i class="fas fa-chevron-left"></i></button>
+                <span style="padding: 4px 12px; background: #111; border-radius: 6px; font-size: 12px; color: #666;" id="pageIndicator">1 / 1</span>
+                <button class="btn-sm" id="nextPageBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </div>
@@ -1423,18 +1436,17 @@
             <form id="evalForm">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Cancellation Date <span class="required">*</span></label>
+                        <label>Date <span class="required">*</span></label>
                         <input type="date" id="evalDate" required />
                     </div>
                     <div class="form-group">
                         <label>Chat ID <span class="required">*</span></label>
-                        <input type="text" id="evalChatId" placeholder="e.g., c79bdc16-4548-40d4-bc4e-449f464a247b" required />
+                        <input type="text" id="evalChatId" placeholder="e.g., c79bdc16-4548..." required />
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Contact Reason L3 <span class="required">*</span></label>
+                        <label>Contact Reason <span class="required">*</span></label>
                         <select id="evalContactReason" required>
                             <option value="">Select...</option>
                             <option value="Refuse to accept order">Refuse to accept order</option>
@@ -1446,10 +1458,10 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Cancellation Reason <span class="required">*</span></label>
+                        <label>Cancel Reason <span class="required">*</span></label>
                         <select id="evalCancelReason" required>
                             <option value="">Select...</option>
-                            <option value="CST - Refuse to receive the order">CST - Refuse to receive the order</option>
+                            <option value="CST - Refuse to receive the order">CST - Refuse to receive</option>
                             <option value="CST - doesn't response">CST - doesn't response</option>
                             <option value="CST - Customer requested">CST - Customer requested</option>
                             <option value="CST - Late Owner">CST - Late Owner</option>
@@ -1457,30 +1469,26 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Agent Email <span class="required">*</span></label>
                     <input type="text" id="evalAgent" placeholder="e.g., wesam.shakir.2527" required />
                 </div>
-
                 <div class="form-group">
-                    <label>Non Compliant Reason / Violation <span class="required">*</span></label>
+                    <label>Violation <span class="required">*</span></label>
                     <select id="evalViolation" required>
                         <option value="">Select violation...</option>
-                        <option value="Order Delay - Should choose LATE-OWNER Cancellation">Order Delay - Should choose LATE-OWNER Cancellation</option>
-                        <option value="2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial">2 Trials Call Diff < 150</option>
-                        <option value="No Trials - Agent Should make 2 Trials To The Customer">No Trials - Agent Should make 2 Trials</option>
-                        <option value="No call attempted before cancellation">No call attempted before cancellation</option>
-                        <option value="Incorrect Contact Reason selected">Incorrect Contact Reason selected</option>
+                        <option value="Order Delay - Should choose LATE-OWNER Cancellation">Order Delay - LATE-OWNER</option>
+                        <option value="2 Trials Call Diff < 150">2 Trials Call Diff < 150</option>
+                        <option value="No Trials - Agent Should make 2 Trials">No Trials - 2 Trials required</option>
+                        <option value="No call attempted before cancellation">No call attempted</option>
+                        <option value="Incorrect Contact Reason selected">Incorrect Contact Reason</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label>Evaluator Comment</label>
-                    <textarea id="evalComment" placeholder="e.g., Valid Escalation, Invalid Escalation - Reversal Required..." rows="2"></textarea>
+                    <textarea id="evalComment" placeholder="e.g., Valid Escalation..." rows="2"></textarea>
                 </div>
-
                 <div class="form-group">
                     <label>Action <span class="required">*</span></label>
                     <select id="evalAction" required>
@@ -1492,20 +1500,19 @@
                         <option value="Pending">Pending</option>
                     </select>
                 </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn btn-outline" id="cancelEvalBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="submitEvalBtn">
-                        <i class="fas fa-save"></i> Save Evaluation
+                        <i class="fas fa-save"></i> Save
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ===== EDIT ACTION DROPDOWN MODAL ===== -->
+    <!-- ===== EDIT ACTION MODAL ===== -->
     <div class="modal-overlay edit-action-modal" id="editActionModal">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 420px;">
             <div class="modal-header">
                 <h2><i class="fas fa-edit"></i> Edit Action</h2>
                 <button class="close-modal" id="closeEditModal"><i class="fas fa-times"></i></button>
@@ -1517,7 +1524,7 @@
                 </div>
                 <div class="form-group">
                     <label>Chat ID</label>
-                    <input type="text" id="editChatId" disabled style="opacity: 0.7;" />
+                    <input type="text" id="editChatId" disabled style="opacity: 0.7; font-size: 12px;" />
                 </div>
                 <div class="form-group">
                     <label>Current Action</label>
@@ -1536,7 +1543,7 @@
                 <div class="form-actions">
                     <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancel</button>
                     <button type="button" class="btn btn-primary" id="saveEditBtn">
-                        <i class="fas fa-save"></i> Update Action
+                        <i class="fas fa-save"></i> Update
                     </button>
                 </div>
             </div>
@@ -1545,15 +1552,13 @@
 
     <!-- ===== ACTION PLAN MODAL ===== -->
     <div class="modal-overlay" id="actionPlanOverlay">
-        <div class="modal-card" style="max-width: 950px;">
+        <div class="modal-card" style="max-width: 900px;">
             <div class="modal-header">
-                <h2><i class="fas fa-bullseye"></i> Action Plan · Summary</h2>
+                <h2><i class="fas fa-bullseye"></i> Action Plan</h2>
                 <button class="close-modal" id="closeActionPlanBtn"><i class="fas fa-times"></i></button>
             </div>
-            <div class="action-plan-grid" id="actionPlanGrid">
-                <!-- injected from JS -->
-            </div>
-            <div style="margin-top: 24px; text-align: right; border-top: 1px solid #333; padding-top: 18px;">
+            <div class="action-plan-grid" id="actionPlanGrid"></div>
+            <div style="margin-top: 16px; text-align: right; border-top: 1px solid #2a2a2a; padding-top: 14px;">
                 <button class="btn btn-primary" id="closeActionPlanFooterBtn">Close</button>
             </div>
         </div>
@@ -1561,22 +1566,13 @@
 
     <!-- ===== ACTION MATRIX MODAL ===== -->
     <div class="modal-overlay" id="matrixOverlay">
-        <div class="modal-card" style="max-width: 750px;">
+        <div class="modal-card" style="max-width: 600px;">
             <div class="modal-header">
                 <h2><i class="fas fa-table"></i> Action Matrix</h2>
                 <button class="close-modal" id="closeMatrixBtn"><i class="fas fa-times"></i></button>
             </div>
             <table class="matrix-table">
-                <thead>
-                    <tr>
-                        <th>Clause</th>
-                        <th>1st Time</th>
-                        <th>2nd Time</th>
-                        <th>3rd Time</th>
-                        <th>4th Time</th>
-                        <th>Counter Reset</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Clause</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>Reset</th></tr></thead>
                 <tbody>
                     <tr>
                         <td><strong>Wrong Cancellation</strong></td>
@@ -1588,7 +1584,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 16px; text-align: right;">
+            <div style="margin-top: 16px; border-top: 1px solid #2a2a2a; padding-top: 14px; text-align: right;">
                 <button class="btn btn-primary" id="closeMatrixFooterBtn">Close</button>
             </div>
         </div>
@@ -1598,10 +1594,9 @@
 
 <script>
     // ================================================================
-    // 1. USER MANAGEMENT (Login/Logout)
+    // 1. USER MANAGEMENT
     // ================================================================
 
-    // User database - Only Waqas as Admin, one general user
     const USERS = {
         'waqas@dashboard.com': {
             password: 'waqas1982',
@@ -1617,10 +1612,13 @@
 
     let currentUser = null;
     let dateFilter = { from: null, to: null };
+    let evaluations = [];
+    let currentPage = 1;
+    const rowsPerPage = 5;
+    let editTargetId = null;
 
     function handleLogin(e) {
         e.preventDefault();
-        
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value.trim();
         const errorEl = document.getElementById('loginError');
@@ -1631,21 +1629,16 @@
                 role: USERS[email].role,
                 name: USERS[email].name
             };
-            
             sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboardWrapper').style.display = 'block';
-            
             updateUIForRole(currentUser.role);
             initDashboard();
-            
             errorEl.classList.remove('show');
         } else {
             errorEl.classList.add('show');
             setTimeout(() => errorEl.classList.remove('show'), 3000);
         }
-        
         return false;
     }
 
@@ -1685,15 +1678,9 @@
         const isAdmin = role === 'admin';
         const badge = document.getElementById('userRoleBadge');
         const adminControls = document.getElementById('adminControls');
-        
         badge.textContent = isAdmin ? '👑 Admin' : '👤 User';
         badge.className = 'user-role-badge ' + (isAdmin ? 'admin' : 'user');
-        
-        if (isAdmin) {
-            adminControls.style.display = 'flex';
-        } else {
-            adminControls.style.display = 'none';
-        }
+        adminControls.style.display = isAdmin ? 'flex' : 'none';
     }
 
     // ================================================================
@@ -1703,11 +1690,7 @@
     function loadData() {
         const saved = localStorage.getItem('evaluationData');
         if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                return getDefaultData();
-            }
+            try { return JSON.parse(saved); } catch (e) { return getDefaultData(); }
         }
         return getDefaultData();
     }
@@ -1719,81 +1702,18 @@
 
     function getDefaultData() {
         return [
-            {
-                cancellationDate: '2026-08-18',
-                chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b',
-                contactReason: 'Refuse to accept order',
-                cancelReason: 'CST - Refuse to receive the order',
-                agent: 'wesam.shakir.2527',
-                violation: 'Order Delay - Should choose LATE-OWNER Cancellation',
-                evaluatorComment: 'Valid Escalation',
-                action: 'Coaching / Written Memo'
-            },
-            {
-                cancellationDate: '2026-08-18',
-                chatId: '46cc7168-69f4-4858-9992-e21c59875ce5',
-                contactReason: 'Checking status',
-                cancelReason: 'CST - Refuse to receive the order',
-                agent: 'wesam.shakir.2527',
-                violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial',
-                evaluatorComment: 'Invalid Escalation - Reversal Required',
-                action: '1-Day Deduction'
-            },
-            {
-                cancellationDate: '2026-08-18',
-                chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531',
-                contactReason: 'Unable to contact',
-                cancelReason: 'CST - doesn\'t response',
-                agent: 'wesam.shakir.2527',
-                violation: 'No Trials - Agent Should make 2 Trials To The Customer',
-                evaluatorComment: 'Valid Escalation',
-                action: '2-Days Deduction + Final Warning'
-            },
-            {
-                cancellationDate: '2026-08-19',
-                chatId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-                contactReason: 'Customer requested cancellation',
-                cancelReason: 'CST - Customer requested',
-                agent: 'sara.ahmed.101',
-                violation: 'No call attempted before cancellation',
-                evaluatorComment: 'Invalid Escalation - Reversal Required',
-                action: 'Coaching / Written Memo'
-            },
-            {
-                cancellationDate: '2026-08-19',
-                chatId: 'z9y8x7w6-v5u4-3210-zyxw-vutsrqponmlk',
-                contactReason: 'Late Owner',
-                cancelReason: 'CST - Late Owner',
-                agent: 'khalid.hassan.89',
-                violation: 'Incorrect Contact Reason selected (should be LATE-OWNER)',
-                evaluatorComment: 'Valid Escalation',
-                action: 'Coaching / Written Memo'
-            },
-            {
-                cancellationDate: '2026-08-20',
-                chatId: 'new-001-xyz',
-                contactReason: 'Late Owner',
-                cancelReason: 'CST - Late Owner',
-                agent: 'fatima.ali.45',
-                violation: 'Incorrect contact reason (selected Refuse instead of Late Owner)',
-                evaluatorComment: 'Valid Escalation',
-                action: '1-Day Deduction'
-            },
-            {
-                cancellationDate: '2026-08-20',
-                chatId: 'new-002-abc',
-                contactReason: 'Unable to contact',
-                cancelReason: 'CST - doesn\'t response',
-                agent: 'ahmed.khan.12',
-                violation: 'Only 1 trial call made (requires 2)',
-                evaluatorComment: 'Invalid Escalation - Reversal Required',
-                action: 'Coaching / Written Memo'
-            }
+            { cancellationDate: '2026-08-18', chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b', contactReason: 'Refuse to accept order', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: 'Order Delay - Should choose LATE-OWNER Cancellation', evaluatorComment: 'Valid Escalation', action: 'Coaching / Written Memo' },
+            { cancellationDate: '2026-08-18', chatId: '46cc7168-69f4-4858-9992-e21c59875ce5', contactReason: 'Checking status', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial', evaluatorComment: 'Invalid Escalation - Reversal Required', action: '1-Day Deduction' },
+            { cancellationDate: '2026-08-18', chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531', contactReason: 'Unable to contact', cancelReason: 'CST - doesn\'t response', agent: 'wesam.shakir.2527', violation: 'No Trials - Agent Should make 2 Trials To The Customer', evaluatorComment: 'Valid Escalation', action: '2-Days Deduction + Final Warning' },
+            { cancellationDate: '2026-08-19', chatId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', contactReason: 'Customer requested cancellation', cancelReason: 'CST - Customer requested', agent: 'sara.ahmed.101', violation: 'No call attempted before cancellation', evaluatorComment: 'Invalid Escalation - Reversal Required', action: 'Coaching / Written Memo' },
+            { cancellationDate: '2026-08-19', chatId: 'z9y8x7w6-v5u4-3210-zyxw-vutsrqponmlk', contactReason: 'Late Owner', cancelReason: 'CST - Late Owner', agent: 'khalid.hassan.89', violation: 'Incorrect Contact Reason selected', evaluatorComment: 'Valid Escalation', action: 'Coaching / Written Memo' },
+            { cancellationDate: '2026-08-20', chatId: 'new-001-xyz', contactReason: 'Late Owner', cancelReason: 'CST - Late Owner', agent: 'fatima.ali.45', violation: 'Incorrect contact reason selected', evaluatorComment: 'Valid Escalation', action: '1-Day Deduction' },
+            { cancellationDate: '2026-08-20', chatId: 'new-002-abc', contactReason: 'Unable to contact', cancelReason: 'CST - doesn\'t response', agent: 'ahmed.khan.12', violation: 'Only 1 trial call made', evaluatorComment: 'Invalid Escalation - Reversal Required', action: 'Coaching / Written Memo' }
         ];
     }
 
     // ================================================================
-    // 3. 6-MONTH AUTO-CLEANUP POLICY
+    // 3. 6-MONTH AUTO-CLEANUP
     // ================================================================
 
     const RETENTION_DAYS = 180;
@@ -1801,29 +1721,18 @@
     function autoCleanupOldData(data) {
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
-        
-        const oldRecords = data.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            return recordDate < cutoffDate;
-        });
-        
-        const newRecords = data.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            return recordDate >= cutoffDate;
-        });
-        
+        const oldRecords = data.filter(e => new Date(e.cancellationDate) < cutoffDate);
+        const newRecords = data.filter(e => new Date(e.cancellationDate) >= cutoffDate);
         if (oldRecords.length > 0) {
-            console.log(`🗑️ Auto-cleanup: Removed ${oldRecords.length} record(s) older than 6 months.`);
+            console.log(`🗑️ Auto-cleanup: Removed ${oldRecords.length} record(s)`);
             showCleanupNotification(oldRecords.length, newRecords.length);
         }
-        
         return newRecords;
     }
 
     function showCleanupNotification(removed, remaining) {
         const existing = document.querySelector('.cleanup-notification');
         if (existing) existing.remove();
-        
         const notification = document.createElement('div');
         notification.className = 'cleanup-notification';
         notification.innerHTML = `
@@ -1831,20 +1740,19 @@
                 <i class="fas fa-recycle"></i>
                 <div class="text">
                     <strong>🧹 Auto-Cleanup Complete</strong>
-                    <p>Removed ${removed} record(s) older than 6 months. ${remaining} record(s) remain.</p>
+                    <p>Removed ${removed} record(s) older than 6 months. ${remaining} remain.</p>
                 </div>
                 <button class="close-notif" onclick="this.closest('.cleanup-notification').remove()">×</button>
             </div>
         `;
         document.body.appendChild(notification);
-        
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.style.opacity = '0';
                 notification.style.transition = 'opacity 0.5s';
                 setTimeout(() => notification.remove(), 500);
             }
-        }, 8000);
+        }, 6000);
     }
 
     // ================================================================
@@ -1853,8 +1761,6 @@
 
     function getFilteredData() {
         let filtered = [...evaluations];
-        
-        // Apply date filter
         if (dateFilter.from) {
             const fromDate = new Date(dateFilter.from);
             fromDate.setHours(0, 0, 0, 0);
@@ -1864,7 +1770,6 @@
                 return recordDate >= fromDate;
             });
         }
-        
         if (dateFilter.to) {
             const toDate = new Date(dateFilter.to);
             toDate.setHours(23, 59, 59, 999);
@@ -1873,7 +1778,6 @@
                 return recordDate <= toDate;
             });
         }
-        
         return filtered;
     }
 
@@ -1895,17 +1799,8 @@
     document.getElementById('applyDateFilterBtn').addEventListener('click', function() {
         const from = document.getElementById('dateFrom').value;
         const to = document.getElementById('dateTo').value;
-        
-        if (!from && !to) {
-            alert('Please select at least one date range.');
-            return;
-        }
-        
-        if (from && to && new Date(from) > new Date(to)) {
-            alert('"From" date cannot be after "To" date.');
-            return;
-        }
-        
+        if (!from && !to) { alert('Please select at least one date.'); return; }
+        if (from && to && new Date(from) > new Date(to)) { alert('"From" cannot be after "To".'); return; }
         dateFilter.from = from || null;
         dateFilter.to = to || null;
         updateDateFilterStatus();
@@ -1927,20 +1822,13 @@
     // 5. RENDER FUNCTIONS
     // ================================================================
 
-    let evaluations = [];
-    let currentPage = 1;
-    const rowsPerPage = 5;
-    let editTargetId = null;
-
     function getAgentList(data) {
         return [...new Set(data.map(e => e.agent))].sort();
     }
 
     function getActionCounts(data) {
         const counts = {};
-        data.forEach(e => {
-            counts[e.action] = (counts[e.action] || 0) + 1;
-        });
+        data.forEach(e => { counts[e.action] = (counts[e.action] || 0) + 1; });
         return counts;
     }
 
@@ -1958,7 +1846,6 @@
         const counts = getActionCounts(data);
         const actionOrder = ['Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
         const maxVal = Math.max(...Object.values(counts), 1);
-
         const chartContainer = document.getElementById('actionChart');
         chartContainer.innerHTML = actionOrder.map(action => {
             const val = counts[action] || 0;
@@ -1982,19 +1869,14 @@
         const total = stats.valid + stats.invalid || 1;
         const validPct = Math.round((stats.valid / total) * 100);
         const invalidPct = Math.round((stats.invalid / total) * 100);
-
         document.getElementById('escalationPie').innerHTML = `
             <div class="pie-item">
-                <div class="pie-circle green" style="background: conic-gradient(#4a7a4a 0% ${validPct}%, #2a2a2a ${validPct}% 100%);">
-                    ${validPct}%
-                </div>
-                <span class="pie-label">Valid Escalations<br>${stats.valid}</span>
+                <div class="pie-circle green" style="background: conic-gradient(#4a7a4a 0% ${validPct}%, #2a2a2a ${validPct}% 100%);">${validPct}%</div>
+                <span class="pie-label">Valid<br>${stats.valid}</span>
             </div>
             <div class="pie-item">
-                <div class="pie-circle red" style="background: conic-gradient(#7a4a4a 0% ${invalidPct}%, #2a2a2a ${invalidPct}% 100%);">
-                    ${invalidPct}%
-                </div>
-                <span class="pie-label">Invalid / Reversal<br>${stats.invalid}</span>
+                <div class="pie-circle red" style="background: conic-gradient(#7a4a4a 0% ${invalidPct}%, #2a2a2a ${invalidPct}% 100%);">${invalidPct}%</div>
+                <span class="pie-label">Invalid<br>${stats.invalid}</span>
             </div>
         `;
     }
@@ -2003,63 +1885,41 @@
         const uniqueAgents = [...new Set(data.map(e => e.agent))];
         document.getElementById('totalAgents').textContent = uniqueAgents.length;
         document.getElementById('totalCases').textContent = data.length;
-
         const stats = getEscalationStats(data);
         document.getElementById('validEscalations').textContent = stats.valid;
         document.getElementById('invalidEscalations').textContent = stats.invalid;
-
-        const coaching = data.filter(e => e.action === 'Coaching / Written Memo').length;
-        document.getElementById('coachingCount').textContent = coaching;
-
-        const deduction = data.filter(e => e.action === '1-Day Deduction').length;
-        document.getElementById('deductionCount').textContent = deduction;
-
+        document.getElementById('coachingCount').textContent = data.filter(e => e.action === 'Coaching / Written Memo').length;
+        document.getElementById('deductionCount').textContent = data.filter(e => e.action === '1-Day Deduction').length;
         document.getElementById('totalRecordsDisplay').textContent = evaluations.length;
         document.getElementById('adminRecordCount').textContent = evaluations.length;
-        
         if (evaluations.length > 0) {
             const oldest = evaluations.reduce((a, b) => {
                 const dateA = new Date(a.cancellationDate || '2099-01-01');
                 const dateB = new Date(b.cancellationDate || '2099-01-01');
                 return dateA < dateB ? a : b;
             });
-            document.getElementById('oldestRecordDisplay').textContent = 
-                new Date(oldest.cancellationDate).toLocaleDateString();
-            
+            document.getElementById('oldestRecordDisplay').textContent = new Date(oldest.cancellationDate).toLocaleDateString();
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS + 30);
-            const expiring = evaluations.filter(e => {
-                const recordDate = new Date(e.cancellationDate);
-                return recordDate < cutoffDate;
-            });
-            
+            const expiring = evaluations.filter(e => new Date(e.cancellationDate) < cutoffDate);
             const warningEl = document.getElementById('expiringWarning');
-            if (expiring.length > 0) {
-                warningEl.style.display = 'inline';
-                warningEl.textContent = `⚠️ ${expiring.length} record(s) expiring soon`;
-            } else {
-                warningEl.style.display = 'none';
-            }
+            warningEl.style.display = expiring.length > 0 ? 'inline' : 'none';
+            if (expiring.length > 0) warningEl.textContent = `⚠️ ${expiring.length} expiring`;
         }
-        
         const lastCleanup = localStorage.getItem('lastAutoCleanup');
         if (lastCleanup) {
-            const date = new Date(parseInt(lastCleanup));
-            document.getElementById('lastCleanupDisplay').textContent = date.toLocaleDateString();
+            document.getElementById('lastCleanupDisplay').textContent = new Date(parseInt(lastCleanup)).toLocaleDateString();
         }
     }
 
     function renderTable() {
-        // Get filtered data based on date range
         const filteredData = getFilteredData();
-        
         const search = document.getElementById('searchInput').value.toLowerCase().trim();
         const actionFilter = document.getElementById('actionFilter').value;
         const agentFilter = document.getElementById('agentFilter').value;
 
         let filtered = filteredData.filter(row => {
-            const matchSearch = row.agent.toLowerCase().includes(search) ||
-                               row.chatId.toLowerCase().includes(search);
+            const matchSearch = row.agent.toLowerCase().includes(search) || row.chatId.toLowerCase().includes(search);
             const matchAction = actionFilter === '' || row.action === actionFilter;
             const matchAgent = agentFilter === '' || row.agent === agentFilter;
             return matchSearch && matchAction && matchAgent;
@@ -2068,8 +1928,7 @@
         const agentSelect = document.getElementById('agentFilter');
         const currentVal = agentSelect.value;
         const agents = getAgentList(filteredData);
-        agentSelect.innerHTML = '<option value="">All Agents</option>' +
-            agents.map(a => `<option value="${a}">${a}</option>`).join('');
+        agentSelect.innerHTML = '<option value="">All Agents</option>' + agents.map(a => `<option value="${a}">${a}</option>`).join('');
         agentSelect.value = currentVal;
 
         const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
@@ -2079,7 +1938,7 @@
 
         const tbody = document.getElementById('tableBody');
         if (pageItems.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 40px 0; color: #555;">No cases found</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 30px 0; color: #444;">No cases found</td></tr>`;
         } else {
             tbody.innerHTML = pageItems.map(row => {
                 const tagClass = row.action === 'Coaching / Written Memo' ? 'tag-coaching' :
@@ -2094,9 +1953,9 @@
                         <td><span class="chat-id-full" title="${row.chatId}">${row.chatId}</span></td>
                         <td>${row.contactReason}</td>
                         <td>${row.cancelReason}</td>
-                        <td><span class="agent-badge"><i class="fas fa-user-circle" style="margin-right: 4px;"></i>${row.agent}</span></td>
-                        <td style="max-width: 180px; font-size: 12px; color: #aaa;">${row.violation}</td>
-                        <td><span style="font-size: 12px; color: #888;">${row.evaluatorComment || '—'}</span></td>
+                        <td><span class="agent-badge">${row.agent}</span></td>
+                        <td style="max-width:120px; font-size:11px; color:#888;">${row.violation}</td>
+                        <td><span style="font-size:11px; color:#666;">${row.evaluatorComment || '—'}</span></td>
                         <td><span class="action-tag ${tagClass}">${row.action}</span></td>
                         <td>
                             <button class="btn-sm primary-sm" onclick="openEditModal('${row.chatId}')"><i class="fas fa-edit"></i></button>
@@ -2143,7 +2002,6 @@
 
     document.getElementById('evalForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
         const newEval = {
             cancellationDate: document.getElementById('evalDate').value,
             chatId: document.getElementById('evalChatId').value.trim(),
@@ -2154,21 +2012,17 @@
             evaluatorComment: document.getElementById('evalComment').value.trim(),
             action: document.getElementById('evalAction').value
         };
-
         if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action) {
             alert('Please fill in all required fields (*)');
             return;
         }
-
         if (evaluations.some(e => e.chatId === newEval.chatId)) {
-            alert('A case with this Chat ID already exists. Please use a unique ID.');
+            alert('A case with this Chat ID already exists.');
             return;
         }
-
         evaluations.push(newEval);
         closeEvalForm();
         renderTable();
-
         const btn = document.getElementById('submitEvalBtn');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
@@ -2176,19 +2030,17 @@
     });
 
     // ================================================================
-    // 7. EDIT ACTION WITH DROPDOWN MODAL
+    // 7. EDIT ACTION
     // ================================================================
 
     function openEditModal(chatId) {
         const row = evaluations.find(e => e.chatId === chatId);
         if (!row) return;
-
         editTargetId = chatId;
         document.getElementById('editAgentName').value = row.agent;
         document.getElementById('editChatId').value = row.chatId;
         document.getElementById('editCurrentAction').value = row.action;
         document.getElementById('editNewAction').value = row.action;
-
         document.getElementById('editActionModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -2207,16 +2059,11 @@
 
     document.getElementById('saveEditBtn').addEventListener('click', function() {
         if (!editTargetId) return;
-
         const row = evaluations.find(e => e.chatId === editTargetId);
         if (!row) return;
-
-        const newAction = document.getElementById('editNewAction').value;
-        row.action = newAction;
-
+        row.action = document.getElementById('editNewAction').value;
         closeEditModal();
         renderTable();
-
         const btn = document.getElementById('saveEditBtn');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
@@ -2246,41 +2093,18 @@
             alert('⚠️ Only administrators can perform this action.');
             return;
         }
-        
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
-        
-        const oldRecords = evaluations.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            return recordDate < cutoffDate;
-        });
-        
-        const newRecords = evaluations.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            return recordDate >= cutoffDate;
-        });
-        
+        const oldRecords = evaluations.filter(e => new Date(e.cancellationDate) < cutoffDate);
+        const newRecords = evaluations.filter(e => new Date(e.cancellationDate) >= cutoffDate);
         if (oldRecords.length === 0) {
-            alert('ℹ️ No records older than 6 months found.\n\n' +
-                  `📊 ${evaluations.length} record(s) total (all within the last 6 months).`);
+            alert('ℹ️ No records older than 6 months found.');
             return;
         }
-        
-        if (!confirm(
-            `⚠️ 6-Month Retention Policy\n\n` +
-            `📅 Records older than: ${cutoffDate.toLocaleDateString()}\n` +
-            `🗑️ Records to remove: ${oldRecords.length}\n` +
-            `📊 Records to keep: ${newRecords.length}\n\n` +
-            `This action cannot be undone. Continue?`
-        )) {
-            return;
-        }
-        
+        if (!confirm(`⚠️ Remove ${oldRecords.length} record(s) older than 6 months?`)) return;
         evaluations = newRecords;
         renderTable();
-        
-        alert(`✅ Removed ${oldRecords.length} record(s) older than 6 months.\n` +
-              `📊 ${evaluations.length} record(s) remain.`);
+        alert(`✅ Removed ${oldRecords.length} record(s). ${evaluations.length} remain.`);
     });
 
     document.getElementById('clearAllDataBtn').addEventListener('click', function() {
@@ -2288,44 +2112,25 @@
             alert('⚠️ Only administrators can perform this action.');
             return;
         }
-        
         const count = evaluations.length;
-        if (count === 0) {
-            alert('ℹ️ No data to delete.');
-            return;
-        }
-        
-        if (!confirm(`⚠️⚠️⚠️ DANGER: You are about to delete ALL ${count} record(s). This is IRREVERSIBLE.`)) {
-            return;
-        }
-        if (!confirm(`⚠️ FINAL WARNING: Delete ${count} record(s)? Type "DELETE ALL" to confirm.`)) {
-            return;
-        }
-        
+        if (count === 0) { alert('ℹ️ No data to delete.'); return; }
+        if (!confirm(`⚠️⚠️⚠️ Delete ALL ${count} record(s)?`)) return;
+        if (!confirm(`⚠️ FINAL WARNING: Type "DELETE ALL" to confirm.`)) return;
         const confirmation = prompt('Type "DELETE ALL" to confirm:');
-        if (confirmation !== 'DELETE ALL') {
-            alert('✅ Operation cancelled.');
-            return;
-        }
-        
+        if (confirmation !== 'DELETE ALL') { alert('✅ Cancelled.'); return; }
         evaluations = [];
         renderTable();
-        alert(`✅ All ${count} record(s) have been permanently deleted.`);
+        alert(`✅ All ${count} record(s) deleted.`);
     });
 
     // ================================================================
-    // 10. EXPORT FUNCTIONS (CSV & Excel)
+    // 10. EXPORT FUNCTIONS
     // ================================================================
 
     document.getElementById('downloadCsvBtn').addEventListener('click', function() {
-        if (evaluations.length === 0) {
-            alert('⚠️ No data to export.');
-            return;
-        }
-        
+        if (evaluations.length === 0) { alert('⚠️ No data to export.'); return; }
         const headers = ['Cancellation Date', 'Chat ID', 'Contact Reason', 'Cancellation Reason', 'Agent Email', 'Non Compliant Reason', 'Evaluator Comment', 'Action'];
         const rows = evaluations.map(e => [e.cancellationDate || '', e.chatId || '', e.contactReason || '', e.cancelReason || '', e.agent || '', e.violation || '', e.evaluatorComment || '', e.action || '']);
-        
         let csvContent = headers.join(',') + '\n';
         rows.forEach(row => {
             const escapedRow = row.map(cell => {
@@ -2336,7 +2141,6 @@
             });
             csvContent += escapedRow.join(',') + '\n';
         });
-        
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -2349,38 +2153,16 @@
     });
 
     document.getElementById('downloadExcelBtn').addEventListener('click', function() {
-        if (evaluations.length === 0) {
-            alert('⚠️ No data to export.');
-            return;
-        }
-        
+        if (evaluations.length === 0) { alert('⚠️ No data to export.'); return; }
         const headers = ['Cancellation Date', 'Chat ID', 'Contact Reason', 'Cancellation Reason', 'Agent Email', 'Non Compliant Reason', 'Evaluator Comment', 'Action'];
-        
         let tableHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
         tableHtml += '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Evaluations</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>';
         tableHtml += '<body><table>';
-        
-        tableHtml += '<tr>';
-        headers.forEach(h => {
-            tableHtml += `<th style="font-weight:bold; background:#333; color:#fff; padding:8px;">${h}</th>`;
-        });
-        tableHtml += '</tr>';
-        
+        tableHtml += '<tr>' + headers.map(h => `<th style="font-weight:bold; background:#333; color:#fff; padding:8px;">${h}</th>`).join('') + '</tr>';
         evaluations.forEach(e => {
-            tableHtml += '<tr>';
-            tableHtml += `<td>${e.cancellationDate || ''}</td>`;
-            tableHtml += `<td>${e.chatId || ''}</td>`;
-            tableHtml += `<td>${e.contactReason || ''}</td>`;
-            tableHtml += `<td>${e.cancelReason || ''}</td>`;
-            tableHtml += `<td>${e.agent || ''}</td>`;
-            tableHtml += `<td>${e.violation || ''}</td>`;
-            tableHtml += `<td>${e.evaluatorComment || ''}</td>`;
-            tableHtml += `<td>${e.action || ''}</td>`;
-            tableHtml += '</tr>';
+            tableHtml += `<tr><td>${e.cancellationDate || ''}</td><td>${e.chatId || ''}</td><td>${e.contactReason || ''}</td><td>${e.cancelReason || ''}</td><td>${e.agent || ''}</td><td>${e.violation || ''}</td><td>${e.evaluatorComment || ''}</td><td>${e.action || ''}</td></tr>`;
         });
-        
         tableHtml += '</table></body></html>';
-        
         const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -2393,41 +2175,24 @@
     });
 
     // ================================================================
-    // 11. ACTION PLAN & MATRIX MODALS
+    // 11. ACTION PLAN & MATRIX
     // ================================================================
 
     const actionPlanData = [
-        { issue: 'Agents cancelling orders without calling the customer 2 times with a 3-minute gap',
-          correction: 'Re-communicate the mandatory cancellation procedure to all agents through a process refresher and acknowledgement',
-          owner: 'Operations / Training', timeline: 'Immediate', success: '100% agents briefed' },
-        { issue: 'Same issue recurring after refresher',
-          correction: 'Conduct targeted coaching for agents identified through QA audits and apply action matrix accordingly.',
-          owner: 'Team Leaders', timeline: 'Daily', success: 'Reduction in cancellation violations' },
-        { issue: 'Incorrect Contact Reason selected for Late Owner cases',
-          correction: 'Conduct a short refresher covering Late Owner scenarios and the correct contact reason mapping',
-          owner: 'Training / QA', timeline: 'Within 1–2 days', success: '≥95% correct contact reason selection' },
-        { issue: 'Agents confused between similar contact reasons',
-          correction: 'Prepare and share a one-page contact reason guide with examples/scenarios and paste them on agents cluster.',
-          owner: 'Team Leaders', timeline: 'Immediate', success: 'Reduction in miscoding errors' },
-        { issue: 'Repeat offenders',
-          correction: 'Place repeat-error agents on an individual improvement plan with focused coaching and increased monitoring',
-          owner: 'Operations / TL', timeline: 'Weekly review', success: 'No repeat critical error after coaching' },
-        { issue: 'Live Tracker for Outliers',
-          correction: 'QA to share a daily tracker showing agent name, violation type, order ID, error, and corrective action.',
-          owner: 'QA/TL', timeline: 'Daily', success: 'Daily visibility of violations' },
-        { issue: 'Quiz',
-          correction: 'Run quick knowledge checks after refresher sessions',
-          owner: 'Training / QA', timeline: 'Weekly', success: '≥90% assessment score' },
-        { issue: 'Overall compliance',
-          correction: 'Review cancellation and Late Owner contact reason trends in daily/weekly operations meetings',
-          owner: 'Operations / QA', timeline: 'Daily & Weekly', success: 'Week-on-week reduction in errors' }
+        { issue: 'Agents cancelling orders without calling the customer 2 times with a 3-minute gap', correction: 'Re-communicate the mandatory cancellation procedure to all agents through a process refresher and acknowledgement', owner: 'Operations / Training', timeline: 'Immediate', success: '100% agents briefed' },
+        { issue: 'Same issue recurring after refresher', correction: 'Conduct targeted coaching for agents identified through QA audits and apply action matrix accordingly.', owner: 'Team Leaders', timeline: 'Daily', success: 'Reduction in cancellation violations' },
+        { issue: 'Incorrect Contact Reason selected for Late Owner cases', correction: 'Conduct a short refresher covering Late Owner scenarios and the correct contact reason mapping', owner: 'Training / QA', timeline: 'Within 1–2 days', success: '≥95% correct contact reason selection' },
+        { issue: 'Agents confused between similar contact reasons', correction: 'Prepare and share a one-page contact reason guide with examples/scenarios and paste them on agents cluster.', owner: 'Team Leaders', timeline: 'Immediate', success: 'Reduction in miscoding errors' },
+        { issue: 'Repeat offenders', correction: 'Place repeat-error agents on an individual improvement plan with focused coaching and increased monitoring', owner: 'Operations / TL', timeline: 'Weekly review', success: 'No repeat critical error after coaching' },
+        { issue: 'Live Tracker for Outliers', correction: 'QA to share a daily tracker showing agent name, violation type, order ID, error, and corrective action.', owner: 'QA/TL', timeline: 'Daily', success: 'Daily visibility of violations' },
+        { issue: 'Quiz', correction: 'Run quick knowledge checks after refresher sessions', owner: 'Training / QA', timeline: 'Weekly', success: '≥90% assessment score' },
+        { issue: 'Overall compliance', correction: 'Review cancellation and Late Owner contact reason trends in daily/weekly operations meetings', owner: 'Operations / QA', timeline: 'Daily & Weekly', success: 'Week-on-week reduction in errors' }
     ];
 
     function renderActionPlan() {
-        const grid = document.getElementById('actionPlanGrid');
-        grid.innerHTML = actionPlanData.map(item => `
+        document.getElementById('actionPlanGrid').innerHTML = actionPlanData.map(item => `
             <div class="action-item">
-                <div class="issue"><i class="fas fa-circle" style="font-size: 7px; color: #666; vertical-align: middle; margin-right: 8px;"></i>${item.issue}</div>
+                <div class="issue">${item.issue}</div>
                 <div class="correction">${item.correction}</div>
                 <div class="meta">
                     <span><i class="fas fa-user-cog"></i> ${item.owner}</span>
@@ -2448,7 +2213,6 @@
         document.getElementById('actionPlanOverlay').classList.remove('active');
         document.body.style.overflow = '';
     }
-
     document.getElementById('closeActionPlanBtn').addEventListener('click', closeActionPlan);
     document.getElementById('closeActionPlanFooterBtn').addEventListener('click', closeActionPlan);
     document.getElementById('actionPlanOverlay').addEventListener('click', function(e) {
@@ -2464,7 +2228,6 @@
         document.getElementById('matrixOverlay').classList.remove('active');
         document.body.style.overflow = '';
     }
-
     document.getElementById('closeMatrixBtn').addEventListener('click', closeMatrix);
     document.getElementById('closeMatrixFooterBtn').addEventListener('click', closeMatrix);
     document.getElementById('matrixOverlay').addEventListener('click', function(e) {
@@ -2472,53 +2235,36 @@
     });
 
     // ================================================================
-    // 12. FILTERS, PAGINATION, SEARCH
+    // 12. FILTERS, PAGINATION
     // ================================================================
 
-    document.getElementById('searchInput').addEventListener('input', function() {
-        currentPage = 1;
-        renderTable();
-    });
-
-    document.getElementById('actionFilter').addEventListener('change', function() {
-        currentPage = 1;
-        renderTable();
-    });
-
-    document.getElementById('agentFilter').addEventListener('change', function() {
-        currentPage = 1;
-        renderTable();
-    });
-
-    document.getElementById('prevPageBtn').addEventListener('click', function() {
-        if (currentPage > 1) { currentPage--; renderTable(); }
-    });
-
+    document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
+    document.getElementById('actionFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
+    document.getElementById('agentFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
+    document.getElementById('prevPageBtn').addEventListener('click', function() { if (currentPage > 1) { currentPage--; renderTable(); } });
     document.getElementById('nextPageBtn').addEventListener('click', function() {
         const total = Math.ceil(evaluations.length / rowsPerPage);
         if (currentPage < total) { currentPage++; renderTable(); }
     });
 
     // ================================================================
-    // 13. INIT DASHBOARD
+    // 13. INIT
     // ================================================================
 
     function initDashboard() {
         evaluations = loadData();
-        
         const beforeCleanup = evaluations.length;
         evaluations = autoCleanupOldData(evaluations);
         if (evaluations.length < beforeCleanup) {
             localStorage.setItem('lastAutoCleanup', Date.now().toString());
         }
-        
         saveData(evaluations);
         updateDateFilterStatus();
         renderTable();
     }
 
     // ================================================================
-    // 14. CHECK EXISTING SESSION ON PAGE LOAD
+    // 14. CHECK SESSION
     // ================================================================
 
     if (!checkExistingSession()) {
@@ -2536,14 +2282,10 @@
             if (currentUser && currentUser.role === 'admin') {
                 document.getElementById('adminControls').scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('⚠️ Admin access required. Please login as admin.');
+                alert('⚠️ Admin access required.');
             }
         }
     });
-
-    // ================================================================
-    // 16. EXPOSE FOR DEBUGGING
-    // ================================================================
 
     window.__evaluations = evaluations;
     window.__currentUser = currentUser;
