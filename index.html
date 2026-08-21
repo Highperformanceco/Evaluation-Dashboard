@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluator Dashboard · Action Matrix System</title>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* --- HEADER --- */
+        .dashboard-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #333;
+        }
+
+        .dashboard-header h1 {
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .dashboard-header h1 i {
+            color: #888;
+            font-size: 30px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 13px;
+            border: none;
+            background: #2a2a2a;
+            color: #cccccc;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: 1px solid #3a3a3a;
+            letter-spacing: 0.2px;
+        }
+
+        .btn:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn i {
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #3a3a3a;
+            color: #ffffff;
+            border-color: #555;
+        }
+
+        .btn-primary:hover {
+            background: #4a4a4a;
+            border-color: #777;
+        }
+
+        .btn-success {
+            background: #2a3a2a;
+            color: #a0c0a0;
+            border-color: #3a5a3a;
+        }
+
+        .btn-success:hover {
+            background: #3a4a3a;
+            border-color: #4a7a4a;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #3a3a3a;
+            color: #aaaaaa;
+        }
+
+        .btn-outline:hover {
+            background: #2a2a2a;
+            border-color: #555;
+        }
+
+        /* --- EVAL CTA (Single Button) --- */
+        .eval-cta-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .eval-cta {
+            background: #2a2a2a;
+            color: #ffffff;
+            padding: 14px 40px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid #444;
+            cursor: pointer;
+            transition: 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .eval-cta:hover {
+            background: #3a3a3a;
+            border-color: #666;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .eval-cta i {
+            font-size: 18px;
+            color: #888;
+        }
+
+        /* --- STATS ROW --- */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #222;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: #555;
+            background: #262626;
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            color: #777;
+            width: 36px;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-card.accent-green i { color: #6aaa6a; }
+        .stat-card.accent-red i { color: #c07a7a; }
+        .stat-card.accent-gold i { color: #c8b87a; }
+        .stat-card.accent-blue i { color: #7a9ac8; }
+
+        /* --- CHARTS ROW --- */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: #222;
+            border-radius: 12px;
+            padding: 20px 22px 22px 22px;
+            border: 1px solid #333;
+        }
+
+        .chart-card h4 {
+            font-weight: 600;
+            font-size: 14px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card h4 i {
+            color: #666;
+        }
+
+        .chart-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chart-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-bar-item .label {
+            font-size: 13px;
+            color: #bbb;
+            min-width: 140px;
+            font-weight: 400;
+        }
+
+        .chart-bar-item .bar-track {
+            flex: 1;
+            height: 22px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-bar-item .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+            background: #4a4a4a;
+        }
+
+        .chart-bar-item .bar-fill.green { background: #4a7a4a; }
+        .chart-bar-item .bar-fill.red { background: #7a4a4a; }
+        .chart-bar-item .bar-fill.gold { background: #7a7a4a; }
+        .chart-bar-item .bar-fill.blue { background: #4a5a7a; }
+        .chart-bar-item .bar-fill.purple { background: #5a4a7a; }
+        .chart-bar-item .bar-fill.orange { background: #7a5a3a; }
+
+        .chart-bar-item .bar-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ddd;
+            min-width: 36px;
+            text-align: right;
+        }
+
+        .chart-pie-group {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pie-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pie-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+            border: 3px solid #444;
+        }
+
+        .pie-circle.green { border-color: #4a7a4a; color: #6aaa6a; }
+        .pie-circle.red { border-color: #7a4a4a; color: #c07a7a; }
+
+        .pie-label {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+
+        /* --- TABLE --- */
+        .table-container {
+            background: #222;
+            border-radius: 12px;
+            padding: 18px 0 6px 0;
+            border: 1px solid #333;
+            overflow-x: auto;
+        }
+
+        .table-header-tools {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 14px 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .table-header-tools h3 {
+            font-weight: 600;
+            font-size: 16px;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-header-tools h3 i {
+            color: #666;
+        }
+
+        .table-header-tools .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .table-header-tools .filter-group input,
+        .table-header-tools .filter-group select {
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: 1.5px solid #333;
+            font-size: 13px;
+            background: #1a1a1a;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: 0.2s;
+            color: #ccc;
+        }
+
+        .table-header-tools .filter-group input:focus,
+        .table-header-tools .filter-group select:focus {
+            border-color: #555;
+            background: #222;
+        }
+
+        .table-header-tools .filter-group input::placeholder {
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 1100px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 14px;
+            background: #1a1a1a;
+            color: #888;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-bottom: 1.5px solid #333;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #2a2a2a;
+            vertical-align: middle;
+            color: #ddd;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #2a2a2a;
+        }
+
+        .agent-badge {
+            background: #2a2a2a;
+            padding: 3px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 12px;
+            color: #ccc;
+            display: inline-block;
+        }
+
+        .action-tag {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 11.5px;
+            letter-spacing: 0.2px;
+        }
+
+        .tag-coaching { background: #2a3a2a; color: #8aaa8a; }
+        .tag-warning { background: #3a3a2a; color: #c8b87a; }
+        .tag-danger { background: #3a2a2a; color: #c07a7a; }
+        .tag-dark { background: #2a2a2a; color: #888; }
+        .tag-info { background: #2a2a3a; color: #8a9ac8; }
+        .tag-termination { background: #3a2a2a; color: #d48a8a; }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            background: #2a2a2a;
+            color: #aaa;
+        }
+
+        .btn-sm:hover {
+            background: #3a3a3a;
+            border-color: #555;
+        }
+
+        .btn-sm i {
+            margin-right: 4px;
+        }
+
+        .btn-sm.primary-sm {
+            background: #3a3a3a;
+            color: #ddd;
+            border-color: #555;
+        }
+
+        .btn-sm.primary-sm:hover {
+            background: #4a4a4a;
+        }
+
+        .btn-sm.danger-sm {
+            background: #3a2a2a;
+            color: #c07a7a;
+            border-color: #5a3a3a;
+        }
+
+        .btn-sm.danger-sm:hover {
+            background: #4a2a2a;
+        }
+
+        .text-muted {
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #222;
+            max-width: 740px;
+            width: 100%;
+            max-height: 92vh;
+            border-radius: 16px;
+            padding: 32px 36px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 16px;
+            margin-bottom: 22px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header h2 i {
+            color: #666;
+        }
+
+        .close-modal {
+            background: #2a2a2a;
+            border: 1px solid #333;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #888;
+        }
+
+        .close-modal:hover {
+            background: #3a3a3a;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .form-group label .required {
+            color: #c07a7a;
+            margin-left: 3px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #333;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s;
+            background: #1a1a1a;
+            color: #ddd;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #555;
+            background: #222;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #333;
+            justify-content: flex-end;
+        }
+
+        /* --- ACTION PLAN MODAL --- */
+        .action-plan-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 20px;
+        }
+
+        .action-item {
+            background: #1a1a1a;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border-left: 4px solid #555;
+            border: 1px solid #2a2a2a;
+            transition: 0.2s;
+        }
+
+        .action-item:hover {
+            background: #222;
+            border-color: #444;
+        }
+
+        .action-item .issue {
+            font-weight: 600;
+            color: #ddd;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .action-item .correction {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .action-item .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .action-item .meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-item .meta i {
+            color: #555;
+            width: 14px;
+        }
+
+        /* --- MATRIX MODAL --- */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .matrix-table th {
+            background: #1a1a1a;
+            color: #888;
+            padding: 12px 16px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .matrix-table td {
+            padding: 12px 16px;
+            text-align: center;
+            border: 1px solid #333;
+            color: #ddd;
+        }
+
+        .matrix-table .highlight-cell {
+            background: #2a2a1a;
+            color: #c8b87a;
+            font-weight: 600;
+        }
+
+        /* --- Edit Action Dropdown Modal --- */
+        .edit-action-modal .modal-card {
+            max-width: 480px;
+        }
+
+        .edit-action-modal .form-group select {
+            font-size: 15px;
+            padding: 12px 16px;
+        }
+
+        /* responsive */
+        @media (max-width: 820px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+
+            .action-plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-card {
+                padding: 20px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .table-header-tools {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-pie-group {
+                flex-direction: column;
+            }
+        }
+
+        .modal-card::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .modal-card::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        .modal-card::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+    <!-- ===== HEADER ===== -->
+    <div class="dashboard-header">
+        <h1>
+            <i class="fas fa-clipboard-check"></i>
+            Evaluator Dashboard
+        </h1>
+        <div class="header-actions">
+            <button class="btn btn-outline" id="viewActionPlanBtn">
+                <i class="fas fa-list-ul"></i> Action Plan
+            </button>
+            <button class="btn btn-outline" id="viewMatrixBtn">
+                <i class="fas fa-table"></i> Action Matrix
+            </button>
+            <button class="btn btn-success" id="saveToSheetBtn">
+                <i class="fas fa-save"></i> Save to Sheet
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== EVALUATION CTA (SINGLE BUTTON) ===== -->
+    <div class="eval-cta-group">
+        <button class="eval-cta" id="openEvalFormBtn">
+            <i class="fas fa-plus-circle"></i> New Evaluation
+            <span style="font-size: 11px; color: #666; font-weight: 400;">(Form)</span>
+        </button>
+    </div>
+
+    <!-- ===== STATS ===== -->
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card accent-blue">
+            <i class="fas fa-users"></i>
+            <div><div class="stat-number" id="totalAgents">0</div><div class="stat-label">Total Agents</div></div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-file-alt"></i>
+            <div><div class="stat-number" id="totalCases">0</div><div class="stat-label">Total Cases</div></div>
+        </div>
+        <div class="stat-card accent-green">
+            <i class="fas fa-check-circle"></i>
+            <div><div class="stat-number" id="validEscalations">0</div><div class="stat-label">Valid Escalations</div></div>
+        </div>
+        <div class="stat-card accent-red">
+            <i class="fas fa-times-circle"></i>
+            <div><div class="stat-number" id="invalidEscalations">0</div><div class="stat-label">Invalid / Reversal</div></div>
+        </div>
+        <div class="stat-card accent-gold">
+            <i class="fas fa-user-graduate"></i>
+            <div><div class="stat-number" id="coachingCount">0</div><div class="stat-label">Coaching / Written Memo</div></div>
+        </div>
+        <div class="stat-card accent-red">
+            <i class="fas fa-dollar-sign"></i>
+            <div><div class="stat-number" id="deductionCount">0</div><div class="stat-label">1-Day Deduction</div></div>
+        </div>
+    </div>
+
+    <!-- ===== CHARTS ROW ===== -->
+    <div class="charts-row">
+        <!-- Bar Chart: Actions Distribution -->
+        <div class="chart-card">
+            <h4><i class="fas fa-chart-bar"></i> Action Distribution</h4>
+            <div class="chart-bars" id="actionChart">
+                <!-- injected by JS -->
+            </div>
+        </div>
+
+        <!-- Pie Chart: Escalation Status -->
+        <div class="chart-card">
+            <h4><i class="fas fa-chart-pie"></i> Escalation Status</h4>
+            <div class="chart-pie-group" id="escalationPie">
+                <!-- injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TABLE ===== -->
+    <div class="table-container">
+        <div class="table-header-tools">
+            <h3><i class="fas fa-table"></i> Case Evaluations</h3>
+            <div class="filter-group">
+                <input type="text" id="searchInput" placeholder="🔍 Search agent or chat..." />
+                <select id="actionFilter">
+                    <option value="">All Actions</option>
+                    <option value="Coaching / Written Memo">Coaching / Written Memo</option>
+                    <option value="1-Day Deduction">1-Day Deduction</option>
+                    <option value="2-Days Deduction + Final Warning">2-Days + Final Warning</option>
+                    <option value="Termination">Termination</option>
+                    <option value="Pending">Pending</option>
+                </select>
+                <select id="agentFilter">
+                    <option value="">All Agents</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto; padding: 0 4px;">
+            <table id="evaluationTable">
+                <thead>
+                    <tr>
+                        <th>Cancellation Date</th>
+                        <th>Chat ID</th>
+                        <th>Contact Reason</th>
+                        <th>Cancellation Reason</th>
+                        <th>Agent Email</th>
+                        <th>Non Compliant Reason</th>
+                        <th>Evaluator Comment</th>
+                        <th>Action</th>
+                        <th style="width: 100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- injected by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding: 12px 20px; border-top: 1px solid #333; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; align-items: center;">
+            <span class="text-muted" id="rowCount">0 rows</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-sm" id="prevPageBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                <span style="padding: 4px 14px; background: #1a1a1a; border-radius: 4px; font-size: 13px; color: #888;" id="pageIndicator">1 / 1</span>
+                <button class="btn-sm" id="nextPageBtn">Next <i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== EVALUATION FORM MODAL ===== -->
+    <div class="modal-overlay" id="evalFormOverlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-clipboard-list"></i> New Evaluation</h2>
+                <button class="close-modal" id="closeEvalFormBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="evalForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cancellation Date <span class="required">*</span></label>
+                        <input type="date" id="evalDate" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Chat ID <span class="required">*</span></label>
+                        <input type="text" id="evalChatId" placeholder="e.g., 869feec7-d211..." required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contact Reason L3 <span class="required">*</span></label>
+                        <select id="evalContactReason" required>
+                            <option value="">Select...</option>
+                            <option value="Refuse to accept order">Refuse to accept order</option>
+                            <option value="Checking status">Checking status</option>
+                            <option value="Unable to contact">Unable to contact</option>
+                            <option value="Customer requested cancellation">Customer requested cancellation</option>
+                            <option value="Late Owner">Late Owner</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cancellation Reason <span class="required">*</span></label>
+                        <select id="evalCancelReason" required>
+                            <option value="">Select...</option>
+                            <option value="CST - Refuse to receive the order">CST - Refuse to receive the order</option>
+                            <option value="CST - doesn't response">CST - doesn't response</option>
+                            <option value="CST - Customer requested">CST - Customer requested</option>
+                            <option value="CST - Late Owner">CST - Late Owner</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Agent Email <span class="required">*</span></label>
+                    <input type="text" id="evalAgent" placeholder="e.g., wesam.shakir.2527" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Non Compliant Reason / Violation <span class="required">*</span></label>
+                    <select id="evalViolation" required>
+                        <option value="">Select violation...</option>
+                        <option value="Order Delay - Should choose LATE-OWNER Cancellation">Order Delay - Should choose LATE-OWNER Cancellation</option>
+                        <option value="2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial">2 Trials Call Diff < 150</option>
+                        <option value="No Trials - Agent Should make 2 Trials To The Customer">No Trials - Agent Should make 2 Trials</option>
+                        <option value="No call attempted before cancellation">No call attempted before cancellation</option>
+                        <option value="Incorrect Contact Reason selected">Incorrect Contact Reason selected</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Evaluator Comment</label>
+                    <textarea id="evalComment" placeholder="e.g., Valid Escalation, Invalid Escalation - Reversal Required..." rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Action <span class="required">*</span></label>
+                    <select id="evalAction" required>
+                        <option value="">Select action...</option>
+                        <option value="Coaching / Written Memo">Coaching / Written Memo</option>
+                        <option value="1-Day Deduction">1-Day Deduction</option>
+                        <option value="2-Days Deduction + Final Warning">2-Days Deduction + Final Warning</option>
+                        <option value="Termination">Termination</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="cancelEvalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitEvalBtn">
+                        <i class="fas fa-save"></i> Save Evaluation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== EDIT ACTION DROPDOWN MODAL ===== -->
+    <div class="modal-overlay edit-action-modal" id="editActionModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Action</h2>
+                <button class="close-modal" id="closeEditModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="editActionContent">
+                <div class="form-group">
+                    <label>Agent</label>
+                    <input type="text" id="editAgentName" disabled style="opacity: 0.7;" />
+                </div>
+                <div class="form-group">
+                    <label>Chat ID</label>
+                    <input type="text" id="editChatId" disabled style="opacity: 0.7;" />
+                </div>
+                <div class="form-group">
+                    <label>Current Action</label>
+                    <input type="text" id="editCurrentAction" disabled style="opacity: 0.7;" />
+                </div>
+                <div class="form-group">
+                    <label>New Action <span class="required">*</span></label>
+                    <select id="editNewAction">
+                        <option value="Coaching / Written Memo">Coaching / Written Memo</option>
+                        <option value="1-Day Deduction">1-Day Deduction</option>
+                        <option value="2-Days Deduction + Final Warning">2-Days Deduction + Final Warning</option>
+                        <option value="Termination">Termination</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveEditBtn">
+                        <i class="fas fa-save"></i> Update Action
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ACTION PLAN MODAL ===== -->
+    <div class="modal-overlay" id="actionPlanOverlay">
+        <div class="modal-card" style="max-width: 950px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-bullseye"></i> Action Plan · Summary</h2>
+                <button class="close-modal" id="closeActionPlanBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="action-plan-grid" id="actionPlanGrid">
+                <!-- injected from JS -->
+            </div>
+            <div style="margin-top: 24px; text-align: right; border-top: 1px solid #333; padding-top: 18px;">
+                <button class="btn btn-primary" id="closeActionPlanFooterBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ACTION MATRIX MODAL ===== -->
+    <div class="modal-overlay" id="matrixOverlay">
+        <div class="modal-card" style="max-width: 750px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-table"></i> Action Matrix</h2>
+                <button class="close-modal" id="closeMatrixBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Clause</th>
+                        <th>1st Time</th>
+                        <th>2nd Time</th>
+                        <th>3rd Time</th>
+                        <th>4th Time</th>
+                        <th>Counter Reset</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Wrong Cancellation</strong></td>
+                        <td class="highlight-cell">Coaching / Written Memo</td>
+                        <td>1-Day Deduction</td>
+                        <td>2-Days Deduction + Final Warning</td>
+                        <td>Termination</td>
+                        <td>6 Months</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 16px; text-align: right;">
+                <button class="btn btn-primary" id="closeMatrixFooterBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ================================================================
+    // 1. DATA STORE
+    // ================================================================
+
+    let evaluations = [
+        {
+            cancellationDate: '2026-08-18',
+            chatId: '869feec7-d211-4c50-b76d-4ac7cad0ef3a',
+            contactReason: 'Refuse to accept order',
+            cancelReason: 'CST - Refuse to receive the order',
+            agent: 'wesam.shakir.2527',
+            violation: 'Order Delay - Should choose LATE-OWNER Cancellation',
+            evaluatorComment: 'Valid Escalation',
+            action: 'Coaching / Written Memo'
+        },
+        {
+            cancellationDate: '2026-08-18',
+            chatId: '46cc7168-69f4-4858-9992-e21c59875ce5',
+            contactReason: 'Checking status',
+            cancelReason: 'CST - Refuse to receive the order',
+            agent: 'wesam.shakir.2527',
+            violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial',
+            evaluatorComment: 'Invalid Escalation - Reversal Required',
+            action: '1-Day Deduction'
+        },
+        {
+            cancellationDate: '2026-08-18',
+            chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531',
+            contactReason: 'Unable to contact',
+            cancelReason: 'CST - doesn\'t response',
+            agent: 'wesam.shakir.2527',
+            violation: 'No Trials - Agent Should make 2 Trials To The Customer',
+            evaluatorComment: 'Valid Escalation',
+            action: '2-Days Deduction + Final Warning'
+        },
+        {
+            cancellationDate: '2026-08-19',
+            chatId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+            contactReason: 'Customer requested cancellation',
+            cancelReason: 'CST - Customer requested',
+            agent: 'sara.ahmed.101',
+            violation: 'No call attempted before cancellation',
+            evaluatorComment: 'Invalid Escalation - Reversal Required',
+            action: 'Coaching / Written Memo'
+        },
+        {
+            cancellationDate: '2026-08-19',
+            chatId: 'z9y8x7w6-v5u4-3210-zyxw-vutsrqponmlk',
+            contactReason: 'Late Owner',
+            cancelReason: 'CST - Late Owner',
+            agent: 'khalid.hassan.89',
+            violation: 'Incorrect Contact Reason selected (should be LATE-OWNER)',
+            evaluatorComment: 'Valid Escalation',
+            action: 'Coaching / Written Memo'
+        },
+        {
+            cancellationDate: '2026-08-20',
+            chatId: 'new-001-xyz',
+            contactReason: 'Late Owner',
+            cancelReason: 'CST - Late Owner',
+            agent: 'fatima.ali.45',
+            violation: 'Incorrect contact reason (selected Refuse instead of Late Owner)',
+            evaluatorComment: 'Valid Escalation',
+            action: '1-Day Deduction'
+        },
+        {
+            cancellationDate: '2026-08-20',
+            chatId: 'new-002-abc',
+            contactReason: 'Unable to contact',
+            cancelReason: 'CST - doesn\'t response',
+            agent: 'ahmed.khan.12',
+            violation: 'Only 1 trial call made (requires 2)',
+            evaluatorComment: 'Invalid Escalation - Reversal Required',
+            action: 'Coaching / Written Memo'
+        }
+    ];
+
+    // Action Plan Data
+    const actionPlanData = [
+        { issue: 'Agents cancelling orders without calling the customer 2 times with a 3-minute gap',
+          correction: 'Re-communicate the mandatory cancellation procedure to all agents through a process refresher and acknowledgement',
+          owner: 'Operations / Training', timeline: 'Immediate', success: '100% agents briefed' },
+        { issue: 'Same issue recurring after refresher',
+          correction: 'Conduct targeted coaching for agents identified through QA audits and apply action matrix accordingly.',
+          owner: 'Team Leaders', timeline: 'Daily', success: 'Reduction in cancellation violations' },
+        { issue: 'Incorrect Contact Reason selected for Late Owner cases',
+          correction: 'Conduct a short refresher covering Late Owner scenarios and the correct contact reason mapping',
+          owner: 'Training / QA', timeline: 'Within 1–2 days', success: '≥95% correct contact reason selection' },
+        { issue: 'Agents confused between similar contact reasons',
+          correction: 'Prepare and share a one-page contact reason guide with examples/scenarios and paste them on agents cluster.',
+          owner: 'Team Leaders', timeline: 'Immediate', success: 'Reduction in miscoding errors' },
+        { issue: 'Repeat offenders',
+          correction: 'Place repeat-error agents on an individual improvement plan with focused coaching and increased monitoring',
+          owner: 'Operations / TL', timeline: 'Weekly review', success: 'No repeat critical error after coaching' },
+        { issue: 'Live Tracker for Outliers',
+          correction: 'QA to share a daily tracker showing agent name, violation type, order ID, error, and corrective action.',
+          owner: 'QA/TL', timeline: 'Daily', success: 'Daily visibility of violations' },
+        { issue: 'Quiz',
+          correction: 'Run quick knowledge checks after refresher sessions',
+          owner: 'Training / QA', timeline: 'Weekly', success: '≥90% assessment score' },
+        { issue: 'Overall compliance',
+          correction: 'Review cancellation and Late Owner contact reason trends in daily/weekly operations meetings',
+          owner: 'Operations / QA', timeline: 'Daily & Weekly', success: 'Week-on-week reduction in errors' }
+    ];
+
+    // ================================================================
+    // 2. RENDER FUNCTIONS
+    // ================================================================
+
+    let currentPage = 1;
+    const rowsPerPage = 5;
+    let editTargetId = null;
+
+    function getAgentList() {
+        return [...new Set(evaluations.map(e => e.agent))].sort();
+    }
+
+    function getActionCounts() {
+        const counts = {};
+        evaluations.forEach(e => {
+            counts[e.action] = (counts[e.action] || 0) + 1;
+        });
+        return counts;
+    }
+
+    function getEscalationStats() {
+        let valid = 0, invalid = 0;
+        evaluations.forEach(e => {
+            const comment = e.evaluatorComment || '';
+            if (comment.toLowerCase().includes('valid')) valid++;
+            else if (comment.toLowerCase().includes('invalid') || comment.toLowerCase().includes('reversal')) invalid++;
+        });
+        return { valid, invalid };
+    }
+
+    function renderCharts() {
+        const counts = getActionCounts();
+        const actionOrder = ['Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
+        const maxVal = Math.max(...Object.values(counts), 1);
+
+        const chartContainer = document.getElementById('actionChart');
+        chartContainer.innerHTML = actionOrder.map(action => {
+            const val = counts[action] || 0;
+            const pct = maxVal > 0 ? Math.round((val / maxVal) * 100) : 0;
+            const colorClass = action === 'Coaching / Written Memo' ? 'green' :
+                              action === '1-Day Deduction' ? 'red' :
+                              action === '2-Days Deduction + Final Warning' ? 'orange' :
+                              action === 'Termination' ? 'purple' : 'blue';
+            return `
+                <div class="chart-bar-item">
+                    <span class="label">${action}</span>
+                    <div class="bar-track">
+                        <div class="bar-fill ${colorClass}" style="width: ${pct}%;"></div>
+                    </div>
+                    <span class="bar-value">${val}</span>
+                </div>
+            `;
+        }).join('');
+
+        const stats = getEscalationStats();
+        const total = stats.valid + stats.invalid || 1;
+        const validPct = Math.round((stats.valid / total) * 100);
+        const invalidPct = Math.round((stats.invalid / total) * 100);
+
+        document.getElementById('escalationPie').innerHTML = `
+            <div class="pie-item">
+                <div class="pie-circle green" style="background: conic-gradient(#4a7a4a 0% ${validPct}%, #2a2a2a ${validPct}% 100%);">
+                    ${validPct}%
+                </div>
+                <span class="pie-label">Valid Escalations<br>${stats.valid}</span>
+            </div>
+            <div class="pie-item">
+                <div class="pie-circle red" style="background: conic-gradient(#7a4a4a 0% ${invalidPct}%, #2a2a2a ${invalidPct}% 100%);">
+                    ${invalidPct}%
+                </div>
+                <span class="pie-label">Invalid / Reversal<br>${stats.invalid}</span>
+            </div>
+        `;
+    }
+
+    function renderStats() {
+        const uniqueAgents = [...new Set(evaluations.map(e => e.agent))];
+        document.getElementById('totalAgents').textContent = uniqueAgents.length;
+        document.getElementById('totalCases').textContent = evaluations.length;
+
+        const stats = getEscalationStats();
+        document.getElementById('validEscalations').textContent = stats.valid;
+        document.getElementById('invalidEscalations').textContent = stats.invalid;
+
+        const coaching = evaluations.filter(e => e.action === 'Coaching / Written Memo').length;
+        document.getElementById('coachingCount').textContent = coaching;
+
+        const deduction = evaluations.filter(e => e.action === '1-Day Deduction').length;
+        document.getElementById('deductionCount').textContent = deduction;
+    }
+
+    function renderTable() {
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const actionFilter = document.getElementById('actionFilter').value;
+        const agentFilter = document.getElementById('agentFilter').value;
+
+        let filtered = evaluations.filter(row => {
+            const matchSearch = row.agent.toLowerCase().includes(search) ||
+                               row.chatId.toLowerCase().includes(search);
+            const matchAction = actionFilter === '' || row.action === actionFilter;
+            const matchAgent = agentFilter === '' || row.agent === agentFilter;
+            return matchSearch && matchAction && matchAgent;
+        });
+
+        const agentSelect = document.getElementById('agentFilter');
+        const currentVal = agentSelect.value;
+        const agents = getAgentList();
+        agentSelect.innerHTML = '<option value="">All Agents</option>' +
+            agents.map(a => `<option value="${a}">${a}</option>`).join('');
+        agentSelect.value = currentVal;
+
+        const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage - 1) * rowsPerPage;
+        const pageItems = filtered.slice(start, start + rowsPerPage);
+
+        const tbody = document.getElementById('tableBody');
+        if (pageItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 40px 0; color: #555;">No cases found</td></tr>`;
+        } else {
+            tbody.innerHTML = pageItems.map(row => {
+                const tagClass = row.action === 'Coaching / Written Memo' ? 'tag-coaching' :
+                                row.action === '1-Day Deduction' ? 'tag-danger' :
+                                row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
+                                row.action === 'Termination' ? 'tag-termination' : 'tag-info';
+                // Format date for display
+                const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
+                return `
+                    <tr>
+                        <td>${displayDate}</td>
+                        <td><span style="font-family: monospace; font-size: 11.5px; background: #1a1a1a; padding: 3px 8px; border-radius: 4px; color: #888;">${row.chatId.slice(0, 14)}…</span></td>
+                        <td>${row.contactReason}</td>
+                        <td>${row.cancelReason}</td>
+                        <td><span class="agent-badge"><i class="fas fa-user-circle" style="margin-right: 4px;"></i>${row.agent}</span></td>
+                        <td style="max-width: 180px; font-size: 12px; color: #aaa;">${row.violation}</td>
+                        <td><span style="font-size: 12px; color: #888;">${row.evaluatorComment || '—'}</span></td>
+                        <td><span class="action-tag ${tagClass}">${row.action}</span></td>
+                        <td>
+                            <button class="btn-sm primary-sm" onclick="openEditModal('${row.chatId}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-sm danger-sm" onclick="deleteRow('${row.chatId}')"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('rowCount').textContent = `${filtered.length} rows`;
+        document.getElementById('pageIndicator').textContent = `${currentPage} / ${totalPages}`;
+        document.getElementById('prevPageBtn').disabled = currentPage === 1;
+        document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+
+        renderStats();
+        renderCharts();
+    }
+
+    // ================================================================
+    // 3. EVALUATION FORM
+    // ================================================================
+
+    function openEvalForm() {
+        document.getElementById('evalFormOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // Set default date to today
+        document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('evalForm').reset();
+        document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+    }
+
+    function closeEvalForm() {
+        document.getElementById('evalFormOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('openEvalFormBtn').addEventListener('click', openEvalForm);
+    document.getElementById('closeEvalFormBtn').addEventListener('click', closeEvalForm);
+    document.getElementById('cancelEvalBtn').addEventListener('click', closeEvalForm);
+    document.getElementById('evalFormOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeEvalForm();
+    });
+
+    document.getElementById('evalForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const newEval = {
+            cancellationDate: document.getElementById('evalDate').value,
+            chatId: document.getElementById('evalChatId').value.trim(),
+            contactReason: document.getElementById('evalContactReason').value,
+            cancelReason: document.getElementById('evalCancelReason').value,
+            agent: document.getElementById('evalAgent').value.trim(),
+            violation: document.getElementById('evalViolation').value,
+            evaluatorComment: document.getElementById('evalComment').value.trim(),
+            action: document.getElementById('evalAction').value
+        };
+
+        if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action) {
+            alert('Please fill in all required fields (*)');
+            return;
+        }
+
+        if (evaluations.some(e => e.chatId === newEval.chatId)) {
+            alert('A case with this Chat ID already exists. Please use a unique ID.');
+            return;
+        }
+
+        evaluations.push(newEval);
+        closeEvalForm();
+        renderTable();
+
+        const btn = document.getElementById('submitEvalBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+        setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+    });
+
+    // ================================================================
+    // 4. EDIT ACTION WITH DROPDOWN MODAL
+    // ================================================================
+
+    function openEditModal(chatId) {
+        const row = evaluations.find(e => e.chatId === chatId);
+        if (!row) return;
+
+        editTargetId = chatId;
+        document.getElementById('editAgentName').value = row.agent;
+        document.getElementById('editChatId').value = row.chatId.slice(0, 20) + '…';
+        document.getElementById('editCurrentAction').value = row.action;
+        document.getElementById('editNewAction').value = row.action;
+
+        document.getElementById('editActionModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editActionModal').classList.remove('active');
+        document.body.style.overflow = '';
+        editTargetId = null;
+    }
+
+    document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+    document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+    document.getElementById('editActionModal').addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
+    });
+
+    document.getElementById('saveEditBtn').addEventListener('click', function() {
+        if (!editTargetId) return;
+
+        const row = evaluations.find(e => e.chatId === editTargetId);
+        if (!row) return;
+
+        const newAction = document.getElementById('editNewAction').value;
+        row.action = newAction;
+
+        closeEditModal();
+        renderTable();
+
+        // Show feedback
+        const btn = document.getElementById('saveEditBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
+        setTimeout(() => { btn.innerHTML = originalText; }, 1200);
+    });
+
+    // ================================================================
+    // 5. DELETE ROW
+    // ================================================================
+
+    window.deleteRow = function(chatId) {
+        if (!confirm('Delete this case permanently?')) return;
+        evaluations = evaluations.filter(e => e.chatId !== chatId);
+        renderTable();
+    };
+
+    // ================================================================
+    // 6. ACTION PLAN MODAL
+    // ================================================================
+
+    function renderActionPlan() {
+        const grid = document.getElementById('actionPlanGrid');
+        grid.innerHTML = actionPlanData.map(item => `
+            <div class="action-item">
+                <div class="issue"><i class="fas fa-circle" style="font-size: 7px; color: #666; vertical-align: middle; margin-right: 8px;"></i>${item.issue}</div>
+                <div class="correction">${item.correction}</div>
+                <div class="meta">
+                    <span><i class="fas fa-user-cog"></i> ${item.owner}</span>
+                    <span><i class="far fa-clock"></i> ${item.timeline}</span>
+                    <span><i class="fas fa-check-circle"></i> ${item.success}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('viewActionPlanBtn').addEventListener('click', function() {
+        renderActionPlan();
+        document.getElementById('actionPlanOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    function closeActionPlan() {
+        document.getElementById('actionPlanOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('closeActionPlanBtn').addEventListener('click', closeActionPlan);
+    document.getElementById('closeActionPlanFooterBtn').addEventListener('click', closeActionPlan);
+    document.getElementById('actionPlanOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeActionPlan();
+    });
+
+    // ================================================================
+    // 7. ACTION MATRIX MODAL
+    // ================================================================
+
+    document.getElementById('viewMatrixBtn').addEventListener('click', function() {
+        document.getElementById('matrixOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    function closeMatrix() {
+        document.getElementById('matrixOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('closeMatrixBtn').addEventListener('click', closeMatrix);
+    document.getElementById('closeMatrixFooterBtn').addEventListener('click', closeMatrix);
+    document.getElementById('matrixOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeMatrix();
+    });
+
+    // ================================================================
+    // 8. FILTERS, PAGINATION, SEARCH
+    // ================================================================
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById('actionFilter').addEventListener('change', function() {
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById('agentFilter').addEventListener('change', function() {
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById('prevPageBtn').addEventListener('click', function() {
+        if (currentPage > 1) { currentPage--; renderTable(); }
+    });
+
+    document.getElementById('nextPageBtn').addEventListener('click', function() {
+        const total = Math.ceil(evaluations.length / rowsPerPage);
+        if (currentPage < total) { currentPage++; renderTable(); }
+    });
+
+    // ================================================================
+    // 9. SAVE TO GOOGLE SHEET
+    // ================================================================
+
+    document.getElementById('saveToSheetBtn').addEventListener('click', function() {
+        const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+        // Prepare data in the exact column order
+        const sheetData = evaluations.map(e => ({
+            cancellationDate: e.cancellationDate || '',
+            chatId: e.chatId || '',
+            contactReason: e.contactReason || '',
+            cancelReason: e.cancelReason || '',
+            agent: e.agent || '',
+            violation: e.violation || '',
+            evaluatorComment: e.evaluatorComment || '',
+            action: e.action || ''
+        }));
+
+        const payload = {
+            data: sheetData,
+            actionPlan: actionPlanData,
+            actionCounts: getActionCounts(),
+            escalationStats: getEscalationStats(),
+            timestamp: new Date().toISOString()
+        };
+
+        console.log('📤 Payload to send:', payload);
+
+        alert('✅ Data ready to be saved to Google Sheet.\n\n' +
+              'Column Order (matching your header):\n' +
+              '1. Cancellation Date\n' +
+              '2. Chat ID\n' +
+              '3. Contact Reason\n' +
+              '4. Cancellation Reason\n' +
+              '5. Agent Email\n' +
+              '6. Non Compliant Reason\n' +
+              '7. Evaluator Comment\n' +
+              '8. Action\n\n' +
+              'Replace SCRIPT_URL with your Apps Script URL.');
+    });
+
+    // ================================================================
+    // 10. INIT
+    // ================================================================
+
+    renderTable();
+
+    window.__evaluations = evaluations;
+</script>
+
+</body>
+</html>
