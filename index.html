@@ -1124,11 +1124,11 @@
         <form id="loginForm" onsubmit="return handleLogin(event)">
             <div class="form-group">
                 <label><i class="fas fa-envelope"></i> Email / Username</label>
-                <input type="text" id="loginEmail" placeholder="Enter your email" value="admin@dashboard.com" />
+                <input type="text" id="loginEmail" placeholder="Enter your email" value="" required />
             </div>
             <div class="form-group">
                 <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" value="Admin123!" />
+                <input type="password" id="loginPassword" placeholder="Enter your password" value="" required />
             </div>
             <button type="submit" class="login-btn">
                 <i class="fas fa-sign-in-alt"></i> Sign In
@@ -1137,7 +1137,7 @@
         </form>
         <div style="margin-top: 16px; text-align: center; font-size: 12px; color: #555; border-top: 1px solid #2a2a2a; padding-top: 16px;">
             <span style="color: #444;">Demo credentials:</span><br>
-            <span style="color: #666;">Admin: admin@dashboard.com / Admin123!</span><br>
+            <span style="color: #666;">Admin: waqas@dashboard.com / waqas1982</span><br>
             <span style="color: #666;">User: user@dashboard.com / User123!</span>
         </div>
     </div>
@@ -1173,7 +1173,7 @@
     </div>
 
     <!-- ===== ADMIN CONTROLS (visible only to admin) ===== -->
-    <div id="adminControls" style="display: none; background: #1a1a2a; border: 1px solid #2a3a3a; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; display: none; flex-wrap: wrap; align-items: center; gap: 12px;">
+    <div id="adminControls" style="display: none; background: #1a1a2a; border: 1px solid #2a3a3a; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; gap: 12px;">
         <span style="color: #6aaa6a; font-size: 13px; font-weight: 600;">
             <i class="fas fa-shield-alt"></i> Admin Controls
         </span>
@@ -1182,9 +1182,6 @@
         </button>
         <button class="btn btn-danger" id="clearAllDataBtn">
             <i class="fas fa-trash-alt"></i> Clear All Data
-        </button>
-        <button class="btn btn-outline" id="exportBeforeCleanupBtn" style="font-size: 12px; padding: 6px 14px;">
-            <i class="fas fa-download"></i> Export Before Cleanup
         </button>
         <span style="font-size: 11px; color: #666; margin-left: auto;">
             <i class="fas fa-database"></i> <span id="adminRecordCount">0</span> records
@@ -1503,17 +1500,17 @@
     // 1. USER MANAGEMENT (Login/Logout)
     // ================================================================
 
-    // User database
+    // User database - Only Waqas as Admin, one general user
     const USERS = {
-        'admin@dashboard.com': {
-            password: 'Admin123!',
+        'waqas@dashboard.com': {
+            password: 'waqas1982',
             role: 'admin',
-            name: 'Admin User'
+            name: 'Waqas Ahmed'
         },
         'user@dashboard.com': {
             password: 'User123!',
             role: 'user',
-            name: 'Regular User'
+            name: 'General User'
         }
     };
 
@@ -1560,11 +1557,16 @@
         if (saved) {
             try {
                 currentUser = JSON.parse(saved);
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('dashboardWrapper').style.display = 'block';
-                updateUIForRole(currentUser.role);
-                initDashboard();
-                return true;
+                // Verify user still exists in USERS
+                if (USERS[currentUser.email]) {
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('dashboardWrapper').style.display = 'block';
+                    updateUIForRole(currentUser.role);
+                    initDashboard();
+                    return true;
+                } else {
+                    sessionStorage.removeItem('currentUser');
+                }
             } catch (e) {
                 sessionStorage.removeItem('currentUser');
             }
