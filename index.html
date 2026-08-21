@@ -150,27 +150,6 @@
             display: block;
         }
 
-        .login-card .role-badge {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 8px;
-        }
-
-        .role-badge.admin {
-            background: #2a3a2a;
-            color: #6aaa6a;
-            border: 1px solid #3a5a3a;
-        }
-
-        .role-badge.user {
-            background: #2a2a3a;
-            color: #7a9ac8;
-            border: 1px solid #3a4a6a;
-        }
-
         /* --- HEADER --- */
         .dashboard-header {
             display: flex;
@@ -318,6 +297,70 @@
         .eval-cta i {
             font-size: 18px;
             color: #888;
+        }
+
+        /* --- DATE RANGE FILTER --- */
+        .date-filter {
+            background: #1a1a2a;
+            border: 1px solid #2a3a3a;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .date-filter label {
+            font-size: 13px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .date-filter label i {
+            color: #666;
+        }
+
+        .date-filter input[type="date"] {
+            padding: 7px 12px;
+            border: 1.5px solid #333;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .date-filter input[type="date"]:focus {
+            border-color: #555;
+            background: #222;
+        }
+
+        .date-filter .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .date-filter .filter-actions .btn-sm {
+            padding: 6px 16px;
+            font-size: 12px;
+        }
+
+        .date-filter .filter-actions .btn-sm.clear-btn {
+            background: #2a2a2a;
+            color: #888;
+            border: 1px solid #333;
+        }
+
+        .date-filter .filter-actions .btn-sm.clear-btn:hover {
+            background: #3a2a2a;
+            color: #c07a7a;
         }
 
         /* --- STATS ROW --- */
@@ -655,6 +698,26 @@
         .tag-dark { background: #2a2a2a; color: #888; }
         .tag-info { background: #2a2a3a; color: #8a9ac8; }
         .tag-termination { background: #3a2a2a; color: #d48a8a; }
+
+        /* --- CHAT ID STYLING (Full ID visible) --- */
+        .chat-id-full {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #1a1a1a;
+            padding: 3px 10px;
+            border-radius: 4px;
+            color: #8aaa8a;
+            word-break: break-all;
+            display: inline-block;
+            max-width: 220px;
+            white-space: normal;
+            line-height: 1.4;
+        }
+
+        .chat-id-full:hover {
+            background: #2a2a2a;
+            color: #a0d0a0;
+        }
 
         .btn-sm {
             padding: 4px 12px;
@@ -1042,6 +1105,20 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .date-filter {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-filter .filter-actions {
+                margin-left: 0;
+            }
+
+            .chat-id-full {
+                max-width: 140px;
+                font-size: 11px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1056,6 +1133,11 @@
             .header-actions .btn {
                 font-size: 12px;
                 padding: 8px 14px;
+            }
+
+            .chat-id-full {
+                max-width: 100px;
+                font-size: 10px;
             }
         }
 
@@ -1172,7 +1254,7 @@
         </div>
     </div>
 
-    <!-- ===== ADMIN CONTROLS (visible only to admin) ===== -->
+    <!-- ===== ADMIN CONTROLS ===== -->
     <div id="adminControls" style="display: none; background: #1a1a2a; border: 1px solid #2a3a3a; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; gap: 12px;">
         <span style="color: #6aaa6a; font-size: 13px; font-weight: 600;">
             <i class="fas fa-shield-alt"></i> Admin Controls
@@ -1185,6 +1267,25 @@
         </button>
         <span style="font-size: 11px; color: #666; margin-left: auto;">
             <i class="fas fa-database"></i> <span id="adminRecordCount">0</span> records
+        </span>
+    </div>
+
+    <!-- ===== DATE RANGE FILTER ===== -->
+    <div class="date-filter">
+        <label><i class="fas fa-calendar-alt"></i> From:</label>
+        <input type="date" id="dateFrom" />
+        <label><i class="fas fa-calendar-alt"></i> To:</label>
+        <input type="date" id="dateTo" />
+        <div class="filter-actions">
+            <button class="btn-sm primary-sm" id="applyDateFilterBtn">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+            <button class="btn-sm clear-btn" id="clearDateFilterBtn">
+                <i class="fas fa-times"></i> Clear
+            </button>
+        </div>
+        <span style="font-size: 12px; color: #666; margin-left: auto;" id="dateFilterStatus">
+            <i class="fas fa-info-circle"></i> All dates
         </span>
     </div>
 
@@ -1327,7 +1428,7 @@
                     </div>
                     <div class="form-group">
                         <label>Chat ID <span class="required">*</span></label>
-                        <input type="text" id="evalChatId" placeholder="e.g., 869feec7-d211..." required />
+                        <input type="text" id="evalChatId" placeholder="e.g., c79bdc16-4548-40d4-bc4e-449f464a247b" required />
                     </div>
                 </div>
 
@@ -1515,6 +1616,7 @@
     };
 
     let currentUser = null;
+    let dateFilter = { from: null, to: null };
 
     function handleLogin(e) {
         e.preventDefault();
@@ -1530,17 +1632,12 @@
                 name: USERS[email].name
             };
             
-            // Save session
             sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
             
-            // Hide login, show dashboard
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboardWrapper').style.display = 'block';
             
-            // Update UI based on role
             updateUIForRole(currentUser.role);
-            
-            // Initialize dashboard
             initDashboard();
             
             errorEl.classList.remove('show');
@@ -1557,7 +1654,6 @@
         if (saved) {
             try {
                 currentUser = JSON.parse(saved);
-                // Verify user still exists in USERS
                 if (USERS[currentUser.email]) {
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('dashboardWrapper').style.display = 'block';
@@ -1593,7 +1689,6 @@
         badge.textContent = isAdmin ? '👑 Admin' : '👤 User';
         badge.className = 'user-role-badge ' + (isAdmin ? 'admin' : 'user');
         
-        // Show/hide admin controls
         if (isAdmin) {
             adminControls.style.display = 'flex';
         } else {
@@ -1605,7 +1700,6 @@
     // 2. DATA STORE
     // ================================================================
 
-    // Load data from localStorage or use default
     function loadData() {
         const saved = localStorage.getItem('evaluationData');
         if (saved) {
@@ -1620,7 +1714,6 @@
 
     function saveData(data) {
         localStorage.setItem('evaluationData', JSON.stringify(data));
-        // Also update admin record count
         document.getElementById('adminRecordCount').textContent = data.length;
     }
 
@@ -1628,7 +1721,7 @@
         return [
             {
                 cancellationDate: '2026-08-18',
-                chatId: '869feec7-d211-4c50-b76d-4ac7cad0ef3a',
+                chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b',
                 contactReason: 'Refuse to accept order',
                 cancelReason: 'CST - Refuse to receive the order',
                 agent: 'wesam.shakir.2527',
@@ -1703,7 +1796,7 @@
     // 3. 6-MONTH AUTO-CLEANUP POLICY
     // ================================================================
 
-    const RETENTION_DAYS = 180; // 6 months
+    const RETENTION_DAYS = 180;
 
     function autoCleanupOldData(data) {
         const cutoffDate = new Date();
@@ -1721,7 +1814,6 @@
         
         if (oldRecords.length > 0) {
             console.log(`🗑️ Auto-cleanup: Removed ${oldRecords.length} record(s) older than 6 months.`);
-            console.log(`📊 ${newRecords.length} record(s) remain.`);
             showCleanupNotification(oldRecords.length, newRecords.length);
         }
         
@@ -1729,7 +1821,6 @@
     }
 
     function showCleanupNotification(removed, remaining) {
-        // Remove any existing notification
         const existing = document.querySelector('.cleanup-notification');
         if (existing) existing.remove();
         
@@ -1747,7 +1838,6 @@
         `;
         document.body.appendChild(notification);
         
-        // Auto-remove after 8 seconds
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.style.opacity = '0';
@@ -1758,7 +1848,83 @@
     }
 
     // ================================================================
-    // 4. RENDER FUNCTIONS
+    // 4. DATE RANGE FILTER
+    // ================================================================
+
+    function getFilteredData() {
+        let filtered = [...evaluations];
+        
+        // Apply date filter
+        if (dateFilter.from) {
+            const fromDate = new Date(dateFilter.from);
+            fromDate.setHours(0, 0, 0, 0);
+            filtered = filtered.filter(e => {
+                const recordDate = new Date(e.cancellationDate);
+                recordDate.setHours(0, 0, 0, 0);
+                return recordDate >= fromDate;
+            });
+        }
+        
+        if (dateFilter.to) {
+            const toDate = new Date(dateFilter.to);
+            toDate.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(e => {
+                const recordDate = new Date(e.cancellationDate);
+                return recordDate <= toDate;
+            });
+        }
+        
+        return filtered;
+    }
+
+    function updateDateFilterStatus() {
+        const statusEl = document.getElementById('dateFilterStatus');
+        if (dateFilter.from && dateFilter.to) {
+            const from = new Date(dateFilter.from).toLocaleDateString();
+            const to = new Date(dateFilter.to).toLocaleDateString();
+            statusEl.innerHTML = `<i class="fas fa-filter"></i> ${from} → ${to}`;
+        } else if (dateFilter.from) {
+            statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${new Date(dateFilter.from).toLocaleDateString()}`;
+        } else if (dateFilter.to) {
+            statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${new Date(dateFilter.to).toLocaleDateString()}`;
+        } else {
+            statusEl.innerHTML = `<i class="fas fa-info-circle"></i> All dates`;
+        }
+    }
+
+    document.getElementById('applyDateFilterBtn').addEventListener('click', function() {
+        const from = document.getElementById('dateFrom').value;
+        const to = document.getElementById('dateTo').value;
+        
+        if (!from && !to) {
+            alert('Please select at least one date range.');
+            return;
+        }
+        
+        if (from && to && new Date(from) > new Date(to)) {
+            alert('"From" date cannot be after "To" date.');
+            return;
+        }
+        
+        dateFilter.from = from || null;
+        dateFilter.to = to || null;
+        updateDateFilterStatus();
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById('clearDateFilterBtn').addEventListener('click', function() {
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+        dateFilter.from = null;
+        dateFilter.to = null;
+        updateDateFilterStatus();
+        currentPage = 1;
+        renderTable();
+    });
+
+    // ================================================================
+    // 5. RENDER FUNCTIONS
     // ================================================================
 
     let evaluations = [];
@@ -1766,21 +1932,21 @@
     const rowsPerPage = 5;
     let editTargetId = null;
 
-    function getAgentList() {
-        return [...new Set(evaluations.map(e => e.agent))].sort();
+    function getAgentList(data) {
+        return [...new Set(data.map(e => e.agent))].sort();
     }
 
-    function getActionCounts() {
+    function getActionCounts(data) {
         const counts = {};
-        evaluations.forEach(e => {
+        data.forEach(e => {
             counts[e.action] = (counts[e.action] || 0) + 1;
         });
         return counts;
     }
 
-    function getEscalationStats() {
+    function getEscalationStats(data) {
         let valid = 0, invalid = 0;
-        evaluations.forEach(e => {
+        data.forEach(e => {
             const comment = e.evaluatorComment || '';
             if (comment.toLowerCase().includes('valid')) valid++;
             else if (comment.toLowerCase().includes('invalid') || comment.toLowerCase().includes('reversal')) invalid++;
@@ -1788,8 +1954,8 @@
         return { valid, invalid };
     }
 
-    function renderCharts() {
-        const counts = getActionCounts();
+    function renderCharts(data) {
+        const counts = getActionCounts(data);
         const actionOrder = ['Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
         const maxVal = Math.max(...Object.values(counts), 1);
 
@@ -1812,7 +1978,7 @@
             `;
         }).join('');
 
-        const stats = getEscalationStats();
+        const stats = getEscalationStats(data);
         const total = stats.valid + stats.invalid || 1;
         const validPct = Math.round((stats.valid / total) * 100);
         const invalidPct = Math.round((stats.invalid / total) * 100);
@@ -1833,22 +1999,21 @@
         `;
     }
 
-    function renderStats() {
-        const uniqueAgents = [...new Set(evaluations.map(e => e.agent))];
+    function renderStats(data) {
+        const uniqueAgents = [...new Set(data.map(e => e.agent))];
         document.getElementById('totalAgents').textContent = uniqueAgents.length;
-        document.getElementById('totalCases').textContent = evaluations.length;
+        document.getElementById('totalCases').textContent = data.length;
 
-        const stats = getEscalationStats();
+        const stats = getEscalationStats(data);
         document.getElementById('validEscalations').textContent = stats.valid;
         document.getElementById('invalidEscalations').textContent = stats.invalid;
 
-        const coaching = evaluations.filter(e => e.action === 'Coaching / Written Memo').length;
+        const coaching = data.filter(e => e.action === 'Coaching / Written Memo').length;
         document.getElementById('coachingCount').textContent = coaching;
 
-        const deduction = evaluations.filter(e => e.action === '1-Day Deduction').length;
+        const deduction = data.filter(e => e.action === '1-Day Deduction').length;
         document.getElementById('deductionCount').textContent = deduction;
 
-        // Update retention info
         document.getElementById('totalRecordsDisplay').textContent = evaluations.length;
         document.getElementById('adminRecordCount').textContent = evaluations.length;
         
@@ -1861,9 +2026,8 @@
             document.getElementById('oldestRecordDisplay').textContent = 
                 new Date(oldest.cancellationDate).toLocaleDateString();
             
-            // Check for expiring records
             const cutoffDate = new Date();
-            cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS + 30); // 30 days warning
+            cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS + 30);
             const expiring = evaluations.filter(e => {
                 const recordDate = new Date(e.cancellationDate);
                 return recordDate < cutoffDate;
@@ -1878,7 +2042,6 @@
             }
         }
         
-        // Last cleanup
         const lastCleanup = localStorage.getItem('lastAutoCleanup');
         if (lastCleanup) {
             const date = new Date(parseInt(lastCleanup));
@@ -1887,11 +2050,14 @@
     }
 
     function renderTable() {
+        // Get filtered data based on date range
+        const filteredData = getFilteredData();
+        
         const search = document.getElementById('searchInput').value.toLowerCase().trim();
         const actionFilter = document.getElementById('actionFilter').value;
         const agentFilter = document.getElementById('agentFilter').value;
 
-        let filtered = evaluations.filter(row => {
+        let filtered = filteredData.filter(row => {
             const matchSearch = row.agent.toLowerCase().includes(search) ||
                                row.chatId.toLowerCase().includes(search);
             const matchAction = actionFilter === '' || row.action === actionFilter;
@@ -1901,7 +2067,7 @@
 
         const agentSelect = document.getElementById('agentFilter');
         const currentVal = agentSelect.value;
-        const agents = getAgentList();
+        const agents = getAgentList(filteredData);
         agentSelect.innerHTML = '<option value="">All Agents</option>' +
             agents.map(a => `<option value="${a}">${a}</option>`).join('');
         agentSelect.value = currentVal;
@@ -1925,7 +2091,7 @@
                 return `
                     <tr>
                         <td>${displayDate}</td>
-                        <td><span style="font-family: monospace; font-size: 11.5px; background: #1a1a1a; padding: 3px 8px; border-radius: 4px; color: #888;">${row.chatId.slice(0, 14)}…</span></td>
+                        <td><span class="chat-id-full" title="${row.chatId}">${row.chatId}</span></td>
                         <td>${row.contactReason}</td>
                         <td>${row.cancelReason}</td>
                         <td><span class="agent-badge"><i class="fas fa-user-circle" style="margin-right: 4px;"></i>${row.agent}</span></td>
@@ -1941,18 +2107,18 @@
             }).join('');
         }
 
-        document.getElementById('rowCount').textContent = `${filtered.length} rows`;
+        document.getElementById('rowCount').textContent = `${filtered.length} rows (${evaluations.length} total)`;
         document.getElementById('pageIndicator').textContent = `${currentPage} / ${totalPages}`;
         document.getElementById('prevPageBtn').disabled = currentPage === 1;
         document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
 
-        renderStats();
-        renderCharts();
+        renderStats(filteredData);
+        renderCharts(filteredData);
         saveData(evaluations);
     }
 
     // ================================================================
-    // 5. EVALUATION FORM
+    // 6. EVALUATION FORM
     // ================================================================
 
     function openEvalForm() {
@@ -2010,7 +2176,7 @@
     });
 
     // ================================================================
-    // 6. EDIT ACTION WITH DROPDOWN MODAL
+    // 7. EDIT ACTION WITH DROPDOWN MODAL
     // ================================================================
 
     function openEditModal(chatId) {
@@ -2019,7 +2185,7 @@
 
         editTargetId = chatId;
         document.getElementById('editAgentName').value = row.agent;
-        document.getElementById('editChatId').value = row.chatId.slice(0, 20) + '…';
+        document.getElementById('editChatId').value = row.chatId;
         document.getElementById('editCurrentAction').value = row.action;
         document.getElementById('editNewAction').value = row.action;
 
@@ -2058,7 +2224,7 @@
     });
 
     // ================================================================
-    // 7. DELETE ROW (Admin Only)
+    // 8. DELETE ROW (Admin Only)
     // ================================================================
 
     window.deleteRow = function(chatId) {
@@ -2072,7 +2238,7 @@
     };
 
     // ================================================================
-    // 8. ADMIN CONTROLS (6-Month Cleanup)
+    // 9. ADMIN CONTROLS
     // ================================================================
 
     document.getElementById('clearOldDataBtn').addEventListener('click', function() {
@@ -2148,7 +2314,7 @@
     });
 
     // ================================================================
-    // 9. EXPORT FUNCTIONS (CSV & Excel)
+    // 10. EXPORT FUNCTIONS (CSV & Excel)
     // ================================================================
 
     document.getElementById('downloadCsvBtn').addEventListener('click', function() {
@@ -2227,7 +2393,7 @@
     });
 
     // ================================================================
-    // 10. ACTION PLAN & MATRIX MODALS
+    // 11. ACTION PLAN & MATRIX MODALS
     // ================================================================
 
     const actionPlanData = [
@@ -2306,7 +2472,7 @@
     });
 
     // ================================================================
-    // 11. FILTERS, PAGINATION, SEARCH
+    // 12. FILTERS, PAGINATION, SEARCH
     // ================================================================
 
     document.getElementById('searchInput').addEventListener('input', function() {
@@ -2334,41 +2500,34 @@
     });
 
     // ================================================================
-    // 12. INIT DASHBOARD
+    // 13. INIT DASHBOARD
     // ================================================================
 
     function initDashboard() {
-        // Load data
         evaluations = loadData();
         
-        // Run auto-cleanup on load
         const beforeCleanup = evaluations.length;
         evaluations = autoCleanupOldData(evaluations);
         if (evaluations.length < beforeCleanup) {
-            // Update last cleanup timestamp
             localStorage.setItem('lastAutoCleanup', Date.now().toString());
         }
         
-        // Save cleaned data
         saveData(evaluations);
-        
-        // Render everything
+        updateDateFilterStatus();
         renderTable();
     }
 
     // ================================================================
-    // 13. CHECK EXISTING SESSION ON PAGE LOAD
+    // 14. CHECK EXISTING SESSION ON PAGE LOAD
     // ================================================================
 
-    // Check if user is already logged in
     if (!checkExistingSession()) {
-        // Show login screen
         document.getElementById('loginScreen').classList.remove('hidden');
         document.getElementById('dashboardWrapper').style.display = 'none';
     }
 
     // ================================================================
-    // 14. KEYBOARD SHORTCUT: Ctrl+Shift+A for admin quick access
+    // 15. KEYBOARD SHORTCUT
     // ================================================================
 
     document.addEventListener('keydown', function(e) {
@@ -2383,7 +2542,7 @@
     });
 
     // ================================================================
-    // 15. EXPOSE FOR DEBUGGING
+    // 16. EXPOSE FOR DEBUGGING
     // ================================================================
 
     window.__evaluations = evaluations;
