@@ -474,6 +474,39 @@
             gap: 12px;
         }
 
+        .offender-list {
+            display: grid;
+            gap: 7px;
+            max-height: 210px;
+            overflow-y: auto;
+        }
+
+        .offender-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #2f2f2f;
+            border-radius: 7px;
+            background: #202020;
+            color: #cfcfcf;
+            cursor: pointer;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .offender-row:hover,
+        .offender-row.selected {
+            background: #293429;
+            border-color: #4a7a4a;
+            color: #fff;
+        }
+
+        .offender-rank { min-width: 22px; color: #c8b87a; font-weight: 700; }
+        .offender-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .offender-count { color: #d09a9a; font-weight: 700; }
+
         .pie-item {
             display: flex;
             flex-direction: column;
@@ -1292,6 +1325,11 @@
         </div>
     </div>
 
+    <div class="chart-card" style="margin-bottom: 16px;">
+        <h4><i class="fas fa-user-shield"></i> Top Offenders · Non-Compliance / Violations</h4>
+        <div id="topOffenders" class="offender-list"></div>
+    </div>
+
     <div class="table-container">
         <div class="table-header-tools">
             <h3><i class="fas fa-table"></i> Case Evaluations</h3>
@@ -1299,6 +1337,7 @@
                 <input type="text" id="searchInput" placeholder="🔍 Search..." />
                 <select id="actionFilter">
                     <option value="">All</option>
+                    <option value="Invalid">Invalid</option>
                     <option value="Coaching / Written Memo">Coaching</option>
                     <option value="1-Day Deduction">1-Day Deduction</option>
                     <option value="2-Days Deduction + Final Warning">2-Days + Final</option>
@@ -1428,6 +1467,7 @@
                     <label>Action <span class="required">*</span></label>
                     <select id="evalAction" required>
                         <option value="">Select action...</option>
+                        <option value="Invalid">Invalid</option>
                         <option value="Coaching / Written Memo">Coaching / Written Memo</option>
                         <option value="1-Day Deduction">1-Day Deduction</option>
                         <option value="2-Days Deduction + Final Warning">2-Days Deduction + Final Warning</option>
@@ -1467,6 +1507,7 @@
                 <div class="form-group">
                     <label>New Action <span class="required">*</span></label>
                     <select id="editNewAction">
+                        <option value="Invalid">Invalid</option>
                         <option value="Coaching / Written Memo">Coaching / Written Memo</option>
                         <option value="1-Day Deduction">1-Day Deduction</option>
                         <option value="2-Days Deduction + Final Warning">2-Days Deduction + Final Warning</option>
@@ -1663,6 +1704,7 @@ function getEscalationStats(data) {
         const isInvalid = comment.includes('invalid') || 
                          comment.includes('reversal') ||
                          action.includes('Deduction') ||
+                         action === 'Invalid' ||
                          action === 'Termination';
         
         const isValid = comment.includes('valid') || 
@@ -1680,13 +1722,14 @@ function getEscalationStats(data) {
 
 function renderCharts(data) {
     const counts = getActionCounts(data);
-    const actionOrder = ['Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
+    const actionOrder = ['Invalid', 'Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
     const maxVal = Math.max(...Object.values(counts), 1);
     const chartContainer = document.getElementById('actionChart');
     chartContainer.innerHTML = actionOrder.map(action => {
         const val = counts[action] || 0;
         const pct = maxVal > 0 ? Math.round((val / maxVal) * 100) : 0;
-        const colorClass = action === 'Coaching / Written Memo' ? 'green' :
+        const colorClass = action === 'Invalid' ? 'red' :
+                          action === 'Coaching / Written Memo' ? 'green' :
                           action === '1-Day Deduction' ? 'red' :
                           action === '2-Days Deduction + Final Warning' ? 'gold' :
                           action === 'Termination' ? 'purple' : 'blue';
@@ -1738,22 +1781,59 @@ function renderStats(data) {
     }
 }
 
+function renderTopOffenders(data) {
+    const container = document.getElementById('topOffenders');
+    const counts = {};
+    data.forEach(row => {
+        const agent = (row.agent || '').trim() || 'Unknown agent';
+        counts[agent] = (counts[agent] || 0) + 1;
+    });
+    const ranked = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 10);
+    const selectedAgent = document.getElementById('agentFilter').value;
+
+    if (ranked.length === 0) {
+        container.innerHTML = '<div style="color:#666;font-size:11px;padding:8px 0;">No violations found for this date range.</div>';
+        return;
+    }
+
+    container.innerHTML = ranked.map(([agent, count], index) => `
+        <button type="button" class="offender-row ${selectedAgent === agent ? 'selected' : ''}"
+                data-agent="${encodeURIComponent(agent)}" onclick="selectOffender(this.dataset.agent)">
+            <span class="offender-rank">#${index + 1}</span>
+            <span class="offender-name">${agent}</span>
+            <span class="offender-count">${count} violation${count === 1 ? '' : 's'}</span>
+        </button>
+    `).join('');
+}
+
+window.selectOffender = function(encodedAgent) {
+    const agent = decodeURIComponent(encodedAgent);
+    const agentFilter = document.getElementById('agentFilter');
+    agentFilter.value = agentFilter.value === agent ? '' : agent;
+    currentPage = 1;
+    renderTable();
+};
+
 function renderTable() {
-    const filteredData = getFilteredData();
+    const dateFilteredData = getFilteredData();
     const search = document.getElementById('searchInput').value.toLowerCase().trim();
     const actionFilter = document.getElementById('actionFilter').value;
     const agentFilter = document.getElementById('agentFilter').value;
+    const filteredData = agentFilter
+        ? dateFilteredData.filter(row => row.agent === agentFilter)
+        : dateFilteredData;
 
     let filtered = filteredData.filter(row => {
         const matchSearch = row.agent.toLowerCase().includes(search) || row.chatId.toLowerCase().includes(search);
         const matchAction = actionFilter === '' || row.action === actionFilter;
-        const matchAgent = agentFilter === '' || row.agent === agentFilter;
-        return matchSearch && matchAction && matchAgent;
+        return matchSearch && matchAction;
     });
 
     const agentSelect = document.getElementById('agentFilter');
     const currentVal = agentSelect.value;
-    const agents = getAgentList(filteredData);
+    const agents = getAgentList(dateFilteredData);
     agentSelect.innerHTML = '<option value="">All Agents</option>' + agents.map(a => `<option value="${a}">${a}</option>`).join('');
     agentSelect.value = currentVal;
 
@@ -1767,7 +1847,8 @@ function renderTable() {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 30px 0; color: #444;">No cases found</td></tr>`;
     } else {
         tbody.innerHTML = pageItems.map(row => {
-            const tagClass = row.action === 'Coaching / Written Memo' ? 'tag-coaching' :
+            const tagClass = row.action === 'Invalid' ? 'tag-danger' :
+                            row.action === 'Coaching / Written Memo' ? 'tag-coaching' :
                             row.action === '1-Day Deduction' ? 'tag-danger' :
                             row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
                             row.action === 'Termination' ? 'tag-termination' : 'tag-info';
@@ -1798,6 +1879,7 @@ function renderTable() {
 
     renderStats(filteredData);
     renderCharts(filteredData);
+    renderTopOffenders(dateFilteredData);
 }
 
 function getFilteredData() {
