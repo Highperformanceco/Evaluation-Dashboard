@@ -32,140 +32,6 @@
             margin: 0 auto;
         }
 
-        /* --- LOGIN SCREEN --- */
-        #loginScreen {
-            position: fixed;
-            inset: 0;
-            background: #0d0d0d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 20px;
-        }
-
-        #loginScreen.hidden {
-            display: none;
-        }
-
-        .login-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 24px;
-            padding: 32px 28px;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-        }
-
-        .login-card .logo {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .login-card .logo .icon-wrapper {
-            display: inline-block;
-            background: #2a2a2a;
-            padding: 18px;
-            border-radius: 50%;
-            border: 2px solid #3a3a3a;
-        }
-
-        .login-card .logo .icon-wrapper i {
-            font-size: 40px;
-            color: #6aaa6a;
-        }
-
-        .login-card .logo h2 {
-            margin-top: 16px;
-            font-weight: 700;
-            font-size: 24px;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-
-        .login-card .logo p {
-            color: #666;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .login-card .form-group {
-            margin-bottom: 16px;
-        }
-
-        .login-card .form-group label {
-            display: block;
-            font-weight: 500;
-            font-size: 13px;
-            color: #888;
-            margin-bottom: 6px;
-        }
-
-        .login-card .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1.5px solid #2a2a2a;
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            transition: 0.2s;
-            background: #111;
-            color: #ddd;
-            -webkit-appearance: none;
-        }
-
-        .login-card .form-group input:focus {
-            border-color: #4a7a4a;
-            background: #1a1a1a;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(74, 122, 74, 0.15);
-        }
-
-        .login-card .form-group input::placeholder {
-            color: #444;
-        }
-
-        .login-card .login-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.25s;
-            background: linear-gradient(135deg, #2a3a2a, #3a4a3a);
-            color: #fff;
-            border: 1px solid #4a6a4a;
-            margin-top: 8px;
-        }
-
-        .login-card .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        .login-card .login-btn:active {
-            transform: scale(0.98);
-        }
-
-        .login-card .login-btn i {
-            margin-right: 8px;
-        }
-
-        .login-card .login-error {
-            color: #c07a7a;
-            font-size: 13px;
-            text-align: center;
-            margin-top: 12px;
-            display: none;
-        }
-
-        .login-card .login-error.show {
-            display: block;
-        }
-
         /* --- HEADER --- */
         .dashboard-header {
             display: flex;
@@ -1215,14 +1081,6 @@
                 padding: 16px;
             }
 
-            .login-card {
-                padding: 24px 20px;
-            }
-
-            .login-card .logo h2 {
-                font-size: 20px;
-            }
-
             .eval-cta {
                 font-size: 14px;
                 padding: 12px 24px;
@@ -1315,43 +1173,21 @@
             border-radius: 10px;
         }
 
-        /* Demo credentials hidden */
-        .demo-credentials {
-            display: none !important;
+        /* Admin password modal */
+        .admin-password-modal .modal-card {
+            max-width: 400px;
+        }
+        
+        .admin-password-modal .modal-card .form-group input {
+            font-size: 18px;
+            letter-spacing: 4px;
         }
     </style>
 </head>
 <body>
 
-<!-- ===== LOGIN SCREEN ===== -->
-<div id="loginScreen">
-    <div class="login-card">
-        <div class="logo">
-            <div class="icon-wrapper">
-                <i class="fas fa-clipboard-check"></i>
-            </div>
-            <h2>Evaluator Dashboard</h2>
-            <p>Sign in to access the system</p>
-        </div>
-        <form id="loginForm" onsubmit="return handleLogin(event)">
-            <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Email / Username</label>
-                <input type="text" id="loginEmail" placeholder="Enter your email" value="" required autocomplete="username" />
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" value="" required autocomplete="current-password" />
-            </div>
-            <button type="submit" class="login-btn">
-                <i class="fas fa-sign-in-alt"></i> Sign In
-            </button>
-            <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
-        </form>
-    </div>
-</div>
-
 <!-- ===== DASHBOARD WRAPPER ===== -->
-<div class="dashboard-wrapper" id="dashboardWrapper" style="display: none;">
+<div class="dashboard-wrapper">
 
     <!-- ===== HEADER ===== -->
     <div class="dashboard-header">
@@ -1360,7 +1196,7 @@
             Evaluator Dashboard
         </h1>
         <div class="header-actions">
-            <span class="user-role-badge" id="userRoleBadge">User</span>
+            <span class="user-role-badge" id="userRoleBadge">👤 User</span>
             <button class="btn btn-outline" id="viewActionPlanBtn">
                 <i class="fas fa-list-ul"></i> Action Plan
             </button>
@@ -1373,8 +1209,8 @@
             <button class="btn btn-success" id="downloadExcelBtn">
                 <i class="fas fa-file-excel"></i> Excel
             </button>
-            <button class="btn btn-danger" id="logoutBtn" style="font-size: 11px; padding: 6px 12px;">
-                <i class="fas fa-sign-out-alt"></i>
+            <button class="btn btn-warning" id="adminModeBtn" style="font-size: 11px; padding: 6px 12px;">
+                <i class="fas fa-shield-alt"></i> Admin
             </button>
         </div>
     </div>
@@ -1391,6 +1227,9 @@
         <span style="font-size: 10px; color: #555; margin-left: auto;">
             <i class="fas fa-database"></i> <span id="adminRecordCount">0</span> records
         </span>
+        <button class="btn btn-outline" id="exitAdminBtn" style="font-size: 10px;">
+            <i class="fas fa-sign-out-alt"></i> Exit Admin
+        </button>
     </div>
 
     <!-- ===== DATE RANGE FILTER ===== -->
@@ -1719,101 +1558,45 @@
         </div>
     </div>
 
+    <!-- ===== ADMIN PASSWORD MODAL ===== -->
+    <div class="modal-overlay admin-password-modal" id="adminPasswordModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-shield-alt"></i> Admin Access</h2>
+                <button class="close-modal" id="closeAdminModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-group">
+                <label>Enter Admin Password <span class="required">*</span></label>
+                <input type="password" id="adminPasswordInput" placeholder="Enter password..." />
+            </div>
+            <div style="color: #c07a7a; font-size: 12px; display: none; margin-bottom: 10px;" id="adminPasswordError">Incorrect password!</div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline" id="cancelAdminBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="verifyAdminBtn">
+                    <i class="fas fa-unlock"></i> Unlock Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
     // ================================================================
-    // 1. USER MANAGEMENT
+    // 1. NO LOGIN REQUIRED - Everyone can access
     // ================================================================
 
-    const USERS = {
-        'waqas@dashboard.com': {
-            password: 'waqas1982',
-            role: 'admin',
-            name: 'Waqas Ahmed'
-        },
-        'user@dashboard.com': {
-            password: 'User123!',
-            role: 'user',
-            name: 'General User'
-        }
-    };
+    let isAdmin = false;
+    const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
 
-    let currentUser = null;
     let dateFilter = { from: null, to: null };
     let evaluations = [];
     let currentPage = 1;
     const rowsPerPage = 5;
     let editTargetId = null;
 
-    function handleLogin(e) {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        const errorEl = document.getElementById('loginError');
-        
-        if (USERS[email] && USERS[email].password === password) {
-            currentUser = {
-                email: email,
-                role: USERS[email].role,
-                name: USERS[email].name
-            };
-            sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboardWrapper').style.display = 'block';
-            updateUIForRole(currentUser.role);
-            initDashboard();
-            errorEl.classList.remove('show');
-        } else {
-            errorEl.classList.add('show');
-            setTimeout(() => errorEl.classList.remove('show'), 3000);
-        }
-        return false;
-    }
-
-    function checkExistingSession() {
-        const saved = sessionStorage.getItem('currentUser');
-        if (saved) {
-            try {
-                currentUser = JSON.parse(saved);
-                if (USERS[currentUser.email]) {
-                    document.getElementById('loginScreen').classList.add('hidden');
-                    document.getElementById('dashboardWrapper').style.display = 'block';
-                    updateUIForRole(currentUser.role);
-                    initDashboard();
-                    return true;
-                } else {
-                    sessionStorage.removeItem('currentUser');
-                }
-            } catch (e) {
-                sessionStorage.removeItem('currentUser');
-            }
-        }
-        return false;
-    }
-
-    function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-            sessionStorage.removeItem('currentUser');
-            currentUser = null;
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('dashboardWrapper').style.display = 'none';
-        }
-    }
-
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-
-    function updateUIForRole(role) {
-        const isAdmin = role === 'admin';
-        const badge = document.getElementById('userRoleBadge');
-        const adminControls = document.getElementById('adminControls');
-        badge.textContent = isAdmin ? '👑 Admin' : '👤 User';
-        badge.className = 'user-role-badge ' + (isAdmin ? 'admin' : 'user');
-        adminControls.style.display = isAdmin ? 'flex' : 'none';
-    }
-
     // ================================================================
-    // 2. DATA STORE
+    // 2. DATA STORE - Shared localStorage
     // ================================================================
 
     function loadData() {
@@ -1827,6 +1610,8 @@
     function saveData(data) {
         localStorage.setItem('evaluationData', JSON.stringify(data));
         document.getElementById('adminRecordCount').textContent = data.length;
+        // Notify other tabs that data has changed
+        localStorage.setItem('dataVersion', Date.now().toString());
     }
 
     function getDefaultData() {
@@ -1964,9 +1749,25 @@
     function getEscalationStats(data) {
         let valid = 0, invalid = 0;
         data.forEach(e => {
-            const comment = e.evaluatorComment || '';
-            if (comment.toLowerCase().includes('valid')) valid++;
-            else if (comment.toLowerCase().includes('invalid') || comment.toLowerCase().includes('reversal')) invalid++;
+            const comment = (e.evaluatorComment || '').toLowerCase();
+            const action = e.action || '';
+            
+            // Check if it's an invalid escalation
+            const isInvalid = comment.includes('invalid') || 
+                             comment.includes('reversal') ||
+                             action.includes('Deduction') ||
+                             action === 'Termination';
+            
+            const isValid = comment.includes('valid') || 
+                           (action === 'Coaching / Written Memo' && !isInvalid);
+            
+            if (isInvalid) invalid++;
+            else if (isValid) valid++;
+            else {
+                // Fallback: if action is deduction/termination, mark as invalid
+                if (action.includes('Deduction') || action === 'Termination') invalid++;
+                else valid++;
+            }
         });
         return { valid, invalid };
     }
@@ -2075,7 +1876,6 @@
                                 row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
                                 row.action === 'Termination' ? 'tag-termination' : 'tag-info';
                 const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
-                const isAdmin = currentUser && currentUser.role === 'admin';
                 return `
                     <tr>
                         <td>${displayDate}</td>
@@ -2106,7 +1906,7 @@
     }
 
     // ================================================================
-    // 6. EVALUATION FORM
+    // 6. EVALUATION FORM - Anyone can add
     // ================================================================
 
     function openEvalForm() {
@@ -2159,7 +1959,7 @@
     });
 
     // ================================================================
-    // 7. EDIT ACTION
+    // 7. EDIT ACTION - Anyone can edit
     // ================================================================
 
     function openEditModal(chatId) {
@@ -2200,26 +2000,90 @@
     });
 
     // ================================================================
-    // 8. DELETE ROW (Admin Only)
+    // 8. DELETE ROW - Only Admin with password
     // ================================================================
 
     window.deleteRow = function(chatId) {
-        if (currentUser && currentUser.role === 'admin') {
+        if (isAdmin) {
             if (!confirm('Delete this case permanently?')) return;
             evaluations = evaluations.filter(e => e.chatId !== chatId);
             renderTable();
         } else {
-            alert('⚠️ Only administrators can delete records.');
+            alert('⚠️ Admin access required to delete. Click the "Admin" button and enter password.');
         }
     };
 
     // ================================================================
-    // 9. ADMIN CONTROLS
+    // 9. ADMIN MODE - Password Protected
+    // ================================================================
+
+    document.getElementById('adminModeBtn').addEventListener('click', function() {
+        document.getElementById('adminPasswordModal').classList.add('active');
+        document.getElementById('adminPasswordInput').value = '';
+        document.getElementById('adminPasswordError').style.display = 'none';
+        document.body.style.overflow = 'hidden';
+    });
+
+    document.getElementById('closeAdminModal').addEventListener('click', function() {
+        document.getElementById('adminPasswordModal').classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    document.getElementById('cancelAdminBtn').addEventListener('click', function() {
+        document.getElementById('adminPasswordModal').classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    document.getElementById('adminPasswordModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            document.getElementById('adminPasswordModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    document.getElementById('verifyAdminBtn').addEventListener('click', function() {
+        const password = document.getElementById('adminPasswordInput').value;
+        if (password === ADMIN_PASSWORD) {
+            isAdmin = true;
+            document.getElementById('adminPasswordModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('adminControls').style.display = 'flex';
+            document.getElementById('userRoleBadge').textContent = '👑 Admin';
+            document.getElementById('userRoleBadge').className = 'user-role-badge admin';
+            document.getElementById('adminModeBtn').style.display = 'none';
+            renderTable(); // Refresh to show delete buttons
+            alert('✅ Admin mode activated! You can now delete entries.');
+        } else {
+            document.getElementById('adminPasswordError').style.display = 'block';
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordInput').focus();
+        }
+    });
+
+    document.getElementById('adminPasswordInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('verifyAdminBtn').click();
+        }
+    });
+
+    // Exit Admin mode
+    document.getElementById('exitAdminBtn').addEventListener('click', function() {
+        isAdmin = false;
+        document.getElementById('adminControls').style.display = 'none';
+        document.getElementById('userRoleBadge').textContent = '👤 User';
+        document.getElementById('userRoleBadge').className = 'user-role-badge user';
+        document.getElementById('adminModeBtn').style.display = 'inline-flex';
+        renderTable(); // Refresh to hide delete buttons
+        alert('👋 Admin mode deactivated.');
+    });
+
+    // ================================================================
+    // 10. ADMIN CONTROLS - Only when admin mode is active
     // ================================================================
 
     document.getElementById('clearOldDataBtn').addEventListener('click', function() {
-        if (currentUser && currentUser.role !== 'admin') {
-            alert('⚠️ Only administrators can perform this action.');
+        if (!isAdmin) {
+            alert('⚠️ Admin access required.');
             return;
         }
         const cutoffDate = new Date();
@@ -2237,8 +2101,8 @@
     });
 
     document.getElementById('clearAllDataBtn').addEventListener('click', function() {
-        if (currentUser && currentUser.role !== 'admin') {
-            alert('⚠️ Only administrators can perform this action.');
+        if (!isAdmin) {
+            alert('⚠️ Admin access required.');
             return;
         }
         const count = evaluations.length;
@@ -2253,7 +2117,7 @@
     });
 
     // ================================================================
-    // 10. EXPORT FUNCTIONS
+    // 11. EXPORT FUNCTIONS
     // ================================================================
 
     document.getElementById('downloadCsvBtn').addEventListener('click', function() {
@@ -2304,7 +2168,7 @@
     });
 
     // ================================================================
-    // 11. ACTION PLAN & MATRIX
+    // 12. ACTION PLAN & MATRIX
     // ================================================================
 
     const actionPlanData = [
@@ -2364,7 +2228,7 @@
     });
 
     // ================================================================
-    // 12. FILTERS, PAGINATION
+    // 13. FILTERS, PAGINATION
     // ================================================================
 
     document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
@@ -2377,7 +2241,26 @@
     });
 
     // ================================================================
-    // 13. INIT
+    // 14. CROSS-TAB SYNC - Check for updates from other tabs
+    // ================================================================
+
+    function checkForUpdates() {
+        const currentVersion = localStorage.getItem('dataVersion');
+        if (currentVersion && currentVersion !== window._lastVersion) {
+            window._lastVersion = currentVersion;
+            evaluations = loadData();
+            renderTable();
+        }
+    }
+
+    // Check for updates every 3 seconds
+    setInterval(checkForUpdates, 3000);
+
+    // Initialize version tracking
+    window._lastVersion = localStorage.getItem('dataVersion');
+
+    // ================================================================
+    // 15. INIT
     // ================================================================
 
     function initDashboard() {
@@ -2390,34 +2273,19 @@
         saveData(evaluations);
         updateDateFilterStatus();
         renderTable();
+        // Show message about admin access
+        console.log('📋 Evaluator Dashboard loaded - Everyone can add entries, Admin password required for delete');
     }
 
     // ================================================================
-    // 14. CHECK SESSION
+    // 16. START
     // ================================================================
 
-    if (!checkExistingSession()) {
-        document.getElementById('loginScreen').classList.remove('hidden');
-        document.getElementById('dashboardWrapper').style.display = 'none';
-    }
+    initDashboard();
 
-    // ================================================================
-    // 15. KEYBOARD SHORTCUT
-    // ================================================================
-
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-            e.preventDefault();
-            if (currentUser && currentUser.role === 'admin') {
-                document.getElementById('adminControls').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert('⚠️ Admin access required.');
-            }
-        }
-    });
-
+    // Expose for debugging
     window.__evaluations = evaluations;
-    window.__currentUser = currentUser;
+    window.__isAdmin = isAdmin;
 </script>
 
 </body>
