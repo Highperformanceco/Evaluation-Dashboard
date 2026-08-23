@@ -1557,7 +1557,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - YOUR UPDATED APPS SCRIPT URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzWM6wlKKvhCZq-FS_wYvNYQHxkyXCbDEEHz6wp86YRczgSWfHU-j2C1W5JN1GZWpm1rA/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbz5DfIfeIfp7WPud5mm-7oSdIN614-S7Ha7218T4Jh0qMkcAbtKmEe3wGcM1-wu23jPrQ/exec';
 
 // ================================================================
 // 1. NO LOGIN REQUIRED - Everyone can access
@@ -1605,19 +1605,23 @@ async function saveData(data) {
         const response = await fetch(GOOGLE_SHEETS_API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                // Apps Script does not reliably answer the browser's CORS
+                // preflight for application/json. text/plain is a "simple"
+                // request; the Apps Script still receives the same JSON text.
+                'Content-Type': 'text/plain;charset=utf-8',
             },
             body: JSON.stringify({ data: data })
         });
         
         const result = await response.json();
         
-        if (result.success) {
+        if (response.ok && result.success) {
             console.log('💾 Saved', result.count, 'records to Google Sheets');
             document.getElementById('adminRecordCount').textContent = data.length;
         } else {
             console.error('Failed to save:', result.error);
             alert('⚠️ Could not save to Google Sheets. Error: ' + (result.error || 'Unknown error'));
+            throw new Error(result.error || `HTTP ${response.status}`);
         }
     } catch (error) {
         console.error('Error saving to Google Sheets:', error);
