@@ -11,9 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
-        /* ================================================================ */
-        /* ALL YOUR EXISTING STYLES GO HERE - PASTE YOUR FULL STYLES BELOW */
-        /* ================================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -35,7 +32,6 @@
             margin: 0 auto;
         }
 
-        /* --- HEADER --- */
         .dashboard-header {
             display: flex;
             flex-wrap: wrap;
@@ -174,7 +170,6 @@
             border: 1px solid #3a4a6a;
         }
 
-        /* --- EVAL CTA --- */
         .eval-cta-group {
             display: flex;
             justify-content: center;
@@ -214,7 +209,6 @@
             color: #6aaa6a;
         }
 
-        /* --- ADMIN CONTROLS --- */
         #adminControls {
             background: #1a1a2a;
             border: 1px solid #2a3a3a;
@@ -238,7 +232,6 @@
             padding: 6px 14px;
         }
 
-        /* --- DATE FILTER --- */
         .date-filter {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
@@ -304,7 +297,6 @@
             border-top: 1px solid #222;
         }
 
-        /* --- STATS ROW --- */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -356,7 +348,6 @@
         .stat-card.accent-gold i { color: #c8b87a; }
         .stat-card.accent-purple i { color: #9a7ac8; }
 
-        /* --- RETENTION INFO --- */
         .retention-info {
             background: #1a1a2a;
             border: 1px solid #2a3a3a;
@@ -397,7 +388,6 @@
             margin-right: 3px;
         }
 
-        /* --- CHARTS ROW --- */
         .charts-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -518,7 +508,6 @@
             font-weight: 600;
         }
 
-        /* --- TABLE --- */
         .table-container {
             background: #1a1a1a;
             border-radius: 12px;
@@ -701,7 +690,6 @@
             font-size: 11px;
         }
 
-        /* --- MODAL --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -833,7 +821,6 @@
             justify-content: flex-end;
         }
 
-        /* --- ACTION PLAN --- */
         .action-plan-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -909,7 +896,6 @@
             font-weight: 600;
         }
 
-        /* --- NOTIFICATION --- */
         .cleanup-notification {
             position: fixed;
             bottom: 16px;
@@ -966,7 +952,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- RESPONSIVE --- */
+        .admin-password-modal .modal-card {
+            max-width: 400px;
+        }
+        
+        .admin-password-modal .modal-card .form-group input {
+            font-size: 18px;
+            letter-spacing: 4px;
+        }
+
         @media (max-width: 1024px) {
             .stats-row {
                 grid-template-columns: repeat(3, 1fr);
@@ -1165,24 +1159,12 @@
             background: #444;
             border-radius: 10px;
         }
-
-        /* Admin password modal */
-        .admin-password-modal .modal-card {
-            max-width: 400px;
-        }
-        
-        .admin-password-modal .modal-card .form-group input {
-            font-size: 18px;
-            letter-spacing: 4px;
-        }
     </style>
 </head>
 <body>
 
-<!-- ===== DASHBOARD WRAPPER ===== -->
 <div class="dashboard-wrapper">
 
-    <!-- ===== HEADER ===== -->
     <div class="dashboard-header">
         <h1>
             <i class="fas fa-clipboard-check"></i>
@@ -1211,7 +1193,6 @@
         </div>
     </div>
 
-    <!-- ===== ADMIN CONTROLS ===== -->
     <div id="adminControls" style="display: none;">
         <span class="admin-label"><i class="fas fa-shield-alt"></i> Admin Controls</span>
         <button class="btn btn-warning" id="clearOldDataBtn">
@@ -1231,7 +1212,6 @@
         </button>
     </div>
 
-    <!-- ===== DATE RANGE FILTER ===== -->
     <div class="date-filter">
         <label><i class="fas fa-calendar-alt"></i> From</label>
         <input type="date" id="dateFrom" />
@@ -1250,7 +1230,6 @@
         </div>
     </div>
 
-    <!-- ===== EVALUATION CTA ===== -->
     <div class="eval-cta-group">
         <button class="eval-cta" id="openEvalFormBtn">
             <i class="fas fa-plus-circle"></i> New Evaluation
@@ -1258,7 +1237,6 @@
         </button>
     </div>
 
-    <!-- ===== STATS ===== -->
     <div class="stats-row" id="statsRow">
         <div class="stat-card accent-blue">
             <i class="fas fa-users"></i>
@@ -1286,7 +1264,6 @@
         </div>
     </div>
 
-    <!-- ===== RETENTION INFO ===== -->
     <div class="retention-info">
         <div class="left">
             <i class="fas fa-calendar-alt"></i>
@@ -1304,7 +1281,6 @@
         </div>
     </div>
 
-    <!-- ===== CHARTS ROW ===== -->
     <div class="charts-row">
         <div class="chart-card">
             <h4><i class="fas fa-chart-bar"></i> Action Distribution</h4>
@@ -1316,7 +1292,6 @@
         </div>
     </div>
 
-    <!-- ===== TABLE ===== -->
     <div class="table-container">
         <div class="table-header-tools">
             <h3><i class="fas fa-table"></i> Case Evaluations</h3>
@@ -1365,7 +1340,6 @@
         </div>
     </div>
 
-    <!-- ===== EVALUATION FORM MODAL ===== -->
     <div class="modal-overlay" id="evalFormOverlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -1471,7 +1445,6 @@
         </div>
     </div>
 
-    <!-- ===== EDIT ACTION MODAL ===== -->
     <div class="modal-overlay edit-action-modal" id="editActionModal">
         <div class="modal-card" style="max-width: 420px;">
             <div class="modal-header">
@@ -1511,7 +1484,6 @@
         </div>
     </div>
 
-    <!-- ===== ACTION PLAN MODAL ===== -->
     <div class="modal-overlay" id="actionPlanOverlay">
         <div class="modal-card" style="max-width: 900px;">
             <div class="modal-header">
@@ -1525,7 +1497,6 @@
         </div>
     </div>
 
-    <!-- ===== ACTION MATRIX MODAL ===== -->
     <div class="modal-overlay" id="matrixOverlay">
         <div class="modal-card" style="max-width: 600px;">
             <div class="modal-header">
@@ -1560,7 +1531,6 @@
         </div>
     </div>
 
-    <!-- ===== ADMIN PASSWORD MODAL ===== -->
     <div class="modal-overlay admin-password-modal" id="adminPasswordModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -1585,16 +1555,16 @@
 
 <script>
 // ================================================================
-// ⭐ GOOGLE SHEETS API URL - YOUR WEB APP URL
+// ⭐ GOOGLE SHEETS API URL - YOUR APPS SCRIPT URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/a/macros/talabat.com/s/AKfycbyKEfuuPTtJIo-0yKObN4gybvYzxgN2FARXs_UE_Cv7BVUiwNlENFD_2olR9LrajIUr/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzWM6wlKKvhCZq-FS_wYvNYQHxkyXCbDEEHz6wp86YRczgSWfHU-j2C1W5JN1GZWpm1rA/exec';
 
 // ================================================================
 // 1. NO LOGIN REQUIRED - Everyone can access
 // ================================================================
 
 let isAdmin = false;
-const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
+const ADMIN_PASSWORD = 'admin123';
 
 let dateFilter = { from: null, to: null };
 let evaluations = [];
@@ -1602,10 +1572,9 @@ let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
 let isSyncing = false;
-let syncTimeout = null;
 
 // ================================================================
-// 2. DATA STORE - Google Sheets (Shared)
+// 2. DATA STORE - Google Sheets
 // ================================================================
 
 async function loadData() {
@@ -1622,11 +1591,6 @@ async function loadData() {
         }
     } catch (error) {
         console.error('Error loading from Google Sheets:', error);
-        // Try localStorage as fallback
-        const saved = localStorage.getItem('evaluationData_backup');
-        if (saved) {
-            try { return JSON.parse(saved); } catch (e) {}
-        }
         return getDefaultData();
     }
 }
@@ -1636,7 +1600,6 @@ async function saveData(data) {
     isSyncing = true;
     
     try {
-        // Show sync status
         document.getElementById('syncStatus').style.display = 'inline';
         
         const response = await fetch(GOOGLE_SHEETS_API_URL, {
@@ -1651,16 +1614,14 @@ async function saveData(data) {
         
         if (result.success) {
             console.log('💾 Saved', result.count, 'records to Google Sheets');
-            // Backup to localStorage as cache
-            localStorage.setItem('evaluationData_backup', JSON.stringify(data));
             document.getElementById('adminRecordCount').textContent = data.length;
         } else {
             console.error('Failed to save:', result.error);
-            alert('⚠️ Could not save to Google Sheets. Check your connection.');
+            alert('⚠️ Could not save to Google Sheets. Error: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error saving to Google Sheets:', error);
-        alert('⚠️ Error saving data. Please try again.');
+        alert('⚠️ Error saving data. Please try again.\n\nError: ' + error.message);
     } finally {
         isSyncing = false;
         document.getElementById('syncStatus').style.display = 'none';
@@ -1671,122 +1632,12 @@ function getDefaultData() {
     return [
         { cancellationDate: '2026-08-18', chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b', contactReason: 'Refuse to accept order', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: 'Order Delay - Should choose LATE-OWNER Cancellation', evaluatorComment: 'Valid Escalation', action: 'Coaching / Written Memo' },
         { cancellationDate: '2026-08-18', chatId: '46cc7168-69f4-4858-9992-e21c59875ce5', contactReason: 'Checking status', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial', evaluatorComment: 'Invalid Escalation - Reversal Required', action: '1-Day Deduction' },
-        { cancellationDate: '2026-08-18', chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531', contactReason: 'Unable to contact', cancelReason: 'CST - doesn\'t response', agent: 'wesam.shakir.2527', violation: 'No Trials - Agent Should make 2 Trials To The Customer', evaluatorComment: 'Valid Escalation', action: '2-Days Deduction + Final Warning' },
-        { cancellationDate: '2026-08-19', chatId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', contactReason: 'Customer requested cancellation', cancelReason: 'CST - Customer requested', agent: 'sara.ahmed.101', violation: 'No call attempted before cancellation', evaluatorComment: 'Invalid Escalation - Reversal Required', action: 'Coaching / Written Memo' },
-        { cancellationDate: '2026-08-19', chatId: 'z9y8x7w6-v5u4-3210-zyxw-vutsrqponmlk', contactReason: 'Late Owner', cancelReason: 'CST - Late Owner', agent: 'khalid.hassan.89', violation: 'Incorrect Contact Reason selected', evaluatorComment: 'Valid Escalation', action: 'Coaching / Written Memo' },
-        { cancellationDate: '2026-08-20', chatId: 'new-001-xyz', contactReason: 'Late Owner', cancelReason: 'CST - Late Owner', agent: 'fatima.ali.45', violation: 'Incorrect contact reason selected', evaluatorComment: 'Valid Escalation', action: '1-Day Deduction' },
-        { cancellationDate: '2026-08-20', chatId: 'new-002-abc', contactReason: 'Unable to contact', cancelReason: 'CST - doesn\'t response', agent: 'ahmed.khan.12', violation: 'Only 1 trial call made', evaluatorComment: 'Invalid Escalation - Reversal Required', action: 'Coaching / Written Memo' }
+        { cancellationDate: '2026-08-18', chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531', contactReason: 'Unable to contact', cancelReason: "CST - doesn't response", agent: 'wesam.shakir.2527', violation: 'No Trials - Agent Should make 2 Trials To The Customer', evaluatorComment: 'Valid Escalation', action: '2-Days Deduction + Final Warning' }
     ];
 }
 
 // ================================================================
-// 3. 6-MONTH AUTO-CLEANUP
-// ================================================================
-
-const RETENTION_DAYS = 180;
-
-function autoCleanupOldData(data) {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
-    const oldRecords = data.filter(e => new Date(e.cancellationDate) < cutoffDate);
-    const newRecords = data.filter(e => new Date(e.cancellationDate) >= cutoffDate);
-    if (oldRecords.length > 0) {
-        console.log(`🗑️ Auto-cleanup: Removed ${oldRecords.length} record(s)`);
-        showCleanupNotification(oldRecords.length, newRecords.length);
-    }
-    return newRecords;
-}
-
-function showCleanupNotification(removed, remaining) {
-    const existing = document.querySelector('.cleanup-notification');
-    if (existing) existing.remove();
-    const notification = document.createElement('div');
-    notification.className = 'cleanup-notification';
-    notification.innerHTML = `
-        <div class="content">
-            <i class="fas fa-recycle"></i>
-            <div class="text">
-                <strong>🧹 Auto-Cleanup Complete</strong>
-                <p>Removed ${removed} record(s) older than 6 months. ${remaining} remain.</p>
-            </div>
-            <button class="close-notif" onclick="this.closest('.cleanup-notification').remove()">×</button>
-        </div>
-    `;
-    document.body.appendChild(notification);
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.opacity = '0';
-            notification.style.transition = 'opacity 0.5s';
-            setTimeout(() => notification.remove(), 500);
-        }
-    }, 6000);
-}
-
-// ================================================================
-// 4. DATE RANGE FILTER
-// ================================================================
-
-function getFilteredData() {
-    let filtered = [...evaluations];
-    if (dateFilter.from) {
-        const fromDate = new Date(dateFilter.from);
-        fromDate.setHours(0, 0, 0, 0);
-        filtered = filtered.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            recordDate.setHours(0, 0, 0, 0);
-            return recordDate >= fromDate;
-        });
-    }
-    if (dateFilter.to) {
-        const toDate = new Date(dateFilter.to);
-        toDate.setHours(23, 59, 59, 999);
-        filtered = filtered.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            return recordDate <= toDate;
-        });
-    }
-    return filtered;
-}
-
-function updateDateFilterStatus() {
-    const statusEl = document.getElementById('dateFilterStatus');
-    if (dateFilter.from && dateFilter.to) {
-        const from = new Date(dateFilter.from).toLocaleDateString();
-        const to = new Date(dateFilter.to).toLocaleDateString();
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> ${from} → ${to}`;
-    } else if (dateFilter.from) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${new Date(dateFilter.from).toLocaleDateString()}`;
-    } else if (dateFilter.to) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${new Date(dateFilter.to).toLocaleDateString()}`;
-    } else {
-        statusEl.innerHTML = `<i class="fas fa-info-circle"></i> All dates`;
-    }
-}
-
-document.getElementById('applyDateFilterBtn').addEventListener('click', function() {
-    const from = document.getElementById('dateFrom').value;
-    const to = document.getElementById('dateTo').value;
-    if (!from && !to) { alert('Please select at least one date.'); return; }
-    if (from && to && new Date(from) > new Date(to)) { alert('"From" cannot be after "To".'); return; }
-    dateFilter.from = from || null;
-    dateFilter.to = to || null;
-    updateDateFilterStatus();
-    currentPage = 1;
-    renderTable();
-});
-
-document.getElementById('clearDateFilterBtn').addEventListener('click', function() {
-    document.getElementById('dateFrom').value = '';
-    document.getElementById('dateTo').value = '';
-    dateFilter.from = null;
-    dateFilter.to = null;
-    updateDateFilterStatus();
-    currentPage = 1;
-    renderTable();
-});
-
-// ================================================================
-// 5. RENDER FUNCTIONS
+// 3. RENDER FUNCTIONS
 // ================================================================
 
 function getAgentList(data) {
@@ -1805,7 +1656,6 @@ function getEscalationStats(data) {
         const comment = (e.evaluatorComment || '').toLowerCase();
         const action = e.action || '';
         
-        // Check if it's an invalid escalation
         const isInvalid = comment.includes('invalid') || 
                          comment.includes('reversal') ||
                          action.includes('Deduction') ||
@@ -1817,7 +1667,6 @@ function getEscalationStats(data) {
         if (isInvalid) invalid++;
         else if (isValid) valid++;
         else {
-            // Fallback: if action is deduction/termination, mark as invalid
             if (action.includes('Deduction') || action === 'Termination') invalid++;
             else valid++;
         }
@@ -1882,16 +1731,6 @@ function renderStats(data) {
             return dateA < dateB ? a : b;
         });
         document.getElementById('oldestRecordDisplay').textContent = new Date(oldest.cancellationDate).toLocaleDateString();
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS + 30);
-        const expiring = evaluations.filter(e => new Date(e.cancellationDate) < cutoffDate);
-        const warningEl = document.getElementById('expiringWarning');
-        warningEl.style.display = expiring.length > 0 ? 'inline' : 'none';
-        if (expiring.length > 0) warningEl.textContent = `⚠️ ${expiring.length} expiring`;
-    }
-    const lastCleanup = localStorage.getItem('lastAutoCleanup');
-    if (lastCleanup) {
-        document.getElementById('lastCleanupDisplay').textContent = new Date(parseInt(lastCleanup)).toLocaleDateString();
     }
 }
 
@@ -1955,11 +1794,47 @@ function renderTable() {
 
     renderStats(filteredData);
     renderCharts(filteredData);
-    // Don't auto-save here - only save when changes are made
+}
+
+function getFilteredData() {
+    let filtered = [...evaluations];
+    if (dateFilter.from) {
+        const fromDate = new Date(dateFilter.from);
+        fromDate.setHours(0, 0, 0, 0);
+        filtered = filtered.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            recordDate.setHours(0, 0, 0, 0);
+            return recordDate >= fromDate;
+        });
+    }
+    if (dateFilter.to) {
+        const toDate = new Date(dateFilter.to);
+        toDate.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            return recordDate <= toDate;
+        });
+    }
+    return filtered;
+}
+
+function updateDateFilterStatus() {
+    const statusEl = document.getElementById('dateFilterStatus');
+    if (dateFilter.from && dateFilter.to) {
+        const from = new Date(dateFilter.from).toLocaleDateString();
+        const to = new Date(dateFilter.to).toLocaleDateString();
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> ${from} → ${to}`;
+    } else if (dateFilter.from) {
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${new Date(dateFilter.from).toLocaleDateString()}`;
+    } else if (dateFilter.to) {
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${new Date(dateFilter.to).toLocaleDateString()}`;
+    } else {
+        statusEl.innerHTML = `<i class="fas fa-info-circle"></i> All dates`;
+    }
 }
 
 // ================================================================
-// 6. EVALUATION FORM - Anyone can add
+// 4. EVALUATION FORM
 // ================================================================
 
 function openEvalForm() {
@@ -2004,7 +1879,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     }
     evaluations.push(newEval);
     closeEvalForm();
-    await saveData(evaluations); // Save to Google Sheets
+    await saveData(evaluations);
     renderTable();
     const btn = document.getElementById('submitEvalBtn');
     const originalText = btn.innerHTML;
@@ -2013,7 +1888,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
 });
 
 // ================================================================
-// 7. EDIT ACTION - Anyone can edit
+// 5. EDIT AND DELETE
 // ================================================================
 
 function openEditModal(chatId) {
@@ -2046,7 +1921,7 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
     if (!row) return;
     row.action = document.getElementById('editNewAction').value;
     closeEditModal();
-    await saveData(evaluations); // Save to Google Sheets
+    await saveData(evaluations);
     renderTable();
     const btn = document.getElementById('saveEditBtn');
     const originalText = btn.innerHTML;
@@ -2054,15 +1929,11 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
     setTimeout(() => { btn.innerHTML = originalText; }, 1200);
 });
 
-// ================================================================
-// 8. DELETE ROW - Only Admin with password
-// ================================================================
-
 window.deleteRow = async function(chatId) {
     if (isAdmin) {
         if (!confirm('Delete this case permanently?')) return;
         evaluations = evaluations.filter(e => e.chatId !== chatId);
-        await saveData(evaluations); // Save to Google Sheets
+        await saveData(evaluations);
         renderTable();
     } else {
         alert('⚠️ Admin access required to delete. Click the "Admin" button and enter password.');
@@ -2070,7 +1941,7 @@ window.deleteRow = async function(chatId) {
 };
 
 // ================================================================
-// 9. ADMIN MODE - Password Protected
+// 6. ADMIN MODE
 // ================================================================
 
 document.getElementById('adminModeBtn').addEventListener('click', function() {
@@ -2107,7 +1978,7 @@ document.getElementById('verifyAdminBtn').addEventListener('click', function() {
         document.getElementById('userRoleBadge').textContent = '👑 Admin';
         document.getElementById('userRoleBadge').className = 'user-role-badge admin';
         document.getElementById('adminModeBtn').style.display = 'none';
-        renderTable(); // Refresh to show delete buttons
+        renderTable();
         alert('✅ Admin mode activated! You can now delete entries.');
     } else {
         document.getElementById('adminPasswordError').style.display = 'block';
@@ -2122,20 +1993,15 @@ document.getElementById('adminPasswordInput').addEventListener('keydown', functi
     }
 });
 
-// Exit Admin mode
 document.getElementById('exitAdminBtn').addEventListener('click', function() {
     isAdmin = false;
     document.getElementById('adminControls').style.display = 'none';
     document.getElementById('userRoleBadge').textContent = '👤 User';
     document.getElementById('userRoleBadge').className = 'user-role-badge user';
     document.getElementById('adminModeBtn').style.display = 'inline-flex';
-    renderTable(); // Refresh to hide delete buttons
+    renderTable();
     alert('👋 Admin mode deactivated.');
 });
-
-// ================================================================
-// 10. ADMIN CONTROLS - Only when admin mode is active
-// ================================================================
 
 document.getElementById('clearOldDataBtn').addEventListener('click', async function() {
     if (!isAdmin) {
@@ -2143,7 +2009,7 @@ document.getElementById('clearOldDataBtn').addEventListener('click', async funct
         return;
     }
     const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
+    cutoffDate.setDate(cutoffDate.getDate() - 180);
     const oldRecords = evaluations.filter(e => new Date(e.cancellationDate) < cutoffDate);
     const newRecords = evaluations.filter(e => new Date(e.cancellationDate) >= cutoffDate);
     if (oldRecords.length === 0) {
@@ -2174,16 +2040,11 @@ document.getElementById('clearAllDataBtn').addEventListener('click', async funct
     alert(`✅ All ${count} record(s) deleted.`);
 });
 
-// ================================================================
-// 11. FORCE SYNC
-// ================================================================
-
 document.getElementById('forceSyncBtn').addEventListener('click', async function() {
     const btn = this;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
     btn.disabled = true;
-    
     try {
         await saveData(evaluations);
         alert('✅ Data synced successfully to Google Sheets!');
@@ -2196,7 +2057,7 @@ document.getElementById('forceSyncBtn').addEventListener('click', async function
 });
 
 // ================================================================
-// 12. EXPORT FUNCTIONS
+// 7. EXPORT FUNCTIONS
 // ================================================================
 
 document.getElementById('downloadCsvBtn').addEventListener('click', function() {
@@ -2247,7 +2108,7 @@ document.getElementById('downloadExcelBtn').addEventListener('click', function()
 });
 
 // ================================================================
-// 13. ACTION PLAN & MATRIX
+// 8. ACTION PLAN & MATRIX
 // ================================================================
 
 const actionPlanData = [
@@ -2307,12 +2168,34 @@ document.getElementById('matrixOverlay').addEventListener('click', function(e) {
 });
 
 // ================================================================
-// 14. FILTERS, PAGINATION
+// 9. FILTERS, PAGINATION
 // ================================================================
 
 document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
 document.getElementById('actionFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
 document.getElementById('agentFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
+document.getElementById('applyDateFilterBtn').addEventListener('click', function() {
+    const from = document.getElementById('dateFrom').value;
+    const to = document.getElementById('dateTo').value;
+    if (!from && !to) { alert('Please select at least one date.'); return; }
+    if (from && to && new Date(from) > new Date(to)) { alert('"From" cannot be after "To".'); return; }
+    dateFilter.from = from || null;
+    dateFilter.to = to || null;
+    updateDateFilterStatus();
+    currentPage = 1;
+    renderTable();
+});
+
+document.getElementById('clearDateFilterBtn').addEventListener('click', function() {
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    dateFilter.from = null;
+    dateFilter.to = null;
+    updateDateFilterStatus();
+    currentPage = 1;
+    renderTable();
+});
+
 document.getElementById('prevPageBtn').addEventListener('click', function() { if (currentPage > 1) { currentPage--; renderTable(); } });
 document.getElementById('nextPageBtn').addEventListener('click', function() {
     const total = Math.ceil(evaluations.length / rowsPerPage);
@@ -2320,7 +2203,7 @@ document.getElementById('nextPageBtn').addEventListener('click', function() {
 });
 
 // ================================================================
-// 15. AUTO-REFRESH - Check for updates from Google Sheets
+// 10. AUTO-REFRESH
 // ================================================================
 
 let lastDataHash = '';
@@ -2343,36 +2226,22 @@ async function checkForUpdates() {
     }
 }
 
-// Check for updates every 10 seconds
 setInterval(checkForUpdates, 10000);
 
 // ================================================================
-// 16. INIT
+// 11. INIT
 // ================================================================
 
 async function initDashboard() {
     evaluations = await loadData();
-    const beforeCleanup = evaluations.length;
-    evaluations = autoCleanupOldData(evaluations);
-    if (evaluations.length < beforeCleanup) {
-        localStorage.setItem('lastAutoCleanup', Date.now().toString());
-        await saveData(evaluations);
-    }
     lastDataHash = JSON.stringify(evaluations);
     updateDateFilterStatus();
     renderTable();
     console.log('📋 Evaluator Dashboard loaded - Connected to Google Sheets');
+    console.log('🔗 Google Sheets API URL:', GOOGLE_SHEETS_API_URL);
 }
 
-// ================================================================
-// 17. START
-// ================================================================
-
 initDashboard();
-
-// Expose for debugging
-window.__evaluations = evaluations;
-window.__isAdmin = isAdmin;
 </script>
 
 </body>
