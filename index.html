@@ -994,9 +994,45 @@
             letter-spacing: 4px;
         }
 
+        /* Agent Violation Chart Styles */
+        .agent-violation-chart {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .agent-violation-chart .agent-item {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 8px;
+        }
+        .agent-violation-chart .agent-name {
+            font-weight: 600;
+            color: #ddd;
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .agent-violation-chart .agent-name .total {
+            color: #c8b87a;
+        }
+        .agent-violation-chart .violation-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            padding: 2px 0 2px 12px;
+            color: #aaa;
+        }
+        .agent-violation-chart .violation-item .v-count {
+            color: #8aaa8a;
+            font-weight: 500;
+        }
+
         @media (max-width: 1024px) {
             .stats-row {
                 grid-template-columns: repeat(3, 1fr);
+            }
+            .charts-row {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
@@ -1192,28 +1228,6 @@
             background: #444;
             border-radius: 10px;
         }
-        .agent-violation-chart .violation-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            padding: 2px 0;
-            border-bottom: 1px solid #2a2a2a;
-        }
-        .agent-violation-chart .violation-item .v-type {
-            color: #aaa;
-        }
-        .agent-violation-chart .violation-item .v-count {
-            color: #c8b87a;
-            font-weight: 600;
-        }
-        .agent-violation-chart .agent-name {
-            font-weight: 600;
-            color: #ddd;
-            margin-top: 10px;
-            margin-bottom: 4px;
-            border-bottom: 1px solid #3a3a3a;
-            padding-bottom: 4px;
-        }
     </style>
 </head>
 <body>
@@ -1240,7 +1254,8 @@
                 <i class="fas fa-file-excel"></i> Excel
             </button>
             <button class="btn btn-warning" id="adminModeBtn" style="font-size: 11px; padding: 6px 12px;">
-                <i class="fas fa-shield-alt"></i> Admin            </button>
+                <i class="fas fa-shield-alt"></i> Admin
+            </button>
             <span id="syncStatus" style="font-size: 10px; color: #4a7a4a; display: none;">
                 <i class="fas fa-sync-alt fa-spin"></i> Syncing...
             </span>
@@ -1345,7 +1360,7 @@
             <div class="chart-pie-group" id="escalationPie"></div>
         </div>
         <div class="chart-card">
-            <h4><i class="fas fa-user-tag"></i> Agent Violations</h4>
+            <h4><i class="fas fa-user-tag"></i> Top 10 Agents by Violations</h4>
             <div id="agentViolationChart" class="agent-violation-chart"></div>
         </div>
     </div>
@@ -1417,9 +1432,17 @@
                         <input type="date" id="evalDate" required />
                     </div>
                     <div class="form-group">
-                        <label>Chat ID <span class="required">*</span></label>
-                        <input type="text" id="evalChatId" placeholder="e.g., c79bdc16-4548..." required />
+                        <label>Agent <span class="required">*</span></label>
+                        <select id="evalAgent" required>
+                            <option value="">Select Agent...</option>
+                        </select>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label>Chat ID <span class="required">*</span></label>
+                    <select id="evalChatId" required>
+                        <option value="">Select Chat ID...</option>
+                    </select>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1470,10 +1493,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Agent Email <span class="required">*</span></label>
-                    <input type="text" id="evalAgent" placeholder="e.g., wesam.shakir.2527" required />
-                </div>
-                <div class="form-group">
                     <label>Violation <span class="required">*</span></label>
                     <select id="evalViolation" required>
                         <option value="">Select violation...</option>
@@ -1486,8 +1505,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Evaluator Comment</label>
-                    <textarea id="evalComment" placeholder="e.g., Valid Escalation..." rows="2"></textarea>
+                    <label>Evaluator Comment <span class="required">*</span></label>
+                    <textarea id="evalComment" placeholder="e.g., Valid Escalation..." rows="2" required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Action <span class="required">*</span></label>
@@ -1641,7 +1660,7 @@ let editTargetId = null;
 let isSyncing = false;
 
 // ================================================================
-// 2. DATA STORE - Google Sheets (Tab "data")
+// 2. DATA STORE - Google Sheets
 // ================================================================
 
 async function loadData() {
@@ -1651,7 +1670,6 @@ async function loadData() {
         
         if (result.success && result.data) {
             console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
-            // Ensure each record has evaluatorComment and action (defaults if missing)
             return result.data.map(row => ({
                 ...row,
                 evaluatorComment: row.evaluatorComment || '',
@@ -1802,16 +1820,26 @@ function renderAgentViolationChart(data) {
         if (!agentMap[agent]) agentMap[agent] = {};
         agentMap[agent][violation] = (agentMap[agent][violation] || 0) + 1;
     });
-    let html = '';
-    const sortedAgents = Object.keys(agentMap).sort();
-    sortedAgents.forEach(agent => {
+    
+    // Calculate total violations per agent and sort
+    const agentTotals = Object.keys(agentMap).map(agent => {
         const violations = agentMap[agent];
         const total = Object.values(violations).reduce((a,b) => a+b, 0);
-        html += `<div class="agent-name">${agent} (${total})</div>`;
+        return { agent, violations, total };
+    });
+    
+    // Sort by total violations (descending) and take top 10
+    const topAgents = agentTotals.sort((a, b) => b.total - a.total).slice(0, 10);
+    
+    let html = '';
+    topAgents.forEach(({ agent, violations, total }) => {
+        html += `<div class="agent-item">`;
+        html += `<div class="agent-name">${agent} <span class="total">${total} violation${total > 1 ? 's' : ''}</span></div>`;
         const sortedViolations = Object.entries(violations).sort((a,b) => b[1] - a[1]);
         sortedViolations.forEach(([vType, count]) => {
-            html += `<div class="violation-item"><span class="v-type">${vType}</span><span class="v-count">${count}</span></div>`;
+            html += `<div class="violation-item"><span>${vType}</span><span class="v-count">${count}</span></div>`;
         });
+        html += `</div>`;
     });
     container.innerHTML = html;
 }
@@ -1977,8 +2005,57 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM
+// 4. EVALUATION FORM WITH SMART DROPDOWNS
 // ================================================================
+
+function populateAgentDropdown() {
+    const agentSelect = document.getElementById('evalAgent');
+    const agents = getAgentList(evaluations);
+    agentSelect.innerHTML = '<option value="">Select Agent...</option>' + 
+        agents.map(a => `<option value="${a}">${a}</option>`).join('');
+}
+
+function populateChatDropdown(agent) {
+    const chatSelect = document.getElementById('evalChatId');
+    const chats = evaluations.filter(e => e.agent === agent).map(e => e.chatId);
+    chatSelect.innerHTML = '<option value="">Select Chat ID...</option>' + 
+        chats.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function populateFormFields(chatId) {
+    const record = evaluations.find(e => e.chatId === chatId);
+    if (!record) return;
+    
+    document.getElementById('evalContactReason').value = record.contactReason || '';
+    document.getElementById('evalCancelReason').value = record.cancelReason || '';
+    document.getElementById('evalViolation').value = record.violation || '';
+}
+
+// Event listeners for smart form
+document.getElementById('evalAgent').addEventListener('change', function() {
+    const agent = this.value;
+    if (agent) {
+        populateChatDropdown(agent);
+        // Reset other fields
+        document.getElementById('evalChatId').value = '';
+        document.getElementById('evalContactReason').value = '';
+        document.getElementById('evalCancelReason').value = '';
+        document.getElementById('evalViolation').value = '';
+    } else {
+        document.getElementById('evalChatId').innerHTML = '<option value="">Select Chat ID...</option>';
+    }
+});
+
+document.getElementById('evalChatId').addEventListener('change', function() {
+    const chatId = this.value;
+    if (chatId) {
+        populateFormFields(chatId);
+    } else {
+        document.getElementById('evalContactReason').value = '';
+        document.getElementById('evalCancelReason').value = '';
+        document.getElementById('evalViolation').value = '';
+    }
+});
 
 function openEvalForm() {
     document.getElementById('evalFormOverlay').classList.add('active');
@@ -1986,6 +2063,7 @@ function openEvalForm() {
     document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('evalForm').reset();
     document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+    populateAgentDropdown();
 }
 
 function closeEvalForm() {
@@ -2004,22 +2082,26 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     e.preventDefault();
     const newEval = {
         cancellationDate: document.getElementById('evalDate').value,
-        chatId: document.getElementById('evalChatId').value.trim(),
+        chatId: document.getElementById('evalChatId').value,
         contactReason: document.getElementById('evalContactReason').value,
         cancelReason: document.getElementById('evalCancelReason').value,
-        agent: document.getElementById('evalAgent').value.trim(),
+        agent: document.getElementById('evalAgent').value,
         violation: document.getElementById('evalViolation').value,
         evaluatorComment: document.getElementById('evalComment').value.trim(),
         action: document.getElementById('evalAction').value
     };
-    if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action) {
+    
+    if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action || !newEval.evaluatorComment) {
         alert('Please fill in all required fields (*)');
         return;
     }
+    
+    // Check if chatId already exists
     if (evaluations.some(e => e.chatId === newEval.chatId)) {
         alert('A case with this Chat ID already exists.');
         return;
     }
+    
     evaluations.push(newEval);
     closeEvalForm();
     await saveData(evaluations);
