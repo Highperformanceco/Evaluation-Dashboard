@@ -390,7 +390,7 @@
 
         .charts-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 14px;
             margin-bottom: 16px;
         }
@@ -1192,6 +1192,28 @@
             background: #444;
             border-radius: 10px;
         }
+        .agent-violation-chart .violation-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 2px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .agent-violation-chart .violation-item .v-type {
+            color: #aaa;
+        }
+        .agent-violation-chart .violation-item .v-count {
+            color: #c8b87a;
+            font-weight: 600;
+        }
+        .agent-violation-chart .agent-name {
+            font-weight: 600;
+            color: #ddd;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #3a3a3a;
+            padding-bottom: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1218,8 +1240,7 @@
                 <i class="fas fa-file-excel"></i> Excel
             </button>
             <button class="btn btn-warning" id="adminModeBtn" style="font-size: 11px; padding: 6px 12px;">
-                <i class="fas fa-shield-alt"></i> Admin
-            </button>
+                <i class="fas fa-shield-alt"></i> Admin            </button>
             <span id="syncStatus" style="font-size: 10px; color: #4a7a4a; display: none;">
                 <i class="fas fa-sync-alt fa-spin"></i> Syncing...
             </span>
@@ -1322,6 +1343,10 @@
         <div class="chart-card">
             <h4><i class="fas fa-chart-pie"></i> Escalation Status</h4>
             <div class="chart-pie-group" id="escalationPie"></div>
+        </div>
+        <div class="chart-card">
+            <h4><i class="fas fa-user-tag"></i> Agent Violations</h4>
+            <div id="agentViolationChart" class="agent-violation-chart"></div>
         </div>
     </div>
 
@@ -1599,7 +1624,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - YOUR UPDATED APPS SCRIPT URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbz5DfIfeIfp7WPud5mm-7oSdIN614-S7Ha7218T4Jh0qMkcAbtKmEe3wGcM1-wu23jPrQ/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbyb94Qlw83kxgJxTSFVVwFoCawC8CxnDQN3d4aUAx9hiffEfOjujRZ-clCOCkqCgaiD2g/exec';
 
 // ================================================================
 // 1. NO LOGIN REQUIRED - Everyone can access
@@ -1616,7 +1641,7 @@ let editTargetId = null;
 let isSyncing = false;
 
 // ================================================================
-// 2. DATA STORE - Google Sheets
+// 2. DATA STORE - Google Sheets (Tab "data")
 // ================================================================
 
 async function loadData() {
@@ -1626,7 +1651,12 @@ async function loadData() {
         
         if (result.success && result.data) {
             console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
-            return result.data;
+            // Ensure each record has evaluatorComment and action (defaults if missing)
+            return result.data.map(row => ({
+                ...row,
+                evaluatorComment: row.evaluatorComment || '',
+                action: row.action || 'Pending'
+            }));
         } else {
             console.error('Failed to load data:', result.error);
             return getDefaultData();
@@ -1647,9 +1677,6 @@ async function saveData(data) {
         const response = await fetch(GOOGLE_SHEETS_API_URL, {
             method: 'POST',
             headers: {
-                // Apps Script does not reliably answer the browser's CORS
-                // preflight for application/json. text/plain is a "simple"
-                // request; the Apps Script still receives the same JSON text.
                 'Content-Type': 'text/plain;charset=utf-8',
             },
             body: JSON.stringify({ data: data })
@@ -1759,6 +1786,34 @@ function renderCharts(data) {
             <span class="pie-label">Invalid<br><span class="count">${stats.invalid}</span></span>
         </div>
     `;
+}
+
+function renderAgentViolationChart(data) {
+    const container = document.getElementById('agentViolationChart');
+    if (!data.length) {
+        container.innerHTML = '<div style="color:#666;font-size:11px;padding:8px 0;">No data available.</div>';
+        return;
+    }
+    // Group violations by agent
+    const agentMap = {};
+    data.forEach(row => {
+        const agent = row.agent || 'Unknown';
+        const violation = row.violation || 'Other';
+        if (!agentMap[agent]) agentMap[agent] = {};
+        agentMap[agent][violation] = (agentMap[agent][violation] || 0) + 1;
+    });
+    let html = '';
+    const sortedAgents = Object.keys(agentMap).sort();
+    sortedAgents.forEach(agent => {
+        const violations = agentMap[agent];
+        const total = Object.values(violations).reduce((a,b) => a+b, 0);
+        html += `<div class="agent-name">${agent} (${total})</div>`;
+        const sortedViolations = Object.entries(violations).sort((a,b) => b[1] - a[1]);
+        sortedViolations.forEach(([vType, count]) => {
+            html += `<div class="violation-item"><span class="v-type">${vType}</span><span class="v-count">${count}</span></div>`;
+        });
+    });
+    container.innerHTML = html;
 }
 
 function renderStats(data) {
@@ -1881,6 +1936,7 @@ function renderTable() {
     renderStats(filteredData);
     renderCharts(filteredData);
     renderTopOffenders(dateFilteredData);
+    renderAgentViolationChart(dateFilteredData);
 }
 
 function getFilteredData() {
@@ -2300,10 +2356,15 @@ async function checkForUpdates() {
         const response = await fetch(GOOGLE_SHEETS_API_URL);
         const result = await response.json();
         if (result.success && result.data) {
-            const newHash = JSON.stringify(result.data);
+            const newData = result.data.map(row => ({
+                ...row,
+                evaluatorComment: row.evaluatorComment || '',
+                action: row.action || 'Pending'
+            }));
+            const newHash = JSON.stringify(newData);
             if (newHash !== lastDataHash) {
                 lastDataHash = newHash;
-                evaluations = result.data;
+                evaluations = newData;
                 renderTable();
                 console.log('🔄 Auto-refreshed from Google Sheets');
             }
