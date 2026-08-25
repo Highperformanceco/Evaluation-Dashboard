@@ -642,6 +642,12 @@
             max-width: 160px;
             white-space: normal;
             line-height: 1.3;
+            cursor: pointer;
+            user-select: all;
+        }
+
+        .chat-id-full:hover {
+            background: #2a2a2a;
         }
 
         .btn-sm {
@@ -994,6 +1000,16 @@
             font-weight: 500;
         }
 
+        /* Chat ID dropdown with copy support */
+        .chat-id-option {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+        .chat-id-option:hover {
+            background: #2a3a2a;
+        }
+
         @media (max-width: 1024px) {
             .stats-row {
                 grid-template-columns: repeat(3, 1fr);
@@ -1194,6 +1210,27 @@
         ::-webkit-scrollbar-thumb {
             background: #444;
             border-radius: 10px;
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2a3a2a;
+            color: #a0c0a0;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid #3a5a3a;
+            z-index: 10000;
+            animation: fadeInUp 0.3s ease;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
@@ -1401,8 +1438,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Chat ID <span class="required">*</span></label>
-                    <select id="evalChatId" required>
+                    <label>Chat ID <span class="required">*</span> <span style="font-size:10px;color:#555;">(Click to copy)</span></label>
+                    <select id="evalChatId" required style="font-family: 'Courier New', monospace;">
                         <option value="">Select Chat ID...</option>
                     </select>
                 </div>
@@ -1867,7 +1904,7 @@ function renderTable() {
             return `
                 <tr>
                     <td>${displayDate}</td>
-                    <td><span class="chat-id-full" title="${row.chatId}">${row.chatId}</span></td>
+                    <td><span class="chat-id-full" title="Click to copy: ${row.chatId}" onclick="copyChatId('${row.chatId}')">${row.chatId}</span></td>
                     <td>${row.contactReason}</td>
                     <td>${row.cancelReason}</td>
                     <td><span class="agent-badge">${row.agent}</span></td>
@@ -1931,8 +1968,48 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM WITH SMART DROPDOWNS (DATE FILTERED)
+// 4. EVALUATION FORM WITH SMART DROPDOWNS
 // ================================================================
+
+function showToast(message) {
+    const existing = document.querySelector('.copy-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'copy-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+    }, 2000);
+}
+
+function copyChatId(chatId) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(chatId).then(() => {
+            showToast('✅ Copied: ' + chatId);
+        }).catch(() => {
+            fallbackCopy(chatId);
+        });
+    } else {
+        fallbackCopy(chatId);
+    }
+}
+
+function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showToast('✅ Copied: ' + text);
+    } catch (err) {
+        showToast('⚠️ Please copy manually: ' + text);
+    }
+    document.body.removeChild(textarea);
+}
 
 function populateAgentDropdown() {
     const agentSelect = document.getElementById('evalAgent');
@@ -1950,9 +2027,22 @@ function populateChatDropdown(agent, date) {
         chats = chats.filter(e => e.cancellationDate === date);
     }
     
-    const chatIds = chats.map(e => e.chatId);
+    // Get unique chat IDs and limit to 5
+    const chatIds = [...new Set(chats.map(e => e.chatId))].slice(0, 5);
+    
+    if (chatIds.length === 0) {
+        chatSelect.innerHTML = '<option value="">No Chat IDs available for this date</option>';
+        return;
+    }
+    
     chatSelect.innerHTML = '<option value="">Select Chat ID...</option>' + 
-        chatIds.map(c => `<option value="${c}">${c}</option>`).join('');
+        chatIds.map(c => `<option value="${c}" style="font-family: 'Courier New', monospace; font-size: 13px;">${c}</option>`).join('');
+    
+    // Add click-to-copy hint
+    const label = chatSelect.closest('.form-group').querySelector('label');
+    if (label) {
+        label.innerHTML = 'Chat ID <span class="required">*</span> <span style="font-size:10px;color:#555;">(Select to copy)</span>';
+    }
 }
 
 function populateFormFields(chatId) {
@@ -1962,14 +2052,28 @@ function populateFormFields(chatId) {
     document.getElementById('evalContactReason').value = record.contactReason || '';
     document.getElementById('evalCancelReason').value = record.cancelReason || '';
     document.getElementById('evalViolation').value = record.violation || '';
+    
+    // Make chat ID copyable when selected
+    if (chatId) {
+        const chatSelect = document.getElementById('evalChatId');
+        // Store the selected value for copying
+        chatSelect.dataset.selectedChat = chatId;
+    }
 }
 
 // Event listeners for smart form with date filtering
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
     const date = document.getElementById('evalDate').value;
-    if (agent) {
+    if (agent && date) {
         populateChatDropdown(agent, date);
+        document.getElementById('evalChatId').value = '';
+        document.getElementById('evalContactReason').value = '';
+        document.getElementById('evalCancelReason').value = '';
+        document.getElementById('evalViolation').value = '';
+    } else if (agent && !date) {
+        // If no date selected, show all chat IDs for that agent
+        populateChatDropdown(agent, null);
         document.getElementById('evalChatId').value = '';
         document.getElementById('evalContactReason').value = '';
         document.getElementById('evalCancelReason').value = '';
@@ -1988,6 +2092,8 @@ document.getElementById('evalDate').addEventListener('change', function() {
         document.getElementById('evalContactReason').value = '';
         document.getElementById('evalCancelReason').value = '';
         document.getElementById('evalViolation').value = '';
+    } else if (agent && !date) {
+        populateChatDropdown(agent, null);
     }
 });
 
@@ -1995,10 +2101,20 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     const chatId = this.value;
     if (chatId) {
         populateFormFields(chatId);
+        // Allow copying by clicking the selected option
+        copyChatId(chatId);
     } else {
         document.getElementById('evalContactReason').value = '';
         document.getElementById('evalCancelReason').value = '';
         document.getElementById('evalViolation').value = '';
+    }
+});
+
+// Double-click to copy from dropdown
+document.getElementById('evalChatId').addEventListener('dblclick', function() {
+    const chatId = this.value;
+    if (chatId) {
+        copyChatId(chatId);
     }
 });
 
@@ -2010,6 +2126,11 @@ function openEvalForm() {
     document.getElementById('evalForm').reset();
     document.getElementById('evalDate').value = today;
     populateAgentDropdown();
+    // Trigger date change to populate chat IDs if agent is selected
+    const agent = document.getElementById('evalAgent').value;
+    if (agent) {
+        populateChatDropdown(agent, today);
+    }
 }
 
 function closeEvalForm() {
@@ -2026,12 +2147,21 @@ document.getElementById('evalFormOverlay').addEventListener('click', function(e)
 
 document.getElementById('evalForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    const chatId = document.getElementById('evalChatId').value;
+    const agent = document.getElementById('evalAgent').value;
+    
+    // Check for duplicate chat ID
+    if (evaluations.some(e => e.chatId === chatId)) {
+        alert('❌ This Chat ID already exists in the system. Duplicate entries are not allowed.');
+        return;
+    }
+    
     const newEval = {
         cancellationDate: document.getElementById('evalDate').value,
-        chatId: document.getElementById('evalChatId').value,
+        chatId: chatId,
         contactReason: document.getElementById('evalContactReason').value,
         cancelReason: document.getElementById('evalCancelReason').value,
-        agent: document.getElementById('evalAgent').value,
+        agent: agent,
         violation: document.getElementById('evalViolation').value,
         evaluatorComment: document.getElementById('evalComment').value.trim(),
         action: document.getElementById('evalAction').value
@@ -2039,11 +2169,6 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     
     if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action || !newEval.evaluatorComment) {
         alert('Please fill in all required fields (*)');
-        return;
-    }
-    
-    if (evaluations.some(e => e.chatId === newEval.chatId)) {
-        alert('A case with this Chat ID already exists.');
         return;
     }
     
