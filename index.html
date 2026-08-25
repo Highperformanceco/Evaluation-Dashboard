@@ -1010,208 +1010,6 @@
             background: #2a3a2a;
         }
 
-        @media (max-width: 1024px) {
-            .stats-row {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .charts-row {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-row {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-            }
-
-            .stat-card {
-                padding: 10px 8px;
-                flex-direction: column;
-                text-align: center;
-                gap: 2px;
-            }
-
-            .stat-card i {
-                font-size: 16px;
-                width: auto;
-            }
-
-            .stat-card .stat-number {
-                font-size: 18px;
-            }
-
-            .stat-card .stat-label {
-                font-size: 8px;
-            }
-
-            .charts-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-
-            .chart-card {
-                padding: 12px 14px;
-            }
-
-            .chart-bar-item .label {
-                font-size: 11px;
-                min-width: 80px;
-            }
-
-            .chat-id-full {
-                max-width: 100px;
-                font-size: 10px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .action-plan-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .date-filter {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .date-filter .filter-actions {
-                margin-left: 0;
-                justify-content: center;
-            }
-
-            .retention-info {
-                flex-direction: column;
-                align-items: flex-start;
-                font-size: 10px;
-            }
-
-            .retention-info .right {
-                flex-wrap: wrap;
-            }
-
-            .table-header-tools {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .table-header-tools .filter-group {
-                justify-content: stretch;
-            }
-
-            .table-header-tools .filter-group input,
-            .table-header-tools .filter-group select {
-                flex: 1;
-                max-width: none;
-            }
-
-            .header-actions .btn {
-                font-size: 10px;
-                padding: 6px 10px;
-            }
-
-            .dashboard-header h1 {
-                font-size: 18px;
-            }
-
-            .modal-card {
-                padding: 16px;
-            }
-
-            .eval-cta {
-                font-size: 14px;
-                padding: 12px 24px;
-            }
-
-            #adminControls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            #adminControls .btn {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 6px;
-            }
-
-            .stat-card {
-                padding: 8px 6px;
-            }
-
-            .stat-card .stat-number {
-                font-size: 16px;
-            }
-
-            .header-actions .btn {
-                font-size: 9px;
-                padding: 4px 8px;
-            }
-
-            .header-actions .btn i {
-                font-size: 10px;
-            }
-
-            .dashboard-header h1 {
-                font-size: 16px;
-            }
-
-            .chat-id-full {
-                max-width: 80px;
-                font-size: 9px;
-            }
-
-            .chart-bar-item .label {
-                font-size: 10px;
-                min-width: 60px;
-            }
-
-            .chart-bar-item .bar-value {
-                font-size: 11px;
-                min-width: 24px;
-            }
-
-            .pie-circle {
-                width: 56px;
-                height: 56px;
-                font-size: 14px;
-            }
-        }
-
-        .modal-card::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .modal-card::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-
-        .modal-card::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #111;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 10px;
-        }
-
         .copy-toast {
             position: fixed;
             bottom: 80px;
@@ -1231,6 +1029,23 @@
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Debug info */
+        .debug-info {
+            font-size: 10px;
+            color: #555;
+            padding: 4px 8px;
+            background: #111;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: none;
+        }
+        .debug-info.show {
+            display: block;
+        }
+        .debug-info .count {
+            color: #8aaa8a;
         }
     </style>
 </head>
@@ -1442,6 +1257,7 @@
                     <select id="evalChatId" required style="font-family: 'Courier New', monospace;">
                         <option value="">Select Chat ID...</option>
                     </select>
+                    <div id="chatDebugInfo" class="debug-info"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1968,7 +1784,7 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM WITH SMART DROPDOWNS
+// 4. EVALUATION FORM WITH SMART DROPDOWNS (FIXED DATE HANDLING)
 // ================================================================
 
 function showToast(message) {
@@ -2011,6 +1827,21 @@ function fallbackCopy(text) {
     document.body.removeChild(textarea);
 }
 
+function normalizeDate(dateStr) {
+    if (!dateStr) return null;
+    // Try to parse the date
+    let d = new Date(dateStr);
+    if (isNaN(d.getTime())) {
+        // Try parsing as YYYY-MM-DD
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            d = new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+    }
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().split('T')[0];
+}
+
 function populateAgentDropdown() {
     const agentSelect = document.getElementById('evalAgent');
     const agents = getAgentList(evaluations);
@@ -2020,28 +1851,45 @@ function populateAgentDropdown() {
 
 function populateChatDropdown(agent, date) {
     const chatSelect = document.getElementById('evalChatId');
-    let chats = evaluations.filter(e => e.agent === agent);
+    const debugInfo = document.getElementById('chatDebugInfo');
     
-    // Filter by date if selected
-    if (date) {
-        chats = chats.filter(e => e.cancellationDate === date);
-    }
-    
-    // Get unique chat IDs and limit to 5
-    const chatIds = [...new Set(chats.map(e => e.chatId))].slice(0, 5);
-    
-    if (chatIds.length === 0) {
-        chatSelect.innerHTML = '<option value="">No Chat IDs available for this date</option>';
+    if (!agent) {
+        chatSelect.innerHTML = '<option value="">Select Agent first...</option>';
+        debugInfo.classList.remove('show');
         return;
     }
     
-    chatSelect.innerHTML = '<option value="">Select Chat ID...</option>' + 
-        chatIds.map(c => `<option value="${c}" style="font-family: 'Courier New', monospace; font-size: 13px;">${c}</option>`).join('');
+    // Filter by agent first
+    let chats = evaluations.filter(e => e.agent === agent);
     
-    // Add click-to-copy hint
-    const label = chatSelect.closest('.form-group').querySelector('label');
-    if (label) {
-        label.innerHTML = 'Chat ID <span class="required">*</span> <span style="font-size:10px;color:#555;">(Select to copy)</span>';
+    // Debug: log available dates for this agent
+    const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
+    console.log('📅 Dates for agent', agent, ':', datesForAgent);
+    console.log('📅 Selected date:', date);
+    
+    // If date is provided, filter by date (flexible matching)
+    if (date) {
+        const normalizedSelected = normalizeDate(date);
+        chats = chats.filter(e => {
+            const recordDate = normalizeDate(e.cancellationDate);
+            return recordDate === normalizedSelected;
+        });
+        console.log('🔍 Found', chats.length, 'records for date', date);
+    }
+    
+    // Get unique chat IDs and show ALL of them (no limit)
+    const chatIds = [...new Set(chats.map(e => e.chatId))];
+    
+    // Show debug info
+    if (chatIds.length === 0) {
+        debugInfo.textContent = `ℹ️ No chat IDs found for ${agent} on ${date || 'any date'}. Available dates: ${datesForAgent.join(', ') || 'none'}`;
+        debugInfo.classList.add('show');
+        chatSelect.innerHTML = `<option value="">No Chat IDs available${date ? ' for this date' : ''}</option>`;
+    } else {
+        debugInfo.textContent = `✅ Found ${chatIds.length} chat ID(s) for ${date || 'all dates'}`;
+        debugInfo.classList.add('show');
+        chatSelect.innerHTML = '<option value="">Select Chat ID...</option>' + 
+            chatIds.map(c => `<option value="${c}" style="font-family: \'Courier New\', monospace; font-size: 13px;">${c}</option>`).join('');
     }
 }
 
@@ -2052,48 +1900,28 @@ function populateFormFields(chatId) {
     document.getElementById('evalContactReason').value = record.contactReason || '';
     document.getElementById('evalCancelReason').value = record.cancelReason || '';
     document.getElementById('evalViolation').value = record.violation || '';
-    
-    // Make chat ID copyable when selected
-    if (chatId) {
-        const chatSelect = document.getElementById('evalChatId');
-        // Store the selected value for copying
-        chatSelect.dataset.selectedChat = chatId;
-    }
 }
 
 // Event listeners for smart form with date filtering
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
     const date = document.getElementById('evalDate').value;
-    if (agent && date) {
-        populateChatDropdown(agent, date);
-        document.getElementById('evalChatId').value = '';
-        document.getElementById('evalContactReason').value = '';
-        document.getElementById('evalCancelReason').value = '';
-        document.getElementById('evalViolation').value = '';
-    } else if (agent && !date) {
-        // If no date selected, show all chat IDs for that agent
-        populateChatDropdown(agent, null);
-        document.getElementById('evalChatId').value = '';
-        document.getElementById('evalContactReason').value = '';
-        document.getElementById('evalCancelReason').value = '';
-        document.getElementById('evalViolation').value = '';
-    } else {
-        document.getElementById('evalChatId').innerHTML = '<option value="">Select Chat ID...</option>';
-    }
+    populateChatDropdown(agent, date);
+    document.getElementById('evalChatId').value = '';
+    document.getElementById('evalContactReason').value = '';
+    document.getElementById('evalCancelReason').value = '';
+    document.getElementById('evalViolation').value = '';
 });
 
 document.getElementById('evalDate').addEventListener('change', function() {
     const agent = document.getElementById('evalAgent').value;
     const date = this.value;
-    if (agent && date) {
+    if (agent) {
         populateChatDropdown(agent, date);
         document.getElementById('evalChatId').value = '';
         document.getElementById('evalContactReason').value = '';
         document.getElementById('evalCancelReason').value = '';
         document.getElementById('evalViolation').value = '';
-    } else if (agent && !date) {
-        populateChatDropdown(agent, null);
     }
 });
 
@@ -2101,7 +1929,6 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     const chatId = this.value;
     if (chatId) {
         populateFormFields(chatId);
-        // Allow copying by clicking the selected option
         copyChatId(chatId);
     } else {
         document.getElementById('evalContactReason').value = '';
@@ -2126,11 +1953,9 @@ function openEvalForm() {
     document.getElementById('evalForm').reset();
     document.getElementById('evalDate').value = today;
     populateAgentDropdown();
-    // Trigger date change to populate chat IDs if agent is selected
-    const agent = document.getElementById('evalAgent').value;
-    if (agent) {
-        populateChatDropdown(agent, today);
-    }
+    // Clear chat dropdown initially
+    document.getElementById('evalChatId').innerHTML = '<option value="">Select Agent first...</option>';
+    document.getElementById('chatDebugInfo').classList.remove('show');
 }
 
 function closeEvalForm() {
