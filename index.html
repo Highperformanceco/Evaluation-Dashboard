@@ -474,39 +474,6 @@
             gap: 12px;
         }
 
-        .offender-list {
-            display: grid;
-            gap: 7px;
-            max-height: 210px;
-            overflow-y: auto;
-        }
-
-        .offender-row {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #2f2f2f;
-            border-radius: 7px;
-            background: #202020;
-            color: #cfcfcf;
-            cursor: pointer;
-            text-align: left;
-            font-size: 11px;
-        }
-
-        .offender-row:hover,
-        .offender-row.selected {
-            background: #293429;
-            border-color: #4a7a4a;
-            color: #fff;
-        }
-
-        .offender-rank { min-width: 22px; color: #c8b87a; font-weight: 700; }
-        .offender-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-        .offender-count { color: #d09a9a; font-weight: 700; }
-
         .pie-item {
             display: flex;
             flex-direction: column;
@@ -996,7 +963,7 @@
 
         /* Agent Violation Chart Styles */
         .agent-violation-chart {
-            max-height: 280px;
+            max-height: 320px;
             overflow-y: auto;
         }
         .agent-violation-chart .agent-item {
@@ -1363,11 +1330,6 @@
             <h4><i class="fas fa-user-tag"></i> Top 10 Agents by Violations</h4>
             <div id="agentViolationChart" class="agent-violation-chart"></div>
         </div>
-    </div>
-
-    <div class="chart-card" style="margin-bottom: 16px;">
-        <h4><i class="fas fa-user-shield"></i> Top Offenders · Non-Compliance / Violations</h4>
-        <div id="topOffenders" class="offender-list"></div>
     </div>
 
     <div class="table-container">
@@ -1865,41 +1827,6 @@ function renderStats(data) {
     }
 }
 
-function renderTopOffenders(data) {
-    const container = document.getElementById('topOffenders');
-    const counts = {};
-    data.forEach(row => {
-        const agent = (row.agent || '').trim() || 'Unknown agent';
-        counts[agent] = (counts[agent] || 0) + 1;
-    });
-    const ranked = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-        .slice(0, 10);
-    const selectedAgent = document.getElementById('agentFilter').value;
-
-    if (ranked.length === 0) {
-        container.innerHTML = '<div style="color:#666;font-size:11px;padding:8px 0;">No violations found for this date range.</div>';
-        return;
-    }
-
-    container.innerHTML = ranked.map(([agent, count], index) => `
-        <button type="button" class="offender-row ${selectedAgent === agent ? 'selected' : ''}"
-                data-agent="${encodeURIComponent(agent)}" onclick="selectOffender(this.dataset.agent)">
-            <span class="offender-rank">#${index + 1}</span>
-            <span class="offender-name">${agent}</span>
-            <span class="offender-count">${count} violation${count === 1 ? '' : 's'}</span>
-        </button>
-    `).join('');
-}
-
-window.selectOffender = function(encodedAgent) {
-    const agent = decodeURIComponent(encodedAgent);
-    const agentFilter = document.getElementById('agentFilter');
-    agentFilter.value = agentFilter.value === agent ? '' : agent;
-    currentPage = 1;
-    renderTable();
-};
-
 function renderTable() {
     const dateFilteredData = getFilteredData();
     const search = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1963,7 +1890,6 @@ function renderTable() {
 
     renderStats(filteredData);
     renderCharts(filteredData);
-    renderTopOffenders(dateFilteredData);
     renderAgentViolationChart(dateFilteredData);
 }
 
@@ -2005,7 +1931,7 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM WITH SMART DROPDOWNS
+// 4. EVALUATION FORM WITH SMART DROPDOWNS (DATE FILTERED)
 // ================================================================
 
 function populateAgentDropdown() {
@@ -2015,11 +1941,18 @@ function populateAgentDropdown() {
         agents.map(a => `<option value="${a}">${a}</option>`).join('');
 }
 
-function populateChatDropdown(agent) {
+function populateChatDropdown(agent, date) {
     const chatSelect = document.getElementById('evalChatId');
-    const chats = evaluations.filter(e => e.agent === agent).map(e => e.chatId);
+    let chats = evaluations.filter(e => e.agent === agent);
+    
+    // Filter by date if selected
+    if (date) {
+        chats = chats.filter(e => e.cancellationDate === date);
+    }
+    
+    const chatIds = chats.map(e => e.chatId);
     chatSelect.innerHTML = '<option value="">Select Chat ID...</option>' + 
-        chats.map(c => `<option value="${c}">${c}</option>`).join('');
+        chatIds.map(c => `<option value="${c}">${c}</option>`).join('');
 }
 
 function populateFormFields(chatId) {
@@ -2031,18 +1964,30 @@ function populateFormFields(chatId) {
     document.getElementById('evalViolation').value = record.violation || '';
 }
 
-// Event listeners for smart form
+// Event listeners for smart form with date filtering
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
+    const date = document.getElementById('evalDate').value;
     if (agent) {
-        populateChatDropdown(agent);
-        // Reset other fields
+        populateChatDropdown(agent, date);
         document.getElementById('evalChatId').value = '';
         document.getElementById('evalContactReason').value = '';
         document.getElementById('evalCancelReason').value = '';
         document.getElementById('evalViolation').value = '';
     } else {
         document.getElementById('evalChatId').innerHTML = '<option value="">Select Chat ID...</option>';
+    }
+});
+
+document.getElementById('evalDate').addEventListener('change', function() {
+    const agent = document.getElementById('evalAgent').value;
+    const date = this.value;
+    if (agent && date) {
+        populateChatDropdown(agent, date);
+        document.getElementById('evalChatId').value = '';
+        document.getElementById('evalContactReason').value = '';
+        document.getElementById('evalCancelReason').value = '';
+        document.getElementById('evalViolation').value = '';
     }
 });
 
@@ -2060,9 +2005,10 @@ document.getElementById('evalChatId').addEventListener('change', function() {
 function openEvalForm() {
     document.getElementById('evalFormOverlay').classList.add('active');
     document.body.style.overflow = 'hidden';
-    document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('evalDate').value = today;
     document.getElementById('evalForm').reset();
-    document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('evalDate').value = today;
     populateAgentDropdown();
 }
 
@@ -2096,7 +2042,6 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
         return;
     }
     
-    // Check if chatId already exists
     if (evaluations.some(e => e.chatId === newEval.chatId)) {
         alert('A case with this Chat ID already exists.');
         return;
