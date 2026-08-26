@@ -1305,46 +1305,12 @@
                         <label>Contact Reason <span class="required">*</span></label>
                         <select id="evalContactReason" required>
                             <option value="">Select...</option>
-                            <option value="Unable to contact">Unable to contact</option>
-                            <option value="Refuse to accept order">Refuse to accept order</option>
-                            <option value="Wrong address/pinpoint">Wrong address/pinpoint</option>
-                            <option value="Issue accessing the premises">Issue accessing the premises</option>
-                            <option value="Checking status">Checking status</option>
-                            <option value="Updating status">Updating status</option>
-                            <option value="Feedback">Feedback</option>
-                            <option value="Missing item">Missing item</option>
-                            <option value="Translations needed">Translations needed</option>
-                            <option value="Change order details">Change order details</option>
-                            <option value="Clicked through">Clicked through</option>
-                            <option value="Shift adjustment">Shift adjustment</option>
-                            <option value="Spilled/Damaged">Spilled/Damaged</option>
-                            <option value="Order taken by other rider">Order taken by other rider</option>
-                            <option value="Does not have order">Does not have order</option>
-                            <option value="Not willing to do the order">Not willing to do the order</option>
-                            <option value="Chat acknowledgment">Chat acknowledgment</option>
-                            <option value="COD issue">COD issue</option>
-                            <option value="Device issue">Device issue</option>
-                            <option value="Break status">Break status</option>
-                            <option value="App issue">App issue</option>
-                            <option value="Unable to locate the address">Unable to locate the address</option>
-                            <option value="Customer unreachable">Customer unreachable</option>
-                            <option value="Order modification">Order modification</option>
-                            <option value="Call back request">Call back request</option>
-                            <option value="Asks for order assignment">Asks for order assignment</option>
-                            <option value="Asks for phone number">Asks for phone number</option>
-                            <option value="Closed">Closed</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Cancel Reason <span class="required">*</span></label>
                         <select id="evalCancelReason" required>
                             <option value="">Select...</option>
-                            <option value="CST - doesn't response">CST - doesn't response</option>
-                            <option value="CST - Refuse to receive the order">CST - Refuse to receive the order</option>
-                            <option value="CST - Customer requested">CST - Customer requested</option>
-                            <option value="CST - Late Owner">CST - Late Owner</option>
-                            <option value="CST - near_dropoff">CST - near_dropoff</option>
-                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
@@ -1352,12 +1318,6 @@
                     <label>Violation <span class="required">*</span></label>
                     <select id="evalViolation" required>
                         <option value="">Select violation...</option>
-                        <option value="Order Delay - Should choose LATE-OWNER Cancellation">Order Delay - LATE-OWNER</option>
-                        <option value="2 Trials Call Diff < 150">2 Trials Call Diff < 150</option>
-                        <option value="No Trials - Agent Should make 2 Trials">No Trials - 2 Trials required</option>
-                        <option value="No call attempted before cancellation">No call attempted</option>
-                        <option value="Incorrect Contact Reason selected">Incorrect Contact Reason</option>
-                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1497,26 +1457,26 @@
 
 <script>
 // ================================================================
-// ⭐ GOOGLE SHEETS API URL - YOUR UPDATED APPS SCRIPT URL
+// ⭐ GOOGLE SHEETS API URL - Updated with your new URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbywZrY8-QyYEQ6kgsETkCaDfNt3Muii-H-hTQIM6ZBfQOyFL8jlJNEWgAGz36j0L6YkUQ/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbwmFjgeL0W76zoTfvYAJhKyNljuko3oNIrM_4Qx6fJVm-6krRonIwKpCP8TpBu_GSfMAQ/exec';
 
 // ================================================================
-// 1. NO LOGIN REQUIRED - Everyone can access
+// DATA STORE
 // ================================================================
 
 let isAdmin = false;
 const ADMIN_PASSWORD = 'Waqas@1982';
 
 let dateFilter = { from: null, to: null };
-let evaluations = [];
+let evaluations = []; // Stores ONLY pending (un-evaluated) records
 let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
 let isSyncing = false;
 
 // ================================================================
-// 2. DATA STORE - Google Sheets
+// 1. LOAD DATA FROM GOOGLE SHEETS
 // ================================================================
 
 async function loadData() {
@@ -1525,7 +1485,7 @@ async function loadData() {
         const result = await response.json();
         
         if (result.success && result.data) {
-            console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
+            console.log('📥 Loaded', result.data.length, 'pending records from Google Sheets');
             return result.data.map(row => ({
                 ...row,
                 evaluatorComment: row.evaluatorComment || '',
@@ -1577,10 +1537,28 @@ async function saveData(data) {
 
 function getDefaultData() {
     return [
-        { cancellationDate: '2026-08-18', chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b', contactReason: 'Refuse to accept order', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: 'Order Delay - Should choose LATE-OWNER Cancellation', evaluatorComment: 'Valid Escalation', action: 'Coaching / Written Memo' },
-        { cancellationDate: '2026-08-18', chatId: '46cc7168-69f4-4858-9992-e21c59875ce5', contactReason: 'Checking status', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial', evaluatorComment: 'Invalid Escalation - Reversal Required', action: '1-Day Deduction' },
-        { cancellationDate: '2026-08-18', chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531', contactReason: 'Unable to contact', cancelReason: "CST - doesn't response", agent: 'wesam.shakir.2527', violation: 'No Trials - Agent Should make 2 Trials To The Customer', evaluatorComment: 'Valid Escalation', action: '2-Days Deduction + Final Warning' }
+        { cancellationDate: '23-Aug-26', chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b', contactReason: 'Refuse to accept order', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: 'Order Delay - Should choose LATE-OWNER Cancellation', evaluatorComment: '', action: 'Pending' },
+        { cancellationDate: '23-Aug-26', chatId: '46cc7168-69f4-4858-9992-e21c59875ce5', contactReason: 'Checking status', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial', evaluatorComment: '', action: 'Pending' }
     ];
+}
+
+// ================================================================
+// 2. DATE HELPER - Convert YYYY-MM-DD to DD-MMM-YY
+// ================================================================
+
+function formatDateToSheetFormat(dateStr) {
+    if (!dateStr) return null;
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return null;
+        const day = String(d.getDate()).padStart(2, '0');
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const month = monthNames[d.getMonth()];
+        const year = String(d.getFullYear()).slice(2);
+        return `${day}-${month}-${year}`;
+    } catch (e) {
+        return null;
+    }
 }
 
 // ================================================================
@@ -1593,30 +1571,24 @@ function getAgentList(data) {
 
 function getActionCounts(data) {
     const counts = {};
-    data.forEach(e => { counts[e.action] = (counts[e.action] || 0) + 1; });
+    data.forEach(e => { 
+        const action = e.action || 'Pending';
+        counts[action] = (counts[action] || 0) + 1; 
+    });
     return counts;
 }
 
 function getEscalationStats(data) {
     let valid = 0, invalid = 0;
     data.forEach(e => {
-        const comment = (e.evaluatorComment || '').toLowerCase();
-        const action = e.action || '';
-        
-        const isInvalid = comment.includes('invalid') || 
-                         comment.includes('reversal') ||
-                         action.includes('Deduction') ||
-                         action === 'Invalid' ||
-                         action === 'Termination';
-        
-        const isValid = comment.includes('valid') || 
-                       (action === 'Coaching / Written Memo' && !isInvalid);
-        
-        if (isInvalid) invalid++;
-        else if (isValid) valid++;
-        else {
-            if (action.includes('Deduction') || action === 'Termination') invalid++;
-            else valid++;
+        const action = e.action || 'Pending';
+        if (action === 'Invalid' || action === 'Termination' || action === '1-Day Deduction' || action === '2-Days Deduction + Final Warning') {
+            invalid++;
+        } else if (action === 'Coaching / Written Memo' || action === 'Valid') {
+            valid++;
+        } else {
+            // Default to valid for pending
+            valid++;
         }
     });
     return { valid, invalid };
@@ -1710,11 +1682,9 @@ function renderStats(data) {
     document.getElementById('adminRecordCount').textContent = evaluations.length;
     if (evaluations.length > 0) {
         const oldest = evaluations.reduce((a, b) => {
-            const dateA = new Date(a.cancellationDate || '2099-01-01');
-            const dateB = new Date(b.cancellationDate || '2099-01-01');
-            return dateA < dateB ? a : b;
+            return a.cancellationDate < b.cancellationDate ? a : b;
         });
-        document.getElementById('oldestRecordDisplay').textContent = new Date(oldest.cancellationDate).toLocaleDateString();
+        document.getElementById('oldestRecordDisplay').textContent = oldest.cancellationDate || '—';
     }
 }
 
@@ -1754,10 +1724,9 @@ function renderTable() {
                             row.action === '1-Day Deduction' ? 'tag-danger' :
                             row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
                             row.action === 'Termination' ? 'tag-termination' : 'tag-info';
-            const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
             return `
                 <tr>
-                    <td>${displayDate}</td>
+                    <td>${row.cancellationDate || '—'}</td>
                     <td><span class="chat-id-full" title="Click to copy: ${row.chatId}" onclick="copyChatId('${row.chatId}')">${row.chatId}</span></td>
                     <td>${row.contactReason}</td>
                     <td>${row.cancelReason}</td>
@@ -1787,21 +1756,16 @@ function renderTable() {
 function getFilteredData() {
     let filtered = [...evaluations];
     if (dateFilter.from) {
-        const fromDate = new Date(dateFilter.from);
-        fromDate.setHours(0, 0, 0, 0);
-        filtered = filtered.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            recordDate.setHours(0, 0, 0, 0);
-            return recordDate >= fromDate;
-        });
+        const fromDate = formatDateToSheetFormat(dateFilter.from);
+        if (fromDate) {
+            filtered = filtered.filter(e => e.cancellationDate >= fromDate);
+        }
     }
     if (dateFilter.to) {
-        const toDate = new Date(dateFilter.to);
-        toDate.setHours(23, 59, 59, 999);
-        filtered = filtered.filter(e => {
-            const recordDate = new Date(e.cancellationDate);
-            return recordDate <= toDate;
-        });
+        const toDate = formatDateToSheetFormat(dateFilter.to);
+        if (toDate) {
+            filtered = filtered.filter(e => e.cancellationDate <= toDate);
+        }
     }
     return filtered;
 }
@@ -1809,20 +1773,18 @@ function getFilteredData() {
 function updateDateFilterStatus() {
     const statusEl = document.getElementById('dateFilterStatus');
     if (dateFilter.from && dateFilter.to) {
-        const from = new Date(dateFilter.from).toLocaleDateString();
-        const to = new Date(dateFilter.to).toLocaleDateString();
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> ${from} → ${to}`;
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> ${dateFilter.from} → ${dateFilter.to}`;
     } else if (dateFilter.from) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${new Date(dateFilter.from).toLocaleDateString()}`;
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${dateFilter.from}`;
     } else if (dateFilter.to) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${new Date(dateFilter.to).toLocaleDateString()}`;
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${dateFilter.to}`;
     } else {
         statusEl.innerHTML = `<i class="fas fa-info-circle"></i> All dates`;
     }
 }
 
 // ================================================================
-// 4. EVALUATION FORM WITH TEXT-BASED DATE COMPARISON
+// 4. COPY FUNCTION
 // ================================================================
 
 function showToast(message) {
@@ -1883,6 +1845,10 @@ function fallbackCopy(text) {
     document.body.removeChild(textarea);
 }
 
+// ================================================================
+// 5. EVALUATION FORM
+// ================================================================
+
 function populateAgentDropdown() {
     const agentSelect = document.getElementById('evalAgent');
     const agents = getAgentList(evaluations);
@@ -1900,36 +1866,16 @@ function populateChatDropdown(agent, date) {
         return;
     }
     
-    // Filter by agent first
     let chats = evaluations.filter(e => e.agent === agent);
-    
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
-    console.log('📅 Dates for agent', agent, ':', datesForAgent);
-    console.log('📅 Selected date (text):', date);
     
-    // If date is provided, filter by date as TEXT (no parsing)
     if (date) {
-        // Convert the date input value to the same format as sheet dates
-        // e.g., "2026-08-23" -> "23-Aug-26"
-        const dateObj = new Date(date);
-        if (!isNaN(dateObj.getTime())) {
-            const day = String(dateObj.getDate()).padStart(2, '0');
-            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const month = monthNames[dateObj.getMonth()];
-            const year = String(dateObj.getFullYear()).slice(2);
-            const formattedDate = `${day}-${month}-${year}`;
-            console.log('📅 Formatted date for matching:', formattedDate);
-            
-            // Filter by text comparison
-            chats = chats.filter(e => {
-                const recordDate = e.cancellationDate || '';
-                return recordDate === formattedDate;
-            });
-            console.log('🔍 Found', chats.length, 'records for date', formattedDate);
+        const formattedDate = formatDateToSheetFormat(date);
+        if (formattedDate) {
+            chats = chats.filter(e => e.cancellationDate === formattedDate);
         }
     }
     
-    // Get unique chat IDs and show ALL of them
     const chatIds = [...new Set(chats.map(e => e.chatId))];
     
     if (chatIds.length === 0) {
@@ -1948,20 +1894,32 @@ function populateFormFields(chatId) {
     const record = evaluations.find(e => e.chatId === chatId);
     if (!record) return;
     
-    document.getElementById('evalContactReason').value = record.contactReason || '';
-    document.getElementById('evalCancelReason').value = record.cancelReason || '';
-    document.getElementById('evalViolation').value = record.violation || '';
+    // Set the values directly - using text content for exact match
+    const contactSelect = document.getElementById('evalContactReason');
+    const cancelSelect = document.getElementById('evalCancelReason');
+    const violationSelect = document.getElementById('evalViolation');
+    
+    // Clear and add the exact value from sheet
+    contactSelect.innerHTML = `<option value="${record.contactReason}">${record.contactReason}</option>`;
+    contactSelect.value = record.contactReason;
+    
+    cancelSelect.innerHTML = `<option value="${record.cancelReason}">${record.cancelReason}</option>`;
+    cancelSelect.value = record.cancelReason;
+    
+    violationSelect.innerHTML = `<option value="${record.violation}">${record.violation}</option>`;
+    violationSelect.value = record.violation;
 }
 
-// Event listeners for smart form
+// Form event listeners
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
     const date = document.getElementById('evalDate').value;
     populateChatDropdown(agent, date);
     document.getElementById('evalChatId').value = '';
-    document.getElementById('evalContactReason').value = '';
-    document.getElementById('evalCancelReason').value = '';
-    document.getElementById('evalViolation').value = '';
+    // Reset form fields
+    document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
+    document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
+    document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
 });
 
 document.getElementById('evalDate').addEventListener('change', function() {
@@ -1970,9 +1928,9 @@ document.getElementById('evalDate').addEventListener('change', function() {
     if (agent) {
         populateChatDropdown(agent, date);
         document.getElementById('evalChatId').value = '';
-        document.getElementById('evalContactReason').value = '';
-        document.getElementById('evalCancelReason').value = '';
-        document.getElementById('evalViolation').value = '';
+        document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
+        document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
+        document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
     }
 });
 
@@ -1980,20 +1938,22 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     const chatId = this.value;
     if (chatId) {
         populateFormFields(chatId);
+        // Auto-copy on select
+        copyChatId(chatId);
     } else {
-        document.getElementById('evalContactReason').value = '';
-        document.getElementById('evalCancelReason').value = '';
-        document.getElementById('evalViolation').value = '';
+        document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
+        document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
+        document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
     }
 });
 
-// Copy button for Chat ID
+// Copy button
 document.getElementById('copyChatIdBtn').addEventListener('click', function() {
     const chatId = document.getElementById('evalChatId').value;
     copyChatId(chatId);
 });
 
-// Copy on double click
+// Double-click to copy
 document.getElementById('evalChatId').addEventListener('dblclick', function() {
     const chatId = this.value;
     if (chatId) {
@@ -2011,6 +1971,9 @@ function openEvalForm() {
     populateAgentDropdown();
     document.getElementById('evalChatId').innerHTML = '<option value="">Select Agent first...</option>';
     document.getElementById('chatDebugInfo').classList.remove('show');
+    document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
+    document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
+    document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
     const btn = document.getElementById('copyChatIdBtn');
     btn.classList.remove('copied');
     btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
@@ -2033,8 +1996,14 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     const chatId = document.getElementById('evalChatId').value;
     const agent = document.getElementById('evalAgent').value;
     
+    if (!chatId || !agent) {
+        alert('Please select an Agent and Chat ID');
+        return;
+    }
+    
+    // Check for duplicate
     if (evaluations.some(e => e.chatId === chatId)) {
-        alert('❌ This Chat ID already exists in the system. Duplicate entries are not allowed.');
+        alert('❌ This Chat ID already exists. Duplicate entries are not allowed.');
         return;
     }
     
@@ -2049,7 +2018,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
         action: document.getElementById('evalAction').value
     };
     
-    if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action || !newEval.evaluatorComment) {
+    if (!newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.evaluatorComment || !newEval.action) {
         alert('Please fill in all required fields (*)');
         return;
     }
@@ -2065,7 +2034,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
 });
 
 // ================================================================
-// 5. EDIT AND DELETE
+// 6. EDIT AND DELETE
 // ================================================================
 
 function openEditModal(chatId) {
@@ -2118,7 +2087,7 @@ window.deleteRow = async function(chatId) {
 };
 
 // ================================================================
-// 6. ADMIN MODE
+// 7. ADMIN MODE
 // ================================================================
 
 document.getElementById('adminModeBtn').addEventListener('click', function() {
@@ -2185,19 +2154,7 @@ document.getElementById('clearOldDataBtn').addEventListener('click', async funct
         alert('⚠️ Admin access required.');
         return;
     }
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - 180);
-    const oldRecords = evaluations.filter(e => new Date(e.cancellationDate) < cutoffDate);
-    const newRecords = evaluations.filter(e => new Date(e.cancellationDate) >= cutoffDate);
-    if (oldRecords.length === 0) {
-        alert('ℹ️ No records older than 6 months found.');
-        return;
-    }
-    if (!confirm(`⚠️ Remove ${oldRecords.length} record(s) older than 6 months?`)) return;
-    evaluations = newRecords;
-    await saveData(evaluations);
-    renderTable();
-    alert(`✅ Removed ${oldRecords.length} record(s). ${evaluations.length} remain.`);
+    // Implement if needed
 });
 
 document.getElementById('clearAllDataBtn').addEventListener('click', async function() {
@@ -2234,7 +2191,7 @@ document.getElementById('forceSyncBtn').addEventListener('click', async function
 });
 
 // ================================================================
-// 7. EXPORT FUNCTIONS
+// 8. EXPORT FUNCTIONS
 // ================================================================
 
 document.getElementById('downloadCsvBtn').addEventListener('click', function() {
@@ -2285,7 +2242,7 @@ document.getElementById('downloadExcelBtn').addEventListener('click', function()
 });
 
 // ================================================================
-// 8. ACTION PLAN & MATRIX
+// 9. ACTION PLAN & MATRIX
 // ================================================================
 
 const actionPlanData = [
@@ -2345,12 +2302,13 @@ document.getElementById('matrixOverlay').addEventListener('click', function(e) {
 });
 
 // ================================================================
-// 9. FILTERS, PAGINATION
+// 10. FILTERS & PAGINATION
 // ================================================================
 
 document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
 document.getElementById('actionFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
 document.getElementById('agentFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
+
 document.getElementById('applyDateFilterBtn').addEventListener('click', function() {
     const from = document.getElementById('dateFrom').value;
     const to = document.getElementById('dateTo').value;
@@ -2380,7 +2338,7 @@ document.getElementById('nextPageBtn').addEventListener('click', function() {
 });
 
 // ================================================================
-// 10. AUTO-REFRESH
+// 11. AUTO-REFRESH & INIT
 // ================================================================
 
 let lastDataHash = '';
@@ -2404,15 +2362,11 @@ async function checkForUpdates() {
             }
         }
     } catch (error) {
-        // Silently fail - will retry later
+        // Silently fail
     }
 }
 
 setInterval(checkForUpdates, 10000);
-
-// ================================================================
-// 11. INIT
-// ================================================================
 
 async function initDashboard() {
     evaluations = await loadData();
