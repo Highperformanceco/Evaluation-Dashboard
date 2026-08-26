@@ -1084,6 +1084,31 @@
         .debug-info .count {
             color: #8aaa8a;
         }
+
+        /* Data source debug panel */
+        .data-source-debug {
+            background: #1a1a2a;
+            border: 1px solid #2a3a3a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 11px;
+            color: #888;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .data-source-debug .label {
+            color: #555;
+        }
+        .data-source-debug .value {
+            color: #6aaa6a;
+            font-weight: 500;
+        }
+        .data-source-debug .error {
+            color: #c07a7a;
+        }
     </style>
 </head>
 <body>
@@ -1116,6 +1141,13 @@
                 <i class="fas fa-sync-alt fa-spin"></i> Syncing...
             </span>
         </div>
+    </div>
+
+    <!-- Data Source Debug Panel -->
+    <div class="data-source-debug" id="dataSourceDebug">
+        <span><span class="label">📊 Dashboard Data:</span> <span class="value" id="dashboardSource">Loading...</span></span>
+        <span><span class="label">📋 Form Data:</span> <span class="value" id="formSource">Loading...</span></span>
+        <span><span class="label">📁 Available Sheets:</span> <span class="value" id="availableSheets">Loading...</span></span>
     </div>
 
     <div id="adminControls" style="display: none;">
@@ -1500,7 +1532,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - Your URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzOTTVCxQolwBRDTlk9brwR5WXza3ke8yV-PFs0xxVP-nIwthkI1-EXuuV6dVFZnf7abg/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbycT5EvNPRw1ej-HWN2KrNAj5SFED4uc-ny1o12ycFGwv4owMlfPTlRriMiY0CHdPYgJg/exec';
 
 // ================================================================
 // DATA STORE
@@ -1523,9 +1555,15 @@ let isSyncing = false;
 
 async function loadDashboardData() {
     try {
-        // Load dashboard data from Evaluations tab
+        console.log('📊 Loading dashboard data (Evaluations tab)...');
         const response = await fetch(GOOGLE_SHEETS_API_URL);
         const result = await response.json();
+        
+        console.log('📊 Dashboard API Response:', result);
+        
+        // Update debug panel
+        document.getElementById('dashboardSource').textContent = result.source || 'Unknown';
+        document.getElementById('availableSheets').textContent = result.totalSheets ? result.totalSheets.join(', ') : 'N/A';
         
         if (result.success && result.data) {
             console.log('📥 Dashboard loaded', result.data.length, 'records from', result.source || 'Evaluations tab');
@@ -1542,9 +1580,15 @@ async function loadDashboardData() {
 
 async function loadFormData() {
     try {
-        // Load form data from Data tab
+        console.log('📋 Loading form data (Data tab)...');
         const response = await fetch(GOOGLE_SHEETS_API_URL + '?type=form');
         const result = await response.json();
+        
+        console.log('📋 Form API Response:', result);
+        
+        // Update debug panel
+        document.getElementById('formSource').textContent = result.source || 'Unknown';
+        document.getElementById('availableSheets').textContent = result.totalSheets ? result.totalSheets.join(', ') : 'N/A';
         
         if (result.success && result.data) {
             console.log('📥 Form loaded', result.data.length, 'records from', result.source || 'Data tab');
@@ -1577,7 +1621,7 @@ async function saveData(data) {
         const result = await response.json();
         
         if (response.ok && result.success) {
-            console.log('💾 Saved', result.count, 'records to Google Sheets');
+            console.log('💾 Saved', result.count, 'records to', result.savedTo || 'Google Sheets');
             document.getElementById('adminRecordCount').textContent = data.length;
         } else {
             console.error('Failed to save:', result.error);
@@ -1602,7 +1646,7 @@ function getDefaultData() {
 }
 
 // ================================================================
-// 2. RENDER FUNCTIONS
+// 2. RENDER FUNCTIONS (Same as before - keeping them)
 // ================================================================
 
 function getAgentList(data) {
@@ -1910,11 +1954,16 @@ function populateAgentDropdown() {
     const agents = getAgentList(formData);
     agentSelect.innerHTML = '<option value="">Select Agent...</option>' + 
         agents.map(a => `<option value="${a}">${a}</option>`).join('');
+    
+    console.log('📋 Populated agent dropdown with', agents.length, 'agents from formData');
 }
 
 function populateChatDropdown(agent, date) {
     const chatSelect = document.getElementById('evalChatId');
     const debugInfo = document.getElementById('chatDebugInfo');
+    
+    console.log('📋 populateChatDropdown called with agent:', agent, 'date:', date);
+    console.log('📋 formData length:', formData.length);
     
     if (!agent) {
         chatSelect.innerHTML = '<option value="">Select Agent first...</option>';
@@ -1923,6 +1972,8 @@ function populateChatDropdown(agent, date) {
     }
     
     let chats = formData.filter(e => e.agent === agent);
+    console.log('📋 Found', chats.length, 'records for agent:', agent);
+    
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
     console.log('📅 Form - Dates for agent', agent, ':', datesForAgent);
     console.log('📅 Form - Selected date:', date);
@@ -1939,6 +1990,7 @@ function populateChatDropdown(agent, date) {
     }
     
     const chatIds = [...new Set(chats.map(e => e.chatId))];
+    console.log('📋 Chat IDs found:', chatIds);
     
     if (chatIds.length === 0) {
         debugInfo.textContent = `ℹ️ No chat IDs found for ${agent} on ${date || 'any date'}. Available dates: ${datesForAgent.join(', ') || 'none'}`;
@@ -1965,6 +2017,7 @@ function populateFormFields(chatId) {
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
     const date = document.getElementById('evalDate').value;
+    console.log('📋 Agent changed to:', agent);
     populateChatDropdown(agent, date);
     document.getElementById('evalChatId').value = '';
     document.getElementById('evalContactReason').value = '';
@@ -1975,6 +2028,7 @@ document.getElementById('evalAgent').addEventListener('change', function() {
 document.getElementById('evalDate').addEventListener('change', function() {
     const agent = document.getElementById('evalAgent').value;
     const date = this.value;
+    console.log('📋 Date changed to:', date);
     if (agent) {
         populateChatDropdown(agent, date);
         document.getElementById('evalChatId').value = '';
@@ -2079,7 +2133,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
 });
 
 // ================================================================
-// 5. EDIT AND DELETE
+// 5. EDIT AND DELETE (Same as before - keeping them)
 // ================================================================
 
 function openEditModal(chatId) {
@@ -2132,7 +2186,7 @@ window.deleteRow = async function(chatId) {
 };
 
 // ================================================================
-// 6. ADMIN MODE
+// 6. ADMIN MODE (Same as before - keeping them)
 // ================================================================
 
 document.getElementById('adminModeBtn').addEventListener('click', function() {
@@ -2248,7 +2302,7 @@ document.getElementById('forceSyncBtn').addEventListener('click', async function
 });
 
 // ================================================================
-// 7. EXPORT FUNCTIONS
+// 7. EXPORT FUNCTIONS (Same as before - keeping them)
 // ================================================================
 
 document.getElementById('downloadCsvBtn').addEventListener('click', function() {
@@ -2299,7 +2353,7 @@ document.getElementById('downloadExcelBtn').addEventListener('click', function()
 });
 
 // ================================================================
-// 8. ACTION PLAN & MATRIX
+// 8. ACTION PLAN & MATRIX (Same as before - keeping them)
 // ================================================================
 
 const actionPlanData = [
@@ -2402,7 +2456,6 @@ let lastDataHash = '';
 
 async function checkForUpdates() {
     try {
-        // Only refresh dashboard data, not form data
         const response = await fetch(GOOGLE_SHEETS_API_URL);
         const result = await response.json();
         if (result.success && result.data) {
@@ -2423,6 +2476,8 @@ async function checkForUpdates() {
 setInterval(checkForUpdates, 10000);
 
 async function initDashboard() {
+    console.log('🚀 Initializing dashboard...');
+    
     // Load dashboard data (Evaluations tab)
     evaluations = await loadDashboardData();
     lastDataHash = JSON.stringify(evaluations);
