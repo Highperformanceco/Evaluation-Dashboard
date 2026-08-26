@@ -1305,12 +1305,46 @@
                         <label>Contact Reason <span class="required">*</span></label>
                         <select id="evalContactReason" required>
                             <option value="">Select...</option>
+                            <option value="Unable to contact">Unable to contact</option>
+                            <option value="Refuse to accept order">Refuse to accept order</option>
+                            <option value="Wrong address/pinpoint">Wrong address/pinpoint</option>
+                            <option value="Issue accessing the premises">Issue accessing the premises</option>
+                            <option value="Checking status">Checking status</option>
+                            <option value="Updating status">Updating status</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Missing item">Missing item</option>
+                            <option value="Translations needed">Translations needed</option>
+                            <option value="Change order details">Change order details</option>
+                            <option value="Clicked through">Clicked through</option>
+                            <option value="Shift adjustment">Shift adjustment</option>
+                            <option value="Spilled/Damaged">Spilled/Damaged</option>
+                            <option value="Order taken by other rider">Order taken by other rider</option>
+                            <option value="Does not have order">Does not have order</option>
+                            <option value="Not willing to do the order">Not willing to do the order</option>
+                            <option value="Chat acknowledgment">Chat acknowledgment</option>
+                            <option value="COD issue">COD issue</option>
+                            <option value="Device issue">Device issue</option>
+                            <option value="Break status">Break status</option>
+                            <option value="App issue">App issue</option>
+                            <option value="Unable to locate the address">Unable to locate the address</option>
+                            <option value="Customer unreachable">Customer unreachable</option>
+                            <option value="Order modification">Order modification</option>
+                            <option value="Call back request">Call back request</option>
+                            <option value="Asks for order assignment">Asks for order assignment</option>
+                            <option value="Asks for phone number">Asks for phone number</option>
+                            <option value="Closed">Closed</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Cancel Reason <span class="required">*</span></label>
                         <select id="evalCancelReason" required>
                             <option value="">Select...</option>
+                            <option value="CST - doesn't response">CST - doesn't response</option>
+                            <option value="CST - Refuse to receive the order">CST - Refuse to receive the order</option>
+                            <option value="CST - Customer requested">CST - Customer requested</option>
+                            <option value="CST - Late Owner">CST - Late Owner</option>
+                            <option value="CST - near_dropoff">CST - near_dropoff</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
@@ -1318,6 +1352,12 @@
                     <label>Violation <span class="required">*</span></label>
                     <select id="evalViolation" required>
                         <option value="">Select violation...</option>
+                        <option value="Order Delay - Should choose LATE-OWNER Cancellation">Order Delay - LATE-OWNER</option>
+                        <option value="2 Trials Call Diff < 150">2 Trials Call Diff < 150</option>
+                        <option value="No Trials - Agent Should make 2 Trials">No Trials - 2 Trials required</option>
+                        <option value="No call attempted before cancellation">No call attempted</option>
+                        <option value="Incorrect Contact Reason selected">Incorrect Contact Reason</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1457,12 +1497,12 @@
 
 <script>
 // ================================================================
-// ⭐ GOOGLE SHEETS API URL - Updated with your new URL
+// ⭐ GOOGLE SHEETS API URL - Your URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbxHzrhavS80AQK6WPWDZf8KkNa7H594u6XP_7HHWXDLKsGgSy7YoOxjoJ17k0Bg2iQ4/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzOTTVCxQolwBRDTlk9brwR5WXza3ke8yV-PFs0xxVP-nIwthkI1-EXuuV6dVFZnf7abg/exec';
 
 // ================================================================
-// DATA STORE
+// 1. NO LOGIN REQUIRED - Everyone can access
 // ================================================================
 
 let isAdmin = false;
@@ -1476,7 +1516,7 @@ let editTargetId = null;
 let isSyncing = false;
 
 // ================================================================
-// 1. LOAD DATA FROM GOOGLE SHEETS
+// 2. DATA STORE - Google Sheets
 // ================================================================
 
 async function loadData() {
@@ -1485,12 +1525,8 @@ async function loadData() {
         const result = await response.json();
         
         if (result.success && result.data) {
-            console.log('📥 Loaded', result.data.length, 'records from Google Sheets (Data tab)');
-            return result.data.map(row => ({
-                ...row,
-                evaluatorComment: row.evaluatorComment || '',
-                action: row.action || 'Pending'
-            }));
+            console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
+            return result.data;
         } else {
             console.error('Failed to load data:', result.error);
             return getDefaultData();
@@ -1519,7 +1555,7 @@ async function saveData(data) {
         const result = await response.json();
         
         if (response.ok && result.success) {
-            console.log('💾 Saved', result.count, 'records to Google Sheets (Evaluations tab)');
+            console.log('💾 Saved', result.count, 'records to Google Sheets');
             document.getElementById('adminRecordCount').textContent = data.length;
         } else {
             console.error('Failed to save:', result.error);
@@ -1537,28 +1573,10 @@ async function saveData(data) {
 
 function getDefaultData() {
     return [
-        { cancellationDate: '23-Aug-26', chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b', contactReason: 'Refuse to accept order', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: 'Order Delay - Should choose LATE-OWNER Cancellation', evaluatorComment: '', action: 'Pending' },
-        { cancellationDate: '23-Aug-26', chatId: '46cc7168-69f4-4858-9992-e21c59875ce5', contactReason: 'Checking status', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial', evaluatorComment: '', action: 'Pending' }
+        { cancellationDate: '2026-08-18', chatId: 'c79bdc16-4548-40d4-bc4e-449f464a247b', contactReason: 'Refuse to accept order', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: 'Order Delay - Should choose LATE-OWNER Cancellation', evaluatorComment: 'Valid Escalation', action: 'Coaching / Written Memo' },
+        { cancellationDate: '2026-08-18', chatId: '46cc7168-69f4-4858-9992-e21c59875ce5', contactReason: 'Checking status', cancelReason: 'CST - Refuse to receive the order', agent: 'wesam.shakir.2527', violation: '2 Trials Call Diff < 150 - Agent should Wait 2.5 mins before 2nd trial', evaluatorComment: 'Invalid Escalation - Reversal Required', action: '1-Day Deduction' },
+        { cancellationDate: '2026-08-18', chatId: 'e3e21089-ed6b-4c0c-87ad-053c8e7f7531', contactReason: 'Unable to contact', cancelReason: "CST - doesn't response", agent: 'wesam.shakir.2527', violation: 'No Trials - Agent Should make 2 Trials To The Customer', evaluatorComment: 'Valid Escalation', action: '2-Days Deduction + Final Warning' }
     ];
-}
-
-// ================================================================
-// 2. DATE HELPER - Convert YYYY-MM-DD to DD-MMM-YY
-// ================================================================
-
-function formatDateToSheetFormat(dateStr) {
-    if (!dateStr) return null;
-    try {
-        const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return null;
-        const day = String(d.getDate()).padStart(2, '0');
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const month = monthNames[d.getMonth()];
-        const year = String(d.getFullYear()).slice(2);
-        return `${day}-${month}-${year}`;
-    } catch (e) {
-        return null;
-    }
 }
 
 // ================================================================
@@ -1571,10 +1589,7 @@ function getAgentList(data) {
 
 function getActionCounts(data) {
     const counts = {};
-    data.forEach(e => { 
-        const action = e.action || 'Pending';
-        counts[action] = (counts[action] || 0) + 1; 
-    });
+    data.forEach(e => { counts[e.action] = (counts[e.action] || 0) + 1; });
     return counts;
 }
 
@@ -1582,7 +1597,7 @@ function getEscalationStats(data) {
     let valid = 0, invalid = 0;
     data.forEach(e => {
         const comment = (e.evaluatorComment || '').toLowerCase();
-        const action = e.action || 'Pending';
+        const action = e.action || '';
         
         const isInvalid = comment.includes('invalid') || 
                          comment.includes('reversal') ||
@@ -1803,7 +1818,7 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. COPY FUNCTION
+// 4. EVALUATION FORM
 // ================================================================
 
 function showToast(message) {
@@ -1864,10 +1879,6 @@ function fallbackCopy(text) {
     document.body.removeChild(textarea);
 }
 
-// ================================================================
-// 5. EVALUATION FORM
-// ================================================================
-
 function populateAgentDropdown() {
     const agentSelect = document.getElementById('evalAgent');
     const agents = getAgentList(evaluations);
@@ -1887,12 +1898,18 @@ function populateChatDropdown(agent, date) {
     
     let chats = evaluations.filter(e => e.agent === agent);
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
+    console.log('📅 Dates for agent', agent, ':', datesForAgent);
+    console.log('📅 Selected date:', date);
     
     if (date) {
-        const formattedDate = formatDateToSheetFormat(date);
-        if (formattedDate) {
-            chats = chats.filter(e => e.cancellationDate === formattedDate);
-        }
+        const normalizedSelected = new Date(date);
+        normalizedSelected.setHours(0, 0, 0, 0);
+        chats = chats.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            recordDate.setHours(0, 0, 0, 0);
+            return recordDate.getTime() === normalizedSelected.getTime();
+        });
+        console.log('🔍 Found', chats.length, 'records for date', date);
     }
     
     const chatIds = [...new Set(chats.map(e => e.chatId))];
@@ -1913,29 +1930,20 @@ function populateFormFields(chatId) {
     const record = evaluations.find(e => e.chatId === chatId);
     if (!record) return;
     
-    const contactSelect = document.getElementById('evalContactReason');
-    const cancelSelect = document.getElementById('evalCancelReason');
-    const violationSelect = document.getElementById('evalViolation');
-    
-    contactSelect.innerHTML = `<option value="${record.contactReason}">${record.contactReason}</option>`;
-    contactSelect.value = record.contactReason;
-    
-    cancelSelect.innerHTML = `<option value="${record.cancelReason}">${record.cancelReason}</option>`;
-    cancelSelect.value = record.cancelReason;
-    
-    violationSelect.innerHTML = `<option value="${record.violation}">${record.violation}</option>`;
-    violationSelect.value = record.violation;
+    document.getElementById('evalContactReason').value = record.contactReason || '';
+    document.getElementById('evalCancelReason').value = record.cancelReason || '';
+    document.getElementById('evalViolation').value = record.violation || '';
 }
 
-// Form event listeners
+// Event listeners
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
     const date = document.getElementById('evalDate').value;
     populateChatDropdown(agent, date);
     document.getElementById('evalChatId').value = '';
-    document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
-    document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
-    document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
+    document.getElementById('evalContactReason').value = '';
+    document.getElementById('evalCancelReason').value = '';
+    document.getElementById('evalViolation').value = '';
 });
 
 document.getElementById('evalDate').addEventListener('change', function() {
@@ -1944,9 +1952,9 @@ document.getElementById('evalDate').addEventListener('change', function() {
     if (agent) {
         populateChatDropdown(agent, date);
         document.getElementById('evalChatId').value = '';
-        document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
-        document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
-        document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
+        document.getElementById('evalContactReason').value = '';
+        document.getElementById('evalCancelReason').value = '';
+        document.getElementById('evalViolation').value = '';
     }
 });
 
@@ -1956,9 +1964,9 @@ document.getElementById('evalChatId').addEventListener('change', function() {
         populateFormFields(chatId);
         copyChatId(chatId);
     } else {
-        document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
-        document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
-        document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
+        document.getElementById('evalContactReason').value = '';
+        document.getElementById('evalCancelReason').value = '';
+        document.getElementById('evalViolation').value = '';
     }
 });
 
@@ -1984,9 +1992,6 @@ function openEvalForm() {
     populateAgentDropdown();
     document.getElementById('evalChatId').innerHTML = '<option value="">Select Agent first...</option>';
     document.getElementById('chatDebugInfo').classList.remove('show');
-    document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
-    document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
-    document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
     const btn = document.getElementById('copyChatIdBtn');
     btn.classList.remove('copied');
     btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
@@ -2009,14 +2014,8 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     const chatId = document.getElementById('evalChatId').value;
     const agent = document.getElementById('evalAgent').value;
     
-    if (!chatId || !agent) {
-        alert('Please select an Agent and Chat ID');
-        return;
-    }
-    
-    // Check for duplicate in current data (but we're not filtering anymore)
-    if (evaluations.some(e => e.chatId === chatId && e.evaluatorComment !== '')) {
-        alert('❌ This Chat ID has already been evaluated.');
+    if (evaluations.some(e => e.chatId === chatId)) {
+        alert('❌ This Chat ID already exists in the system. Duplicate entries are not allowed.');
         return;
     }
     
@@ -2031,22 +2030,14 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
         action: document.getElementById('evalAction').value
     };
     
-    if (!newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.evaluatorComment || !newEval.action) {
+    if (!newEval.chatId || !newEval.agent || !newEval.contactReason || !newEval.cancelReason || !newEval.violation || !newEval.action || !newEval.evaluatorComment) {
         alert('Please fill in all required fields (*)');
         return;
     }
     
-    // Save to Evaluations tab (append only)
-    await saveData([newEval]);
-    
-    // Also update local data (mark as evaluated by adding comment/action)
-    const existing = evaluations.find(e => e.chatId === chatId);
-    if (existing) {
-        existing.evaluatorComment = newEval.evaluatorComment;
-        existing.action = newEval.action;
-    }
-    
+    evaluations.push(newEval);
     closeEvalForm();
+    await saveData(evaluations);
     renderTable();
     const btn = document.getElementById('submitEvalBtn');
     const originalText = btn.innerHTML;
@@ -2055,7 +2046,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
 });
 
 // ================================================================
-// 6. EDIT AND DELETE
+// 5. EDIT AND DELETE
 // ================================================================
 
 function openEditModal(chatId) {
@@ -2087,9 +2078,8 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
     const row = evaluations.find(e => e.chatId === editTargetId);
     if (!row) return;
     row.action = document.getElementById('editNewAction').value;
-    // Update in Evaluations tab
-    await saveData([row]);
     closeEditModal();
+    await saveData(evaluations);
     renderTable();
     const btn = document.getElementById('saveEditBtn');
     const originalText = btn.innerHTML;
@@ -2101,7 +2091,6 @@ window.deleteRow = async function(chatId) {
     if (isAdmin) {
         if (!confirm('Delete this case permanently?')) return;
         evaluations = evaluations.filter(e => e.chatId !== chatId);
-        // Save the filtered data back
         await saveData(evaluations);
         renderTable();
     } else {
@@ -2110,7 +2099,7 @@ window.deleteRow = async function(chatId) {
 };
 
 // ================================================================
-// 7. ADMIN MODE
+// 6. ADMIN MODE
 // ================================================================
 
 document.getElementById('adminModeBtn').addEventListener('click', function() {
@@ -2177,7 +2166,19 @@ document.getElementById('clearOldDataBtn').addEventListener('click', async funct
         alert('⚠️ Admin access required.');
         return;
     }
-    // Implement if needed
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - 180);
+    const oldRecords = evaluations.filter(e => new Date(e.cancellationDate) < cutoffDate);
+    const newRecords = evaluations.filter(e => new Date(e.cancellationDate) >= cutoffDate);
+    if (oldRecords.length === 0) {
+        alert('ℹ️ No records older than 6 months found.');
+        return;
+    }
+    if (!confirm(`⚠️ Remove ${oldRecords.length} record(s) older than 6 months?`)) return;
+    evaluations = newRecords;
+    await saveData(evaluations);
+    renderTable();
+    alert(`✅ Removed ${oldRecords.length} record(s). ${evaluations.length} remain.`);
 });
 
 document.getElementById('clearAllDataBtn').addEventListener('click', async function() {
@@ -2214,7 +2215,7 @@ document.getElementById('forceSyncBtn').addEventListener('click', async function
 });
 
 // ================================================================
-// 8. EXPORT FUNCTIONS
+// 7. EXPORT FUNCTIONS
 // ================================================================
 
 document.getElementById('downloadCsvBtn').addEventListener('click', function() {
@@ -2265,7 +2266,7 @@ document.getElementById('downloadExcelBtn').addEventListener('click', function()
 });
 
 // ================================================================
-// 9. ACTION PLAN & MATRIX
+// 8. ACTION PLAN & MATRIX
 // ================================================================
 
 const actionPlanData = [
@@ -2325,7 +2326,7 @@ document.getElementById('matrixOverlay').addEventListener('click', function(e) {
 });
 
 // ================================================================
-// 10. FILTERS & PAGINATION
+// 9. FILTERS, PAGINATION
 // ================================================================
 
 document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
@@ -2361,7 +2362,7 @@ document.getElementById('nextPageBtn').addEventListener('click', function() {
 });
 
 // ================================================================
-// 11. AUTO-REFRESH & INIT
+// 10. AUTO-REFRESH
 // ================================================================
 
 let lastDataHash = '';
@@ -2371,11 +2372,7 @@ async function checkForUpdates() {
         const response = await fetch(GOOGLE_SHEETS_API_URL);
         const result = await response.json();
         if (result.success && result.data) {
-            const newData = result.data.map(row => ({
-                ...row,
-                evaluatorComment: row.evaluatorComment || '',
-                action: row.action || 'Pending'
-            }));
+            const newData = result.data;
             const newHash = JSON.stringify(newData);
             if (newHash !== lastDataHash) {
                 lastDataHash = newHash;
@@ -2385,11 +2382,15 @@ async function checkForUpdates() {
             }
         }
     } catch (error) {
-        // Silently fail
+        // Silently fail - will retry later
     }
 }
 
 setInterval(checkForUpdates, 10000);
+
+// ================================================================
+// 11. INIT
+// ================================================================
 
 async function initDashboard() {
     evaluations = await loadData();
