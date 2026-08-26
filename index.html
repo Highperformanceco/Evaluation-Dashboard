@@ -1000,14 +1000,53 @@
             font-weight: 500;
         }
 
-        /* Chat ID dropdown with copy support */
-        .chat-id-option {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            padding: 4px 8px;
+        /* Chat ID with copy button */
+        .chat-id-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
-        .chat-id-option:hover {
+        .chat-id-wrapper select {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            padding: 10px 14px;
+            border: 1.5px solid #2a2a2a;
+            border-radius: 10px;
+            background: #111;
+            color: #ddd;
+            outline: none;
+            transition: 0.2s;
+        }
+        .chat-id-wrapper select:focus {
+            border-color: #4a7a4a;
+            background: #1a1a1a;
+        }
+        .chat-id-wrapper .copy-btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #2a2a2a;
             background: #2a3a2a;
+            color: #8aaa8a;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chat-id-wrapper .copy-btn:hover {
+            background: #3a4a3a;
+            border-color: #4a7a4a;
+        }
+        .chat-id-wrapper .copy-btn:active {
+            transform: scale(0.95);
+        }
+        .chat-id-wrapper .copy-btn.copied {
+            background: #2a4a2a;
+            border-color: #6aaa6a;
+            color: #6aaa6a;
         }
 
         .copy-toast {
@@ -1031,7 +1070,6 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* Debug info */
         .debug-info {
             font-size: 10px;
             color: #555;
@@ -1253,10 +1291,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Chat ID <span class="required">*</span> <span style="font-size:10px;color:#555;">(Click to copy)</span></label>
-                    <select id="evalChatId" required style="font-family: 'Courier New', monospace;">
-                        <option value="">Select Chat ID...</option>
-                    </select>
+                    <label>Chat ID <span class="required">*</span></label>
+                    <div class="chat-id-wrapper">
+                        <select id="evalChatId" required>
+                            <option value="">Select Chat ID...</option>
+                        </select>
+                        <button type="button" class="copy-btn" id="copyChatIdBtn" title="Copy Chat ID">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
                     <div id="chatDebugInfo" class="debug-info"></div>
                 </div>
                 <div class="form-row">
@@ -1458,7 +1501,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - YOUR UPDATED APPS SCRIPT URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzjd-p-l7G67adWOSHLcWCRYd578o9k6OtwjJyn18BtkbeoEUEM1lUephAazKRVD224QA/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzrFEBYlmGcAPl28n6_u-dnhmwzEQpnk-BfojlLTd6BdlpqylrP0wKWPtI2fds3PdGJ/exec';
 
 // ================================================================
 // 1. NO LOGIN REQUIRED - Everyone can access
@@ -1485,10 +1528,8 @@ async function loadData() {
         
         if (result.success && result.data) {
             console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
-            // Normalize dates on load
             return result.data.map(row => ({
                 ...row,
-                cancellationDate: normalizeDateForDisplay(row.cancellationDate),
                 evaluatorComment: row.evaluatorComment || '',
                 action: row.action || 'Pending'
             }));
@@ -1500,13 +1541,6 @@ async function loadData() {
         console.error('Error loading from Google Sheets:', error);
         return getDefaultData();
     }
-}
-
-function normalizeDateForDisplay(dateStr) {
-    if (!dateStr) return '';
-    // Try to parse and return in YYYY-MM-DD format
-    const parsed = parseDateFlexible(dateStr);
-    return parsed || dateStr;
 }
 
 function parseDateFlexible(dateStr) {
@@ -1530,7 +1564,6 @@ function parseDateFlexible(dateStr) {
             const month = monthMap[parts[1].toLowerCase().substring(0, 3)];
             let year = parseInt(parts[2]);
             if (!isNaN(day) && month !== undefined && !isNaN(year)) {
-                // Handle 2-digit year: 26 -> 2026
                 if (year < 100) year = 2000 + year;
                 d = new Date(year, month, day);
                 if (!isNaN(d.getTime())) {
@@ -1538,9 +1571,7 @@ function parseDateFlexible(dateStr) {
                 }
             }
         }
-    } catch (e) {
-        // Continue
-    }
+    } catch (e) {}
     
     // Try parsing "DD/MM/YYYY" format
     try {
@@ -1556,27 +1587,7 @@ function parseDateFlexible(dateStr) {
                 }
             }
         }
-    } catch (e) {
-        // Continue
-    }
-    
-    // Try parsing "MM/DD/YYYY" format
-    try {
-        const parts = dateStr.split('/');
-        if (parts.length === 3) {
-            const month = parseInt(parts[0]) - 1;
-            const day = parseInt(parts[1]);
-            const year = parseInt(parts[2]);
-            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                d = new Date(year, month, day);
-                if (!isNaN(d.getTime())) {
-                    return d.toISOString().split('T')[0];
-                }
-            }
-        }
-    } catch (e) {
-        // Continue
-    }
+    } catch (e) {}
     
     return null;
 }
@@ -1708,7 +1719,6 @@ function renderAgentViolationChart(data) {
         container.innerHTML = '<div style="color:#666;font-size:11px;padding:8px 0;">No data available.</div>';
         return;
     }
-    // Group violations by agent
     const agentMap = {};
     data.forEach(row => {
         const agent = row.agent || 'Unknown';
@@ -1717,14 +1727,12 @@ function renderAgentViolationChart(data) {
         agentMap[agent][violation] = (agentMap[agent][violation] || 0) + 1;
     });
     
-    // Calculate total violations per agent and sort
     const agentTotals = Object.keys(agentMap).map(agent => {
         const violations = agentMap[agent];
         const total = Object.values(violations).reduce((a,b) => a+b, 0);
         return { agent, violations, total };
     });
     
-    // Sort by total violations (descending) and take top 10
     const topAgents = agentTotals.sort((a, b) => b.total - a.total).slice(0, 10);
     
     let html = '';
@@ -1865,7 +1873,7 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM WITH SMART DROPDOWNS (FIXED DATE HANDLING)
+// 4. EVALUATION FORM WITH SMART DROPDOWNS
 // ================================================================
 
 function showToast(message) {
@@ -1881,9 +1889,21 @@ function showToast(message) {
 }
 
 function copyChatId(chatId) {
+    if (!chatId) {
+        showToast('⚠️ No Chat ID selected');
+        return;
+    }
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(chatId).then(() => {
             showToast('✅ Copied: ' + chatId);
+            // Visual feedback on copy button
+            const btn = document.getElementById('copyChatIdBtn');
+            btn.classList.add('copied');
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            }, 2000);
         }).catch(() => {
             fallbackCopy(chatId);
         });
@@ -1902,6 +1922,13 @@ function fallbackCopy(text) {
     try {
         document.execCommand('copy');
         showToast('✅ Copied: ' + text);
+        const btn = document.getElementById('copyChatIdBtn');
+        btn.classList.add('copied');
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        }, 2000);
     } catch (err) {
         showToast('⚠️ Please copy manually: ' + text);
     }
@@ -1928,7 +1955,6 @@ function populateChatDropdown(agent, date) {
     // Filter by agent first
     let chats = evaluations.filter(e => e.agent === agent);
     
-    // Debug: log available dates for this agent
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
     console.log('📅 Dates for agent', agent, ':', datesForAgent);
     console.log('📅 Selected date:', date);
@@ -1948,7 +1974,6 @@ function populateChatDropdown(agent, date) {
     // Get unique chat IDs and show ALL of them
     const chatIds = [...new Set(chats.map(e => e.chatId))];
     
-    // Show debug info
     if (chatIds.length === 0) {
         debugInfo.textContent = `ℹ️ No chat IDs found for ${agent} on ${date || 'any date'}. Available dates: ${datesForAgent.join(', ') || 'none'}`;
         debugInfo.classList.add('show');
@@ -1970,7 +1995,7 @@ function populateFormFields(chatId) {
     document.getElementById('evalViolation').value = record.violation || '';
 }
 
-// Event listeners for smart form with date filtering
+// Event listeners for smart form
 document.getElementById('evalAgent').addEventListener('change', function() {
     const agent = this.value;
     const date = document.getElementById('evalDate').value;
@@ -1997,7 +2022,6 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     const chatId = this.value;
     if (chatId) {
         populateFormFields(chatId);
-        copyChatId(chatId);
     } else {
         document.getElementById('evalContactReason').value = '';
         document.getElementById('evalCancelReason').value = '';
@@ -2005,7 +2029,13 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     }
 });
 
-// Double-click to copy from dropdown
+// Copy button for Chat ID
+document.getElementById('copyChatIdBtn').addEventListener('click', function() {
+    const chatId = document.getElementById('evalChatId').value;
+    copyChatId(chatId);
+});
+
+// Copy on double click
 document.getElementById('evalChatId').addEventListener('dblclick', function() {
     const chatId = this.value;
     if (chatId) {
@@ -2021,9 +2051,12 @@ function openEvalForm() {
     document.getElementById('evalForm').reset();
     document.getElementById('evalDate').value = today;
     populateAgentDropdown();
-    // Clear chat dropdown initially
     document.getElementById('evalChatId').innerHTML = '<option value="">Select Agent first...</option>';
     document.getElementById('chatDebugInfo').classList.remove('show');
+    // Reset copy button
+    const btn = document.getElementById('copyChatIdBtn');
+    btn.classList.remove('copied');
+    btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
 }
 
 function closeEvalForm() {
@@ -2043,7 +2076,6 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     const chatId = document.getElementById('evalChatId').value;
     const agent = document.getElementById('evalAgent').value;
     
-    // Check for duplicate chat ID
     if (evaluations.some(e => e.chatId === chatId)) {
         alert('❌ This Chat ID already exists in the system. Duplicate entries are not allowed.');
         return;
@@ -2403,7 +2435,6 @@ async function checkForUpdates() {
         if (result.success && result.data) {
             const newData = result.data.map(row => ({
                 ...row,
-                cancellationDate: normalizeDateForDisplay(row.cancellationDate),
                 evaluatorComment: row.evaluatorComment || '',
                 action: row.action || 'Pending'
             }));
