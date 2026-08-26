@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
-        /* All your existing styles plus the loading overlay */
         * {
             margin: 0;
             padding: 0;
@@ -1085,9 +1084,7 @@
             color: #8aaa8a;
         }
 
-        /* ============================================================
-           LOADING OVERLAY
-           ============================================================ */
+        /* LOADING OVERLAY */
         .loading-overlay {
             display: none;
             position: fixed;
@@ -1155,7 +1152,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Toast notification for upload complete */
         .upload-toast {
             position: fixed;
             bottom: 80px;
@@ -1184,15 +1180,13 @@
 </head>
 <body>
 
-<!-- ============================================================
-     LOADING OVERLAY
-     ============================================================ -->
+<!-- LOADING OVERLAY -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
     <div class="loading-text">
-        <i class="fas fa-cloud-upload-alt"></i> <span id="loadingMessage">Uploading Data...</span>
+        <i class="fas fa-cloud-upload-alt"></i> <span id="loadingMessage">Saving Data...</span>
     </div>
-    <div class="loading-subtext" id="loadingSubtext">Please wait while your evaluation is saved</div>
+    <div class="loading-subtext" id="loadingSubtext">Please wait while your data is being saved</div>
     <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
     </div>
@@ -1205,6 +1199,7 @@
 
 <div class="dashboard-wrapper">
 
+    <!-- DASHBOARD HEADER -->
     <div class="dashboard-header">
         <h1>
             <i class="fas fa-clipboard-check"></i>
@@ -1228,12 +1223,12 @@
                 <i class="fas fa-shield-alt"></i> Admin
             </button>
             <span id="syncStatus" style="font-size: 10px; color: #4a7a4a; display: none;">
-                <i class="fas fa-sync-alt fa-spin"></i> Syncing...
+                <i class="fas fa-sync-alt fa-spin"></i> Saving...
             </span>
         </div>
     </div>
 
-    <!-- (Rest of your HTML - all the dashboard elements remain the same) -->
+    <!-- ADMIN CONTROLS -->
     <div id="adminControls" style="display: none;">
         <span class="admin-label"><i class="fas fa-shield-alt"></i> Admin Controls</span>
         <button class="btn btn-warning" id="clearOldDataBtn">
@@ -1253,6 +1248,7 @@
         </button>
     </div>
 
+    <!-- DATE FILTER -->
     <div class="date-filter">
         <label><i class="fas fa-calendar-alt"></i> From</label>
         <input type="date" id="dateFrom" />
@@ -1271,6 +1267,7 @@
         </div>
     </div>
 
+    <!-- NEW EVALUATION BUTTON -->
     <div class="eval-cta-group">
         <button class="eval-cta" id="openEvalFormBtn">
             <i class="fas fa-plus-circle"></i> New Evaluation
@@ -1278,6 +1275,7 @@
         </button>
     </div>
 
+    <!-- STATS ROW -->
     <div class="stats-row" id="statsRow">
         <div class="stat-card accent-blue">
             <i class="fas fa-users"></i>
@@ -1305,6 +1303,7 @@
         </div>
     </div>
 
+    <!-- RETENTION INFO -->
     <div class="retention-info">
         <div class="left">
             <i class="fas fa-calendar-alt"></i>
@@ -1322,6 +1321,7 @@
         </div>
     </div>
 
+    <!-- CHARTS -->
     <div class="charts-row">
         <div class="chart-card">
             <h4><i class="fas fa-chart-bar"></i> Action Distribution</h4>
@@ -1337,6 +1337,7 @@
         </div>
     </div>
 
+    <!-- TABLE -->
     <div class="table-container">
         <div class="table-header-tools">
             <h3><i class="fas fa-table"></i> Case Evaluations</h3>
@@ -1630,14 +1631,13 @@ let formData = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
-let isSyncing = false;
-let toastTimeout = null;
+let isSaving = false;
 
 // ================================================================
 // LOADING OVERLAY FUNCTIONS
 // ================================================================
 
-function showLoading(message = 'Uploading Data...', submessage = 'Please wait while your evaluation is saved') {
+function showLoading(message = 'Saving Data...', submessage = 'Please wait while your data is being saved') {
     const overlay = document.getElementById('loadingOverlay');
     const text = document.getElementById('loadingMessage');
     const subtext = document.getElementById('loadingSubtext');
@@ -1674,11 +1674,33 @@ function showToast(message, isSuccess = true) {
         toast.style.color = '#c07a7a';
     }
     
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
+    setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
 }
+
+// ================================================================
+// SHOW LOADING ON PAGE REFRESH / UNLOAD
+// ================================================================
+
+// Show loading indicator when user refreshes the page
+window.addEventListener('beforeunload', function(e) {
+    showLoading('Refreshing...', 'Please wait while the page reloads');
+});
+
+// Show loading when page is being unloaded (close tab, navigate away)
+window.addEventListener('pagehide', function() {
+    if (evaluations.length > 0 || formData.length > 0) {
+        showLoading('Refreshing...', 'Please wait');
+    }
+});
+
+// Show loading when F5 or Ctrl+R is pressed
+document.addEventListener('keydown', function(e) {
+    if ((e.key === 'F5') || (e.ctrlKey && e.key === 'r')) {
+        showLoading('Refreshing...', 'Please wait while the page reloads');
+    }
+});
 
 // ================================================================
 // 1. LOAD DATA FROM GOOGLE SHEETS
@@ -1727,11 +1749,13 @@ async function loadFormData() {
 }
 
 async function saveData(data) {
-    if (isSyncing) return;
-    isSyncing = true;
+    if (isSaving) {
+        console.log('⚠️ Save already in progress, skipping...');
+        return;
+    }
+    isSaving = true;
     
-    // Show loading overlay
-    showLoading('Saving Evaluation...', 'Please wait while your data is being saved to Google Sheets');
+    showLoading('Saving Data...', 'Please wait while your data is being saved to Google Sheets');
     updateProgress(10);
     
     try {
@@ -1756,10 +1780,8 @@ async function saveData(data) {
             document.getElementById('adminRecordCount').textContent = data.length;
             updateProgress(100);
             
-            // Show success toast
             showToast('✅ Saved ' + result.count + ' records successfully!', true);
             
-            // Small delay so user sees 100%
             await new Promise(resolve => setTimeout(resolve, 500));
         } else {
             console.error('Failed to save:', result.error);
@@ -1770,7 +1792,7 @@ async function saveData(data) {
         console.error('Error saving to Google Sheets:', error);
         showToast('❌ Error saving data. Please try again.', false);
     } finally {
-        isSyncing = false;
+        isSaving = false;
         document.getElementById('syncStatus').style.display = 'none';
         hideLoading();
     }
@@ -2136,7 +2158,6 @@ function populateFormFields(chatId) {
     const record = formData.find(e => e.chatId === chatId);
     if (!record) return;
     
-    // Set Contact Reason
     const contactSelect = document.getElementById('evalContactReason');
     if (record.contactReason) {
         let optionExists = false;
@@ -2155,7 +2176,6 @@ function populateFormFields(chatId) {
         contactSelect.value = record.contactReason;
     }
     
-    // Set Cancel Reason
     const cancelSelect = document.getElementById('evalCancelReason');
     if (record.cancelReason) {
         let optionExists = false;
@@ -2174,7 +2194,6 @@ function populateFormFields(chatId) {
         cancelSelect.value = record.cancelReason;
     }
     
-    // Set Violation - Dynamically add if not exists
     const violationSelect = document.getElementById('evalViolation');
     if (record.violation) {
         let optionExists = false;
@@ -2201,7 +2220,6 @@ function populateFormFields(chatId) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM fully loaded, setting up event listeners...');
     
-    // Form event listeners
     document.getElementById('evalAgent').addEventListener('change', function() {
         const agent = this.value;
         const date = document.getElementById('evalDate').value;
@@ -2292,7 +2310,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { btn.innerHTML = originalText; }, 1500);
     });
 
-    // Admin mode
     document.getElementById('adminModeBtn').addEventListener('click', function() {
         document.getElementById('adminPasswordModal').classList.add('active');
         document.getElementById('adminPasswordInput').value = '';
@@ -2352,7 +2369,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('👋 Admin mode deactivated.');
     });
 
-    // Close Edit Modal
     document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
     document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
     document.getElementById('editActionModal').addEventListener('click', function(e) {
@@ -2373,7 +2389,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { btn.innerHTML = originalText; }, 1200);
     });
 
-    // Filters
     document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
     document.getElementById('actionFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
     document.getElementById('agentFilter').addEventListener('change', function() { currentPage = 1; renderTable(); });
@@ -2406,7 +2421,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentPage < total) { currentPage++; renderTable(); }
     });
 
-    // Export
     document.getElementById('downloadCsvBtn').addEventListener('click', function() {
         if (evaluations.length === 0) { alert('⚠️ No data to export.'); return; }
         const headers = ['Cancellation Date', 'Chat ID', 'Contact Reason', 'Cancellation Reason', 'Agent Email', 'Non Compliant Reason', 'Evaluator Comment', 'Action'];
@@ -2454,7 +2468,6 @@ document.addEventListener('DOMContentLoaded', function() {
         URL.revokeObjectURL(url);
     });
 
-    // Action Plan & Matrix
     document.getElementById('viewActionPlanBtn').addEventListener('click', function() {
         renderActionPlan();
         document.getElementById('actionPlanOverlay').classList.add('active');
@@ -2478,7 +2491,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) closeMatrix();
     });
 
-    // Admin controls
     document.getElementById('clearOldDataBtn').addEventListener('click', async function() {
         if (!isAdmin) {
             alert('⚠️ Admin access required.');
