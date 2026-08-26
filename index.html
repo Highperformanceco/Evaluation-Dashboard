@@ -1459,7 +1459,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - Updated with your new URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbwmFjgeL0W76zoTfvYAJhKyNljuko3oNIrM_4Qx6fJVm-6krRonIwKpCP8TpBu_GSfMAQ/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbxHzrhavS80AQK6WPWDZf8KkNa7H594u6XP_7HHWXDLKsGgSy7YoOxjoJ17k0Bg2iQ4/exec';
 
 // ================================================================
 // DATA STORE
@@ -1469,7 +1469,7 @@ let isAdmin = false;
 const ADMIN_PASSWORD = 'Waqas@1982';
 
 let dateFilter = { from: null, to: null };
-let evaluations = []; // Stores ONLY pending (un-evaluated) records
+let evaluations = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
@@ -1485,7 +1485,7 @@ async function loadData() {
         const result = await response.json();
         
         if (result.success && result.data) {
-            console.log('📥 Loaded', result.data.length, 'pending records from Google Sheets');
+            console.log('📥 Loaded', result.data.length, 'records from Google Sheets (Data tab)');
             return result.data.map(row => ({
                 ...row,
                 evaluatorComment: row.evaluatorComment || '',
@@ -1519,7 +1519,7 @@ async function saveData(data) {
         const result = await response.json();
         
         if (response.ok && result.success) {
-            console.log('💾 Saved', result.count, 'records to Google Sheets');
+            console.log('💾 Saved', result.count, 'records to Google Sheets (Evaluations tab)');
             document.getElementById('adminRecordCount').textContent = data.length;
         } else {
             console.error('Failed to save:', result.error);
@@ -1581,14 +1581,23 @@ function getActionCounts(data) {
 function getEscalationStats(data) {
     let valid = 0, invalid = 0;
     data.forEach(e => {
+        const comment = (e.evaluatorComment || '').toLowerCase();
         const action = e.action || 'Pending';
-        if (action === 'Invalid' || action === 'Termination' || action === '1-Day Deduction' || action === '2-Days Deduction + Final Warning') {
-            invalid++;
-        } else if (action === 'Coaching / Written Memo' || action === 'Valid') {
-            valid++;
-        } else {
-            // Default to valid for pending
-            valid++;
+        
+        const isInvalid = comment.includes('invalid') || 
+                         comment.includes('reversal') ||
+                         action.includes('Deduction') ||
+                         action === 'Invalid' ||
+                         action === 'Termination';
+        
+        const isValid = comment.includes('valid') || 
+                       (action === 'Coaching / Written Memo' && !isInvalid);
+        
+        if (isInvalid) invalid++;
+        else if (isValid) valid++;
+        else {
+            if (action.includes('Deduction') || action === 'Termination') invalid++;
+            else valid++;
         }
     });
     return { valid, invalid };
@@ -1682,9 +1691,11 @@ function renderStats(data) {
     document.getElementById('adminRecordCount').textContent = evaluations.length;
     if (evaluations.length > 0) {
         const oldest = evaluations.reduce((a, b) => {
-            return a.cancellationDate < b.cancellationDate ? a : b;
+            const dateA = new Date(a.cancellationDate || '2099-01-01');
+            const dateB = new Date(b.cancellationDate || '2099-01-01');
+            return dateA < dateB ? a : b;
         });
-        document.getElementById('oldestRecordDisplay').textContent = oldest.cancellationDate || '—';
+        document.getElementById('oldestRecordDisplay').textContent = new Date(oldest.cancellationDate).toLocaleDateString();
     }
 }
 
@@ -1724,9 +1735,10 @@ function renderTable() {
                             row.action === '1-Day Deduction' ? 'tag-danger' :
                             row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
                             row.action === 'Termination' ? 'tag-termination' : 'tag-info';
+            const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
             return `
                 <tr>
-                    <td>${row.cancellationDate || '—'}</td>
+                    <td>${displayDate}</td>
                     <td><span class="chat-id-full" title="Click to copy: ${row.chatId}" onclick="copyChatId('${row.chatId}')">${row.chatId}</span></td>
                     <td>${row.contactReason}</td>
                     <td>${row.cancelReason}</td>
@@ -1756,16 +1768,21 @@ function renderTable() {
 function getFilteredData() {
     let filtered = [...evaluations];
     if (dateFilter.from) {
-        const fromDate = formatDateToSheetFormat(dateFilter.from);
-        if (fromDate) {
-            filtered = filtered.filter(e => e.cancellationDate >= fromDate);
-        }
+        const fromDate = new Date(dateFilter.from);
+        fromDate.setHours(0, 0, 0, 0);
+        filtered = filtered.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            recordDate.setHours(0, 0, 0, 0);
+            return recordDate >= fromDate;
+        });
     }
     if (dateFilter.to) {
-        const toDate = formatDateToSheetFormat(dateFilter.to);
-        if (toDate) {
-            filtered = filtered.filter(e => e.cancellationDate <= toDate);
-        }
+        const toDate = new Date(dateFilter.to);
+        toDate.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(e => {
+            const recordDate = new Date(e.cancellationDate);
+            return recordDate <= toDate;
+        });
     }
     return filtered;
 }
@@ -1773,11 +1790,13 @@ function getFilteredData() {
 function updateDateFilterStatus() {
     const statusEl = document.getElementById('dateFilterStatus');
     if (dateFilter.from && dateFilter.to) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> ${dateFilter.from} → ${dateFilter.to}`;
+        const from = new Date(dateFilter.from).toLocaleDateString();
+        const to = new Date(dateFilter.to).toLocaleDateString();
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> ${from} → ${to}`;
     } else if (dateFilter.from) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${dateFilter.from}`;
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> From ${new Date(dateFilter.from).toLocaleDateString()}`;
     } else if (dateFilter.to) {
-        statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${dateFilter.to}`;
+        statusEl.innerHTML = `<i class="fas fa-filter"></i> Until ${new Date(dateFilter.to).toLocaleDateString()}`;
     } else {
         statusEl.innerHTML = `<i class="fas fa-info-circle"></i> All dates`;
     }
@@ -1894,12 +1913,10 @@ function populateFormFields(chatId) {
     const record = evaluations.find(e => e.chatId === chatId);
     if (!record) return;
     
-    // Set the values directly - using text content for exact match
     const contactSelect = document.getElementById('evalContactReason');
     const cancelSelect = document.getElementById('evalCancelReason');
     const violationSelect = document.getElementById('evalViolation');
     
-    // Clear and add the exact value from sheet
     contactSelect.innerHTML = `<option value="${record.contactReason}">${record.contactReason}</option>`;
     contactSelect.value = record.contactReason;
     
@@ -1916,7 +1933,6 @@ document.getElementById('evalAgent').addEventListener('change', function() {
     const date = document.getElementById('evalDate').value;
     populateChatDropdown(agent, date);
     document.getElementById('evalChatId').value = '';
-    // Reset form fields
     document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
     document.getElementById('evalCancelReason').innerHTML = '<option value="">Select...</option>';
     document.getElementById('evalViolation').innerHTML = '<option value="">Select violation...</option>';
@@ -1938,7 +1954,6 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     const chatId = this.value;
     if (chatId) {
         populateFormFields(chatId);
-        // Auto-copy on select
         copyChatId(chatId);
     } else {
         document.getElementById('evalContactReason').innerHTML = '<option value="">Select...</option>';
@@ -1947,13 +1962,11 @@ document.getElementById('evalChatId').addEventListener('change', function() {
     }
 });
 
-// Copy button
 document.getElementById('copyChatIdBtn').addEventListener('click', function() {
     const chatId = document.getElementById('evalChatId').value;
     copyChatId(chatId);
 });
 
-// Double-click to copy
 document.getElementById('evalChatId').addEventListener('dblclick', function() {
     const chatId = this.value;
     if (chatId) {
@@ -2001,9 +2014,9 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
         return;
     }
     
-    // Check for duplicate
-    if (evaluations.some(e => e.chatId === chatId)) {
-        alert('❌ This Chat ID already exists. Duplicate entries are not allowed.');
+    // Check for duplicate in current data (but we're not filtering anymore)
+    if (evaluations.some(e => e.chatId === chatId && e.evaluatorComment !== '')) {
+        alert('❌ This Chat ID has already been evaluated.');
         return;
     }
     
@@ -2023,9 +2036,17 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
         return;
     }
     
-    evaluations.push(newEval);
+    // Save to Evaluations tab (append only)
+    await saveData([newEval]);
+    
+    // Also update local data (mark as evaluated by adding comment/action)
+    const existing = evaluations.find(e => e.chatId === chatId);
+    if (existing) {
+        existing.evaluatorComment = newEval.evaluatorComment;
+        existing.action = newEval.action;
+    }
+    
     closeEvalForm();
-    await saveData(evaluations);
     renderTable();
     const btn = document.getElementById('submitEvalBtn');
     const originalText = btn.innerHTML;
@@ -2066,8 +2087,9 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
     const row = evaluations.find(e => e.chatId === editTargetId);
     if (!row) return;
     row.action = document.getElementById('editNewAction').value;
+    // Update in Evaluations tab
+    await saveData([row]);
     closeEditModal();
-    await saveData(evaluations);
     renderTable();
     const btn = document.getElementById('saveEditBtn');
     const originalText = btn.innerHTML;
@@ -2079,6 +2101,7 @@ window.deleteRow = async function(chatId) {
     if (isAdmin) {
         if (!confirm('Delete this case permanently?')) return;
         evaluations = evaluations.filter(e => e.chatId !== chatId);
+        // Save the filtered data back
         await saveData(evaluations);
         renderTable();
     } else {
