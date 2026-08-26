@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
+        /* ============================================================
+           ALL YOUR EXISTING STYLES HERE (Keep them the same)
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -1083,9 +1086,93 @@
         .debug-info .count {
             color: #8aaa8a;
         }
+
+        /* ============================================================
+           LOADING OVERLAY - NEW
+           ============================================================ */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-overlay .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #2a2a2a;
+            border-top: 4px solid #6aaa6a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay .loading-text {
+            color: #aaa;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .loading-overlay .loading-text i {
+            color: #6aaa6a;
+            margin-right: 8px;
+        }
+
+        .loading-overlay .loading-subtext {
+            color: #666;
+            font-size: 12px;
+            margin-top: -10px;
+        }
+
+        .loading-overlay .progress-bar {
+            width: 300px;
+            max-width: 80%;
+            height: 4px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .loading-overlay .progress-bar .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3a6a3a, #6aaa6a);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
+
+<!-- ============================================================
+     LOADING OVERLAY - NEW
+     ============================================================ -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">
+        <i class="fas fa-cloud-upload-alt"></i> Uploading Data...
+    </div>
+    <div class="loading-subtext">Please wait while your evaluation is saved</div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+</div>
 
 <div class="dashboard-wrapper">
 
@@ -1496,7 +1583,7 @@
 
 <script>
 // ================================================================
-// ⭐ GOOGLE SHEETS API URL - Your Working URL
+// ⭐ GOOGLE SHEETS API URL - Update with your URL
 // ================================================================
 const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbymhe22_Fh-8ZE42zXx_FzXQ-17fkv-ZCNebAsk31bGker9hA1_qHBmwB-_f7VoK1w9tw/exec';
 
@@ -1514,6 +1601,33 @@ let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
 let isSyncing = false;
+
+// ================================================================
+// LOADING OVERLAY FUNCTIONS - NEW
+// ================================================================
+
+function showLoading(message = 'Uploading Data...', submessage = 'Please wait while your evaluation is saved') {
+    const overlay = document.getElementById('loadingOverlay');
+    const text = overlay.querySelector('.loading-text');
+    const subtext = overlay.querySelector('.loading-subtext');
+    const progress = document.getElementById('progressFill');
+    
+    text.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> ${message}`;
+    subtext.textContent = submessage;
+    progress.style.width = '0%';
+    overlay.classList.add('active');
+}
+
+function updateProgress(percent) {
+    const progress = document.getElementById('progressFill');
+    progress.style.width = Math.min(percent, 100) + '%';
+}
+
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.remove('active');
+    document.getElementById('progressFill').style.width = '0%';
+}
 
 // ================================================================
 // 1. LOAD DATA FROM GOOGLE SHEETS
@@ -1565,8 +1679,13 @@ async function saveData(data) {
     if (isSyncing) return;
     isSyncing = true;
     
+    // Show loading overlay
+    showLoading('Saving Evaluation...', 'Please wait while your data is being saved to Google Sheets');
+    updateProgress(10);
+    
     try {
         document.getElementById('syncStatus').style.display = 'inline';
+        updateProgress(30);
         
         const response = await fetch(GOOGLE_SHEETS_API_URL, {
             method: 'POST',
@@ -1576,11 +1695,17 @@ async function saveData(data) {
             body: JSON.stringify({ data: data })
         });
         
+        updateProgress(70);
+        
         const result = await response.json();
+        updateProgress(90);
         
         if (response.ok && result.success) {
             console.log('💾 Saved', result.count, 'records to Google Sheets');
             document.getElementById('adminRecordCount').textContent = data.length;
+            updateProgress(100);
+            // Small delay so user sees 100%
+            await new Promise(resolve => setTimeout(resolve, 500));
         } else {
             console.error('Failed to save:', result.error);
             alert('⚠️ Could not save to Google Sheets. Error: ' + (result.error || 'Unknown error'));
@@ -1592,6 +1717,7 @@ async function saveData(data) {
     } finally {
         isSyncing = false;
         document.getElementById('syncStatus').style.display = 'none';
+        hideLoading();
     }
 }
 
@@ -1904,7 +2030,7 @@ function fallbackCopy(text) {
 }
 
 // ================================================================
-// 4. EVALUATION FORM - FIXED VIOLATION POPULATION
+// 4. EVALUATION FORM
 // ================================================================
 
 function populateAgentDropdown() {
@@ -1951,15 +2077,9 @@ function populateChatDropdown(agent, date) {
     }
 }
 
-// ================================================================
-// FIXED: populateFormFields - Now properly sets Violation
-// ================================================================
 function populateFormFields(chatId) {
     const record = formData.find(e => e.chatId === chatId);
     if (!record) return;
-    
-    console.log('📋 Populating form fields for chatId:', chatId);
-    console.log('📋 Record found:', record);
     
     // Set Contact Reason
     const contactSelect = document.getElementById('evalContactReason');
@@ -1999,13 +2119,9 @@ function populateFormFields(chatId) {
         cancelSelect.value = record.cancelReason;
     }
     
-    // ============================================================
-    // CRITICAL FIX: Set Violation - Dynamically add if not exists
-    // ============================================================
+    // Set Violation - Dynamically add if not exists
     const violationSelect = document.getElementById('evalViolation');
     if (record.violation) {
-        console.log('📋 Setting violation to:', record.violation);
-        
         let optionExists = false;
         for (let i = 0; i < violationSelect.options.length; i++) {
             if (violationSelect.options[i].value === record.violation) {
@@ -2013,17 +2129,13 @@ function populateFormFields(chatId) {
                 break;
             }
         }
-        
         if (!optionExists) {
-            console.log('📋 Adding new violation option:', record.violation);
             const newOption = document.createElement('option');
             newOption.value = record.violation;
             newOption.textContent = record.violation;
             violationSelect.appendChild(newOption);
         }
-        
         violationSelect.value = record.violation;
-        console.log('📋 Violation set to:', violationSelect.value);
     }
 }
 
