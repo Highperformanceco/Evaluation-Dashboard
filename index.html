@@ -11,8 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
-        /* === All Your Styles Here === */
-        /* (Keep all your existing styles - they work fine) */
         * {
             margin: 0;
             padding: 0;
@@ -1271,6 +1269,7 @@
         </div>
     </div>
 
+    <!-- EVALUATION FORM MODAL -->
     <div class="modal-overlay" id="evalFormOverlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -1354,12 +1353,6 @@
                     <label>Violation <span class="required">*</span></label>
                     <select id="evalViolation" required>
                         <option value="">Select violation...</option>
-                        <option value="Order Delay - Should choose LATE-OWNER Cancellation">Order Delay - LATE-OWNER</option>
-                        <option value="2 Trials Call Diff < 150">2 Trials Call Diff < 150</option>
-                        <option value="No Trials - Agent Should make 2 Trials">No Trials - 2 Trials required</option>
-                        <option value="No call attempted before cancellation">No call attempted</option>
-                        <option value="Incorrect Contact Reason selected">Incorrect Contact Reason</option>
-                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1388,6 +1381,7 @@
         </div>
     </div>
 
+    <!-- EDIT ACTION MODAL -->
     <div class="modal-overlay edit-action-modal" id="editActionModal">
         <div class="modal-card" style="max-width: 420px;">
             <div class="modal-header">
@@ -1428,6 +1422,7 @@
         </div>
     </div>
 
+    <!-- ACTION PLAN MODAL -->
     <div class="modal-overlay" id="actionPlanOverlay">
         <div class="modal-card" style="max-width: 900px;">
             <div class="modal-header">
@@ -1441,6 +1436,7 @@
         </div>
     </div>
 
+    <!-- MATRIX MODAL -->
     <div class="modal-overlay" id="matrixOverlay">
         <div class="modal-card" style="max-width: 600px;">
             <div class="modal-header">
@@ -1475,6 +1471,7 @@
         </div>
     </div>
 
+    <!-- ADMIN PASSWORD MODAL -->
     <div class="modal-overlay admin-password-modal" id="adminPasswordModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -1499,7 +1496,7 @@
 
 <script>
 // ================================================================
-// ⭐ GOOGLE SHEETS API URL - Your URL
+// ⭐ GOOGLE SHEETS API URL - Your Working URL
 // ================================================================
 const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbw3wgCxrsPsPdPp5658q8Edzi3MsJidXNrSakWSO4Bn1ncsaCI5JcSD0Qo4nO-cBg7UYA/exec';
 
@@ -1511,8 +1508,8 @@ let isAdmin = false;
 const ADMIN_PASSWORD = 'Waqas@1982';
 
 let dateFilter = { from: null, to: null };
-let evaluations = []; // Dashboard data from Evaluations tab
-let formData = []; // Form data from Data tab
+let evaluations = [];
+let formData = [];
 let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
@@ -1582,7 +1579,7 @@ async function saveData(data) {
         const result = await response.json();
         
         if (response.ok && result.success) {
-            console.log('💾 Saved', result.count, 'records to', result.savedTo || 'Google Sheets');
+            console.log('💾 Saved', result.count, 'records to Google Sheets');
             document.getElementById('adminRecordCount').textContent = data.length;
         } else {
             console.error('Failed to save:', result.error);
@@ -1907,7 +1904,7 @@ function fallbackCopy(text) {
 }
 
 // ================================================================
-// 4. EVALUATION FORM - Fixed populateFormFields
+// 4. EVALUATION FORM - FIXED VIOLATION POPULATION
 // ================================================================
 
 function populateAgentDropdown() {
@@ -1915,16 +1912,11 @@ function populateAgentDropdown() {
     const agents = getAgentList(formData);
     agentSelect.innerHTML = '<option value="">Select Agent...</option>' + 
         agents.map(a => `<option value="${a}">${a}</option>`).join('');
-    
-    console.log('📋 Populated agent dropdown with', agents.length, 'agents from formData');
 }
 
 function populateChatDropdown(agent, date) {
     const chatSelect = document.getElementById('evalChatId');
     const debugInfo = document.getElementById('chatDebugInfo');
-    
-    console.log('📋 populateChatDropdown called with agent:', agent, 'date:', date);
-    console.log('📋 formData length:', formData.length);
     
     if (!agent) {
         chatSelect.innerHTML = '<option value="">Select Agent first...</option>';
@@ -1933,11 +1925,7 @@ function populateChatDropdown(agent, date) {
     }
     
     let chats = formData.filter(e => e.agent === agent);
-    console.log('📋 Found', chats.length, 'records for agent:', agent);
-    
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
-    console.log('📅 Form - Dates for agent', agent, ':', datesForAgent);
-    console.log('📅 Form - Selected date:', date);
     
     if (date) {
         const normalizedSelected = new Date(date);
@@ -1947,11 +1935,9 @@ function populateChatDropdown(agent, date) {
             recordDate.setHours(0, 0, 0, 0);
             return recordDate.getTime() === normalizedSelected.getTime();
         });
-        console.log('🔍 Form - Found', chats.length, 'records for date', date);
     }
     
     const chatIds = [...new Set(chats.map(e => e.chatId))];
-    console.log('📋 Chat IDs found:', chatIds);
     
     if (chatIds.length === 0) {
         debugInfo.textContent = `ℹ️ No chat IDs found for ${agent} on ${date || 'any date'}. Available dates: ${datesForAgent.join(', ') || 'none'}`;
@@ -1978,7 +1964,6 @@ function populateFormFields(chatId) {
     // Set Contact Reason
     const contactSelect = document.getElementById('evalContactReason');
     if (record.contactReason) {
-        // Check if the value exists in the dropdown, if not, add it
         let optionExists = false;
         for (let i = 0; i < contactSelect.options.length; i++) {
             if (contactSelect.options[i].value === record.contactReason) {
@@ -1993,7 +1978,6 @@ function populateFormFields(chatId) {
             contactSelect.appendChild(newOption);
         }
         contactSelect.value = record.contactReason;
-        console.log('📋 Contact Reason set to:', contactSelect.value);
     }
     
     // Set Cancel Reason
@@ -2013,7 +1997,6 @@ function populateFormFields(chatId) {
             cancelSelect.appendChild(newOption);
         }
         cancelSelect.value = record.cancelReason;
-        console.log('📋 Cancel Reason set to:', cancelSelect.value);
     }
     
     // ============================================================
@@ -2023,7 +2006,6 @@ function populateFormFields(chatId) {
     if (record.violation) {
         console.log('📋 Setting violation to:', record.violation);
         
-        // Check if the value exists in the dropdown
         let optionExists = false;
         for (let i = 0; i < violationSelect.options.length; i++) {
             if (violationSelect.options[i].value === record.violation) {
@@ -2032,7 +2014,6 @@ function populateFormFields(chatId) {
             }
         }
         
-        // If not found, add it dynamically
         if (!optionExists) {
             console.log('📋 Adding new violation option:', record.violation);
             const newOption = document.createElement('option');
@@ -2041,16 +2022,13 @@ function populateFormFields(chatId) {
             violationSelect.appendChild(newOption);
         }
         
-        // Set the value
         violationSelect.value = record.violation;
         console.log('📋 Violation set to:', violationSelect.value);
-    } else {
-        console.log('📋 No violation found for this record');
     }
 }
 
 // ================================================================
-// 5. EVENT LISTENERS - Moved inside DOMContentLoaded
+// 5. EVENT LISTENERS
 // ================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -2060,7 +2038,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('evalAgent').addEventListener('change', function() {
         const agent = this.value;
         const date = document.getElementById('evalDate').value;
-        console.log('📋 Agent changed to:', agent);
         populateChatDropdown(agent, date);
         document.getElementById('evalChatId').value = '';
         document.getElementById('evalContactReason').value = '';
@@ -2071,7 +2048,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('evalDate').addEventListener('change', function() {
         const agent = document.getElementById('evalAgent').value;
         const date = this.value;
-        console.log('📋 Date changed to:', date);
         if (agent) {
             populateChatDropdown(agent, date);
             document.getElementById('evalChatId').value = '';
@@ -2514,11 +2490,9 @@ setInterval(checkForUpdates, 10000);
 async function initDashboard() {
     console.log('🚀 Initializing dashboard...');
     
-    // Load dashboard data (Evaluations tab)
     evaluations = await loadDashboardData();
     lastDataHash = JSON.stringify(evaluations);
     
-    // Load form data (Data tab)
     formData = await loadFormData();
     console.log('📋 Form data loaded:', formData.length, 'records from Data tab');
     
@@ -2528,7 +2502,6 @@ async function initDashboard() {
     console.log('🔗 Google Sheets API URL:', GOOGLE_SHEETS_API_URL);
 }
 
-// Start the dashboard
 initDashboard();
 </script>
 
