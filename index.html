@@ -967,7 +967,6 @@
             letter-spacing: 4px;
         }
 
-        /* Agent Violation Chart Styles */
         .agent-violation-chart {
             max-height: 320px;
             overflow-y: auto;
@@ -1000,7 +999,6 @@
             font-weight: 500;
         }
 
-        /* Chat ID with copy button */
         .chat-id-wrapper {
             display: flex;
             gap: 8px;
@@ -1501,7 +1499,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - YOUR UPDATED APPS SCRIPT URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzrFEBYlmGcAPl28n6_u-dnhmwzEQpnk-BfojlLTd6BdlpqylrP0wKWPtI2fds3PdGJ/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbyBKD_9qg8jdsTG8kRUXtSTuC_IAwtiEoaBOMSKBNXXO7B-zHuQkOqj01iEd6Oy7WNlwQ/exec';
 
 // ================================================================
 // 1. NO LOGIN REQUIRED - Everyone can access
@@ -1541,55 +1539,6 @@ async function loadData() {
         console.error('Error loading from Google Sheets:', error);
         return getDefaultData();
     }
-}
-
-function parseDateFlexible(dateStr) {
-    if (!dateStr) return null;
-    
-    // Try parsing as standard date
-    let d = new Date(dateStr);
-    if (!isNaN(d.getTime())) {
-        return d.toISOString().split('T')[0];
-    }
-    
-    // Try parsing "DD-MMM-YY" format (e.g., "22-Aug-26")
-    try {
-        const monthMap = {
-            'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
-            'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
-        };
-        const parts = dateStr.trim().split('-');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0]);
-            const month = monthMap[parts[1].toLowerCase().substring(0, 3)];
-            let year = parseInt(parts[2]);
-            if (!isNaN(day) && month !== undefined && !isNaN(year)) {
-                if (year < 100) year = 2000 + year;
-                d = new Date(year, month, day);
-                if (!isNaN(d.getTime())) {
-                    return d.toISOString().split('T')[0];
-                }
-            }
-        }
-    } catch (e) {}
-    
-    // Try parsing "DD/MM/YYYY" format
-    try {
-        const parts = dateStr.split('/');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0]);
-            const month = parseInt(parts[1]) - 1;
-            const year = parseInt(parts[2]);
-            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                d = new Date(year, month, day);
-                if (!isNaN(d.getTime())) {
-                    return d.toISOString().split('T')[0];
-                }
-            }
-        }
-    } catch (e) {}
-    
-    return null;
 }
 
 async function saveData(data) {
@@ -1873,7 +1822,7 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM WITH SMART DROPDOWNS
+// 4. EVALUATION FORM WITH TEXT-BASED DATE COMPARISON
 // ================================================================
 
 function showToast(message) {
@@ -1896,7 +1845,6 @@ function copyChatId(chatId) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(chatId).then(() => {
             showToast('✅ Copied: ' + chatId);
-            // Visual feedback on copy button
             const btn = document.getElementById('copyChatIdBtn');
             btn.classList.add('copied');
             btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
@@ -1957,18 +1905,28 @@ function populateChatDropdown(agent, date) {
     
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
     console.log('📅 Dates for agent', agent, ':', datesForAgent);
-    console.log('📅 Selected date:', date);
+    console.log('📅 Selected date (text):', date);
     
-    // If date is provided, filter by date using flexible parsing
+    // If date is provided, filter by date as TEXT (no parsing)
     if (date) {
-        const normalizedSelected = parseDateFlexible(date);
-        console.log('📅 Normalized selected date:', normalizedSelected);
-        
-        chats = chats.filter(e => {
-            const recordDate = parseDateFlexible(e.cancellationDate);
-            return recordDate === normalizedSelected;
-        });
-        console.log('🔍 Found', chats.length, 'records for date', date);
+        // Convert the date input value to the same format as sheet dates
+        // e.g., "2026-08-23" -> "23-Aug-26"
+        const dateObj = new Date(date);
+        if (!isNaN(dateObj.getTime())) {
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = monthNames[dateObj.getMonth()];
+            const year = String(dateObj.getFullYear()).slice(2);
+            const formattedDate = `${day}-${month}-${year}`;
+            console.log('📅 Formatted date for matching:', formattedDate);
+            
+            // Filter by text comparison
+            chats = chats.filter(e => {
+                const recordDate = e.cancellationDate || '';
+                return recordDate === formattedDate;
+            });
+            console.log('🔍 Found', chats.length, 'records for date', formattedDate);
+        }
     }
     
     // Get unique chat IDs and show ALL of them
@@ -2053,7 +2011,6 @@ function openEvalForm() {
     populateAgentDropdown();
     document.getElementById('evalChatId').innerHTML = '<option value="">Select Agent first...</option>';
     document.getElementById('chatDebugInfo').classList.remove('show');
-    // Reset copy button
     const btn = document.getElementById('copyChatIdBtn');
     btn.classList.remove('copied');
     btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
