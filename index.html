@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
+        /* All your existing styles - keeping them same */
         * {
             margin: 0;
             padding: 0;
@@ -1502,38 +1503,59 @@
 const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzOTTVCxQolwBRDTlk9brwR5WXza3ke8yV-PFs0xxVP-nIwthkI1-EXuuV6dVFZnf7abg/exec';
 
 // ================================================================
-// 1. NO LOGIN REQUIRED - Everyone can access
+// DATA STORE
 // ================================================================
 
 let isAdmin = false;
 const ADMIN_PASSWORD = 'Waqas@1982';
 
 let dateFilter = { from: null, to: null };
-let evaluations = [];
+let evaluations = []; // Dashboard data from Evaluations tab
+let formData = []; // Form data from Data tab
 let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
 let isSyncing = false;
 
 // ================================================================
-// 2. DATA STORE - Google Sheets
+// 1. LOAD DATA FROM GOOGLE SHEETS
 // ================================================================
 
-async function loadData() {
+async function loadDashboardData() {
     try {
+        // Load dashboard data from Evaluations tab
         const response = await fetch(GOOGLE_SHEETS_API_URL);
         const result = await response.json();
         
         if (result.success && result.data) {
-            console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
+            console.log('📥 Dashboard loaded', result.data.length, 'records from', result.source || 'Evaluations tab');
             return result.data;
         } else {
-            console.error('Failed to load data:', result.error);
+            console.error('Failed to load dashboard data:', result.error);
             return getDefaultData();
         }
     } catch (error) {
-        console.error('Error loading from Google Sheets:', error);
+        console.error('Error loading dashboard data:', error);
         return getDefaultData();
+    }
+}
+
+async function loadFormData() {
+    try {
+        // Load form data from Data tab
+        const response = await fetch(GOOGLE_SHEETS_API_URL + '?type=form');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            console.log('📥 Form loaded', result.data.length, 'records from', result.source || 'Data tab');
+            return result.data;
+        } else {
+            console.error('Failed to load form data:', result.error);
+            return [];
+        }
+    } catch (error) {
+        console.error('Error loading form data:', error);
+        return [];
     }
 }
 
@@ -1580,7 +1602,7 @@ function getDefaultData() {
 }
 
 // ================================================================
-// 3. RENDER FUNCTIONS
+// 2. RENDER FUNCTIONS
 // ================================================================
 
 function getAgentList(data) {
@@ -1818,7 +1840,7 @@ function updateDateFilterStatus() {
 }
 
 // ================================================================
-// 4. EVALUATION FORM
+// 3. COPY FUNCTION
 // ================================================================
 
 function showToast(message) {
@@ -1879,9 +1901,13 @@ function fallbackCopy(text) {
     document.body.removeChild(textarea);
 }
 
+// ================================================================
+// 4. EVALUATION FORM - Uses formData from Data tab
+// ================================================================
+
 function populateAgentDropdown() {
     const agentSelect = document.getElementById('evalAgent');
-    const agents = getAgentList(evaluations);
+    const agents = getAgentList(formData);
     agentSelect.innerHTML = '<option value="">Select Agent...</option>' + 
         agents.map(a => `<option value="${a}">${a}</option>`).join('');
 }
@@ -1896,10 +1922,10 @@ function populateChatDropdown(agent, date) {
         return;
     }
     
-    let chats = evaluations.filter(e => e.agent === agent);
+    let chats = formData.filter(e => e.agent === agent);
     const datesForAgent = [...new Set(chats.map(e => e.cancellationDate))];
-    console.log('📅 Dates for agent', agent, ':', datesForAgent);
-    console.log('📅 Selected date:', date);
+    console.log('📅 Form - Dates for agent', agent, ':', datesForAgent);
+    console.log('📅 Form - Selected date:', date);
     
     if (date) {
         const normalizedSelected = new Date(date);
@@ -1909,7 +1935,7 @@ function populateChatDropdown(agent, date) {
             recordDate.setHours(0, 0, 0, 0);
             return recordDate.getTime() === normalizedSelected.getTime();
         });
-        console.log('🔍 Found', chats.length, 'records for date', date);
+        console.log('🔍 Form - Found', chats.length, 'records for date', date);
     }
     
     const chatIds = [...new Set(chats.map(e => e.chatId))];
@@ -1927,7 +1953,7 @@ function populateChatDropdown(agent, date) {
 }
 
 function populateFormFields(chatId) {
-    const record = evaluations.find(e => e.chatId === chatId);
+    const record = formData.find(e => e.chatId === chatId);
     if (!record) return;
     
     document.getElementById('evalContactReason').value = record.contactReason || '';
@@ -2015,7 +2041,7 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
     const agent = document.getElementById('evalAgent').value;
     
     if (evaluations.some(e => e.chatId === chatId)) {
-        alert('❌ This Chat ID already exists in the system. Duplicate entries are not allowed.');
+        alert('❌ This Chat ID already exists in the Evaluations tab.');
         return;
     }
     
@@ -2035,9 +2061,16 @@ document.getElementById('evalForm').addEventListener('submit', async function(e)
         return;
     }
     
+    // Add to evaluations (dashboard data)
     evaluations.push(newEval);
-    closeEvalForm();
+    
+    // Save to Google Sheets (Evaluations tab)
     await saveData(evaluations);
+    
+    // Remove from form data (so it doesn't appear again)
+    formData = formData.filter(e => e.chatId !== chatId);
+    
+    closeEvalForm();
     renderTable();
     const btn = document.getElementById('submitEvalBtn');
     const originalText = btn.innerHTML;
@@ -2362,13 +2395,14 @@ document.getElementById('nextPageBtn').addEventListener('click', function() {
 });
 
 // ================================================================
-// 10. AUTO-REFRESH
+// 10. AUTO-REFRESH & INIT
 // ================================================================
 
 let lastDataHash = '';
 
 async function checkForUpdates() {
     try {
+        // Only refresh dashboard data, not form data
         const response = await fetch(GOOGLE_SHEETS_API_URL);
         const result = await response.json();
         if (result.success && result.data) {
@@ -2378,23 +2412,25 @@ async function checkForUpdates() {
                 lastDataHash = newHash;
                 evaluations = newData;
                 renderTable();
-                console.log('🔄 Auto-refreshed from Google Sheets');
+                console.log('🔄 Auto-refreshed dashboard from Google Sheets');
             }
         }
     } catch (error) {
-        // Silently fail - will retry later
+        // Silently fail
     }
 }
 
 setInterval(checkForUpdates, 10000);
 
-// ================================================================
-// 11. INIT
-// ================================================================
-
 async function initDashboard() {
-    evaluations = await loadData();
+    // Load dashboard data (Evaluations tab)
+    evaluations = await loadDashboardData();
     lastDataHash = JSON.stringify(evaluations);
+    
+    // Load form data (Data tab)
+    formData = await loadFormData();
+    console.log('📋 Form data loaded:', formData.length, 'records from Data tab');
+    
     updateDateFilterStatus();
     renderTable();
     console.log('📋 Evaluator Dashboard loaded - Connected to Google Sheets');
