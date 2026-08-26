@@ -1827,19 +1827,58 @@ function fallbackCopy(text) {
     document.body.removeChild(textarea);
 }
 
-function normalizeDate(dateStr) {
+function parseDateFlexible(dateStr) {
     if (!dateStr) return null;
-    // Try to parse the date
+    
+    // Try parsing as standard date
     let d = new Date(dateStr);
-    if (isNaN(d.getTime())) {
-        // Try parsing as YYYY-MM-DD
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-            d = new Date(parts[0], parts[1] - 1, parts[2]);
-        }
+    if (!isNaN(d.getTime())) {
+        return d.toISOString().split('T')[0];
     }
-    if (isNaN(d.getTime())) return null;
-    return d.toISOString().split('T')[0];
+    
+    // Try parsing "22-Aug-26" format (DD-MMM-YY)
+    try {
+        const monthMap = {
+            'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+            'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+        };
+        const parts = dateStr.trim().split('-');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = monthMap[parts[1].toLowerCase().substring(0, 3)];
+            const year = parseInt(parts[2]);
+            if (!isNaN(day) && month !== undefined && !isNaN(year)) {
+                // Handle 2-digit year: 26 -> 2026
+                const fullYear = year < 100 ? 2000 + year : year;
+                d = new Date(fullYear, month, day);
+                if (!isNaN(d.getTime())) {
+                    return d.toISOString().split('T')[0];
+                }
+            }
+        }
+    } catch (e) {
+        // Continue to next method
+    }
+    
+    // Try parsing "22/08/2026" format
+    try {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const year = parseInt(parts[2]);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                d = new Date(year, month, day);
+                if (!isNaN(d.getTime())) {
+                    return d.toISOString().split('T')[0];
+                }
+            }
+        }
+    } catch (e) {
+        // Continue
+    }
+    
+    return null;
 }
 
 function populateAgentDropdown() {
@@ -1867,17 +1906,20 @@ function populateChatDropdown(agent, date) {
     console.log('📅 Dates for agent', agent, ':', datesForAgent);
     console.log('📅 Selected date:', date);
     
-    // If date is provided, filter by date (flexible matching)
+    // If date is provided, filter by date using flexible parsing
     if (date) {
-        const normalizedSelected = normalizeDate(date);
+        const normalizedSelected = parseDateFlexible(date);
+        console.log('📅 Normalized selected date:', normalizedSelected);
+        
         chats = chats.filter(e => {
-            const recordDate = normalizeDate(e.cancellationDate);
+            const recordDate = parseDateFlexible(e.cancellationDate);
+            console.log('📅 Record date:', e.cancellationDate, '->', recordDate);
             return recordDate === normalizedSelected;
         });
         console.log('🔍 Found', chats.length, 'records for date', date);
     }
     
-    // Get unique chat IDs and show ALL of them (no limit)
+    // Get unique chat IDs and show ALL of them
     const chatIds = [...new Set(chats.map(e => e.chatId))];
     
     // Show debug info
