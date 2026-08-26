@@ -1458,7 +1458,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - YOUR UPDATED APPS SCRIPT URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbyb94Qlw83kxgJxTSFVVwFoCawC8CxnDQN3d4aUAx9hiffEfOjujRZ-clCOCkqCgaiD2g/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzjd-p-l7G67adWOSHLcWCRYd578o9k6OtwjJyn18BtkbeoEUEM1lUephAazKRVD224QA/exec';
 
 // ================================================================
 // 1. NO LOGIN REQUIRED - Everyone can access
@@ -1485,8 +1485,10 @@ async function loadData() {
         
         if (result.success && result.data) {
             console.log('📥 Loaded', result.data.length, 'records from Google Sheets');
+            // Normalize dates on load
             return result.data.map(row => ({
                 ...row,
+                cancellationDate: normalizeDateForDisplay(row.cancellationDate),
                 evaluatorComment: row.evaluatorComment || '',
                 action: row.action || 'Pending'
             }));
@@ -1498,6 +1500,85 @@ async function loadData() {
         console.error('Error loading from Google Sheets:', error);
         return getDefaultData();
     }
+}
+
+function normalizeDateForDisplay(dateStr) {
+    if (!dateStr) return '';
+    // Try to parse and return in YYYY-MM-DD format
+    const parsed = parseDateFlexible(dateStr);
+    return parsed || dateStr;
+}
+
+function parseDateFlexible(dateStr) {
+    if (!dateStr) return null;
+    
+    // Try parsing as standard date
+    let d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+        return d.toISOString().split('T')[0];
+    }
+    
+    // Try parsing "DD-MMM-YY" format (e.g., "22-Aug-26")
+    try {
+        const monthMap = {
+            'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+            'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+        };
+        const parts = dateStr.trim().split('-');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = monthMap[parts[1].toLowerCase().substring(0, 3)];
+            let year = parseInt(parts[2]);
+            if (!isNaN(day) && month !== undefined && !isNaN(year)) {
+                // Handle 2-digit year: 26 -> 2026
+                if (year < 100) year = 2000 + year;
+                d = new Date(year, month, day);
+                if (!isNaN(d.getTime())) {
+                    return d.toISOString().split('T')[0];
+                }
+            }
+        }
+    } catch (e) {
+        // Continue
+    }
+    
+    // Try parsing "DD/MM/YYYY" format
+    try {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const year = parseInt(parts[2]);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                d = new Date(year, month, day);
+                if (!isNaN(d.getTime())) {
+                    return d.toISOString().split('T')[0];
+                }
+            }
+        }
+    } catch (e) {
+        // Continue
+    }
+    
+    // Try parsing "MM/DD/YYYY" format
+    try {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            const month = parseInt(parts[0]) - 1;
+            const day = parseInt(parts[1]);
+            const year = parseInt(parts[2]);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                d = new Date(year, month, day);
+                if (!isNaN(d.getTime())) {
+                    return d.toISOString().split('T')[0];
+                }
+            }
+        }
+    } catch (e) {
+        // Continue
+    }
+    
+    return null;
 }
 
 async function saveData(data) {
@@ -1827,60 +1908,6 @@ function fallbackCopy(text) {
     document.body.removeChild(textarea);
 }
 
-function parseDateFlexible(dateStr) {
-    if (!dateStr) return null;
-    
-    // Try parsing as standard date
-    let d = new Date(dateStr);
-    if (!isNaN(d.getTime())) {
-        return d.toISOString().split('T')[0];
-    }
-    
-    // Try parsing "22-Aug-26" format (DD-MMM-YY)
-    try {
-        const monthMap = {
-            'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
-            'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
-        };
-        const parts = dateStr.trim().split('-');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0]);
-            const month = monthMap[parts[1].toLowerCase().substring(0, 3)];
-            const year = parseInt(parts[2]);
-            if (!isNaN(day) && month !== undefined && !isNaN(year)) {
-                // Handle 2-digit year: 26 -> 2026
-                const fullYear = year < 100 ? 2000 + year : year;
-                d = new Date(fullYear, month, day);
-                if (!isNaN(d.getTime())) {
-                    return d.toISOString().split('T')[0];
-                }
-            }
-        }
-    } catch (e) {
-        // Continue to next method
-    }
-    
-    // Try parsing "22/08/2026" format
-    try {
-        const parts = dateStr.split('/');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0]);
-            const month = parseInt(parts[1]) - 1;
-            const year = parseInt(parts[2]);
-            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                d = new Date(year, month, day);
-                if (!isNaN(d.getTime())) {
-                    return d.toISOString().split('T')[0];
-                }
-            }
-        }
-    } catch (e) {
-        // Continue
-    }
-    
-    return null;
-}
-
 function populateAgentDropdown() {
     const agentSelect = document.getElementById('evalAgent');
     const agents = getAgentList(evaluations);
@@ -1913,7 +1940,6 @@ function populateChatDropdown(agent, date) {
         
         chats = chats.filter(e => {
             const recordDate = parseDateFlexible(e.cancellationDate);
-            console.log('📅 Record date:', e.cancellationDate, '->', recordDate);
             return recordDate === normalizedSelected;
         });
         console.log('🔍 Found', chats.length, 'records for date', date);
@@ -2377,6 +2403,7 @@ async function checkForUpdates() {
         if (result.success && result.data) {
             const newData = result.data.map(row => ({
                 ...row,
+                cancellationDate: normalizeDateForDisplay(row.cancellationDate),
                 evaluatorComment: row.evaluatorComment || '',
                 action: row.action || 'Pending'
             }));
