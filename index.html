@@ -11,9 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
-        /* ============================================================
-           ALL YOUR EXISTING STYLES HERE (Keep them the same)
-           ============================================================ */
+        /* All your existing styles plus the loading overlay */
         * {
             margin: 0;
             padding: 0;
@@ -1088,13 +1086,13 @@
         }
 
         /* ============================================================
-           LOADING OVERLAY - NEW
+           LOADING OVERLAY
            ============================================================ */
         .loading-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             z-index: 99999;
             align-items: center;
@@ -1156,22 +1154,53 @@
             border-radius: 4px;
             transition: width 0.3s ease;
         }
+
+        /* Toast notification for upload complete */
+        .upload-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2a3a2a;
+            color: #a0c0a0;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: 1px solid #3a5a3a;
+            z-index: 10001;
+            animation: fadeInUp 0.3s ease;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .upload-toast.show {
+            display: block;
+        }
+
+        .upload-toast i {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
 
 <!-- ============================================================
-     LOADING OVERLAY - NEW
+     LOADING OVERLAY
      ============================================================ -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
     <div class="loading-text">
-        <i class="fas fa-cloud-upload-alt"></i> Uploading Data...
+        <i class="fas fa-cloud-upload-alt"></i> <span id="loadingMessage">Uploading Data...</span>
     </div>
-    <div class="loading-subtext">Please wait while your evaluation is saved</div>
+    <div class="loading-subtext" id="loadingSubtext">Please wait while your evaluation is saved</div>
     <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
     </div>
+</div>
+
+<!-- Upload Toast -->
+<div class="upload-toast" id="uploadToast">
+    <i class="fas fa-check-circle"></i> <span id="toastMessage">Saved successfully!</span>
 </div>
 
 <div class="dashboard-wrapper">
@@ -1204,6 +1233,7 @@
         </div>
     </div>
 
+    <!-- (Rest of your HTML - all the dashboard elements remain the same) -->
     <div id="adminControls" style="display: none;">
         <span class="admin-label"><i class="fas fa-shield-alt"></i> Admin Controls</span>
         <button class="btn btn-warning" id="clearOldDataBtn">
@@ -1585,7 +1615,7 @@
 // ================================================================
 // ⭐ GOOGLE SHEETS API URL - Update with your URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbymhe22_Fh-8ZE42zXx_FzXQ-17fkv-ZCNebAsk31bGker9hA1_qHBmwB-_f7VoK1w9tw/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbz5rZCHsFBvM5ybll-aIjDyO5e9ZZN65NGFmQHG0MDUvXANsySkJlVjVgvvwihDQYs3-A/exec';
 
 // ================================================================
 // DATA STORE
@@ -1601,18 +1631,19 @@ let currentPage = 1;
 const rowsPerPage = 5;
 let editTargetId = null;
 let isSyncing = false;
+let toastTimeout = null;
 
 // ================================================================
-// LOADING OVERLAY FUNCTIONS - NEW
+// LOADING OVERLAY FUNCTIONS
 // ================================================================
 
 function showLoading(message = 'Uploading Data...', submessage = 'Please wait while your evaluation is saved') {
     const overlay = document.getElementById('loadingOverlay');
-    const text = overlay.querySelector('.loading-text');
-    const subtext = overlay.querySelector('.loading-subtext');
+    const text = document.getElementById('loadingMessage');
+    const subtext = document.getElementById('loadingSubtext');
     const progress = document.getElementById('progressFill');
     
-    text.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> ${message}`;
+    text.textContent = message;
     subtext.textContent = submessage;
     progress.style.width = '0%';
     overlay.classList.add('active');
@@ -1627,6 +1658,26 @@ function hideLoading() {
     const overlay = document.getElementById('loadingOverlay');
     overlay.classList.remove('active');
     document.getElementById('progressFill').style.width = '0%';
+}
+
+function showToast(message, isSuccess = true) {
+    const toast = document.getElementById('uploadToast');
+    const toastMsg = document.getElementById('toastMessage');
+    
+    toastMsg.textContent = message;
+    toast.className = 'upload-toast show';
+    if (isSuccess) {
+        toast.style.borderColor = '#3a5a3a';
+        toast.style.color = '#a0c0a0';
+    } else {
+        toast.style.borderColor = '#5a3a3a';
+        toast.style.color = '#c07a7a';
+    }
+    
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
 // ================================================================
@@ -1704,16 +1755,20 @@ async function saveData(data) {
             console.log('💾 Saved', result.count, 'records to Google Sheets');
             document.getElementById('adminRecordCount').textContent = data.length;
             updateProgress(100);
+            
+            // Show success toast
+            showToast('✅ Saved ' + result.count + ' records successfully!', true);
+            
             // Small delay so user sees 100%
             await new Promise(resolve => setTimeout(resolve, 500));
         } else {
             console.error('Failed to save:', result.error);
-            alert('⚠️ Could not save to Google Sheets. Error: ' + (result.error || 'Unknown error'));
+            showToast('❌ Error: ' + (result.error || 'Unknown error'), false);
             throw new Error(result.error || `HTTP ${response.status}`);
         }
     } catch (error) {
         console.error('Error saving to Google Sheets:', error);
-        alert('⚠️ Error saving data. Please try again.\n\nError: ' + error.message);
+        showToast('❌ Error saving data. Please try again.', false);
     } finally {
         isSyncing = false;
         document.getElementById('syncStatus').style.display = 'none';
@@ -1971,7 +2026,7 @@ function updateDateFilterStatus() {
 // 3. COPY FUNCTION
 // ================================================================
 
-function showToast(message) {
+function showToastMessage(message) {
     const existing = document.querySelector('.copy-toast');
     if (existing) existing.remove();
     const toast = document.createElement('div');
@@ -1985,12 +2040,12 @@ function showToast(message) {
 
 function copyChatId(chatId) {
     if (!chatId) {
-        showToast('⚠️ No Chat ID selected');
+        showToastMessage('⚠️ No Chat ID selected');
         return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(chatId).then(() => {
-            showToast('✅ Copied: ' + chatId);
+            showToastMessage('✅ Copied: ' + chatId);
             const btn = document.getElementById('copyChatIdBtn');
             btn.classList.add('copied');
             btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
@@ -2015,7 +2070,7 @@ function fallbackCopy(text) {
     textarea.select();
     try {
         document.execCommand('copy');
-        showToast('✅ Copied: ' + text);
+        showToastMessage('✅ Copied: ' + text);
         const btn = document.getElementById('copyChatIdBtn');
         btn.classList.add('copied');
         btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
@@ -2024,7 +2079,7 @@ function fallbackCopy(text) {
             btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
         }, 2000);
     } catch (err) {
-        showToast('⚠️ Please copy manually: ' + text);
+        showToastMessage('⚠️ Please copy manually: ' + text);
     }
     document.body.removeChild(textarea);
 }
