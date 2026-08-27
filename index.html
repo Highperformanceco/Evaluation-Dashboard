@@ -11,7 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
-        /* All your existing styles - keeping them exactly the same */
+        /* ============================================================
+           ALL YOUR EXISTING STYLES HERE (Keep them exactly the same)
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -1939,10 +1941,6 @@ function renderStats(data) {
     }
 }
 
-// ================================================================
-// FIXED: renderTable with action dropdown that saves on change
-// ================================================================
-
 function renderTable() {
     const dateFilteredData = getFilteredData();
     const search = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1981,7 +1979,6 @@ function renderTable() {
                             row.action === 'Termination' ? 'tag-termination' : 'tag-info';
             const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
             
-            // Create the action dropdown with all options
             const actionOptions = ['Invalid', 'Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
             const actionDropdown = actionOptions.map(opt => 
                 `<option value="${opt}" ${opt === row.action ? 'selected' : ''}>${opt}</option>`
@@ -2010,38 +2007,29 @@ function renderTable() {
         }).join('');
     }
     
-    // ============================================================
-    // FIX: Add event listeners to action dropdowns to auto-save
-    // ============================================================
+    // Add event listeners to action dropdowns
     document.querySelectorAll('.action-dropdown').forEach(select => {
         select.addEventListener('change', async function() {
             const chatId = this.dataset.chatid;
             const newAction = this.value;
             
-            // Find the record
             const row = evaluations.find(e => e.chatId === chatId);
             if (!row) {
                 alert('❌ Record not found!');
                 return;
             }
             
-            // Update local data
             row.action = newAction;
             
-            // Show loading
             showLoading('Updating Action...', 'Please wait while the action is updated');
             updateProgress(30);
             
             try {
-                // Save to Google Sheets
                 await saveData(evaluations);
                 updateProgress(100);
                 showToast('✅ Action updated to: ' + newAction, true);
-                
-                // Update the dropdown in place to show the selected value
                 this.value = newAction;
                 
-                // Update the tag display if needed
                 const rowEl = this.closest('tr');
                 const tagSpan = rowEl.querySelector('.action-tag');
                 if (tagSpan) {
@@ -2054,7 +2042,6 @@ function renderTable() {
                     tagSpan.textContent = newAction;
                 }
                 
-                // Re-render stats and charts
                 renderStats(evaluations);
                 renderCharts(evaluations);
                 renderAgentViolationChart(evaluations);
@@ -2066,7 +2053,6 @@ function renderTable() {
                 console.error('Error updating action:', error);
                 showToast('❌ Error updating action. Please try again.', false);
                 hideLoading();
-                // Revert the dropdown to previous value on error
                 this.value = row.action;
             }
         });
@@ -2289,18 +2275,24 @@ function populateFormFields(chatId) {
 }
 
 // ================================================================
-// 5. FIXED: SAVE EDIT ACTION
+// 5. FIXED: SAVE EDIT ACTION (This is the fix!)
 // ================================================================
 
 document.getElementById('saveEditBtn').addEventListener('click', async function() {
+    console.log('🔧 Save Edit button clicked');
+    
     if (!editTargetId) {
         alert('❌ No record selected!');
         return;
     }
     
+    console.log('🔧 Target Chat ID:', editTargetId);
+    
     const row = evaluations.find(e => e.chatId === editTargetId);
     if (!row) {
-        alert('❌ Record not found!');
+        alert('❌ Record not found in evaluations!');
+        console.error('❌ Record not found for chatId:', editTargetId);
+        console.log('📊 Current evaluations:', evaluations);
         return;
     }
     
@@ -2310,31 +2302,34 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
         return;
     }
     
+    console.log('🔧 Current action:', row.action, '→ New action:', newAction);
+    
     row.action = newAction;
     
     showLoading('Updating Action...', 'Please wait while the action is updated');
     updateProgress(30);
     
     try {
+        console.log('🔧 Saving evaluations to Google Sheets...');
+        console.log('🔧 Total records to save:', evaluations.length);
+        
         await saveData(evaluations);
+        
         updateProgress(100);
-        showToast('✅ Action updated successfully!', true);
+        showToast('✅ Action updated to: ' + newAction, true);
+        console.log('✅ Action updated successfully!');
         
         closeEditModal();
         renderTable();
-        
-        const formRow = formData.find(e => e.chatId === editTargetId);
-        if (formRow) {
-            formRow.action = newAction;
-        }
         
         await new Promise(resolve => setTimeout(resolve, 500));
         hideLoading();
         
     } catch (error) {
-        console.error('Error updating action:', error);
+        console.error('❌ Error updating action:', error);
         showToast('❌ Error updating action. Please try again.', false);
         hideLoading();
+        row.action = document.getElementById('editCurrentAction').value;
     }
 });
 
