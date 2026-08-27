@@ -11,9 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
-        /* ============================================================
-           ALL YOUR EXISTING STYLES HERE (Keep them exactly the same)
-           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -1617,9 +1614,9 @@
 
 <script>
 // ================================================================
-// ⭐ GOOGLE SHEETS API URL - Update with your URL
+// ⭐ GOOGLE SHEETS API URL - Update with your deployed URL
 // ================================================================
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbz5rZCHsFBvM5ybll-aIjDyO5e9ZZN65NGFmQHG0MDUvXANsySkJlVjVgvvwihDQYs3-A/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbxlgVSnnZSAZMcdujekrLx0vwwlluFBQdzPnd3j2SJQGX0j4u1PngHRNbQBAxwT16J39Q/exec';
 
 // ================================================================
 // DATA STORE
@@ -1748,6 +1745,82 @@ async function loadFormData() {
     }
 }
 
+// ================================================================
+// FIXED: UPDATE ACTION - Single row update (doesn't overwrite everything)
+// ================================================================
+
+async function updateAction(chatId, newAction, comment = null) {
+    if (isSaving) {
+        console.log('⚠️ Save already in progress, skipping...');
+        return false;
+    }
+    isSaving = true;
+    
+    showLoading('Updating Action...', 'Please wait while the action is updated');
+    updateProgress(30);
+    
+    try {
+        const payload = {
+            action: 'update',
+            data: [{
+                chatId: chatId,
+                action: newAction,
+                evaluatorComment: comment || ''
+            }]
+        };
+        
+        console.log('📤 Sending update payload:', payload);
+        
+        const response = await fetch(GOOGLE_SHEETS_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        updateProgress(70);
+        
+        const result = await response.json();
+        updateProgress(100);
+        
+        console.log('📥 Update response:', result);
+        
+        if (result.success) {
+            showToast('✅ Action updated to: ' + newAction, true);
+            // Update local data
+            const row = evaluations.find(e => e.chatId === chatId);
+            if (row) {
+                row.action = newAction;
+                if (comment) row.evaluatorComment = comment;
+            }
+            // Also update formData if exists
+            const formRow = formData.find(e => e.chatId === chatId);
+            if (formRow) {
+                formRow.action = newAction;
+                if (comment) formRow.evaluatorComment = comment;
+            }
+            renderTable();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            hideLoading();
+            return true;
+        } else {
+            throw new Error(result.error || 'Update failed');
+        }
+    } catch (error) {
+        console.error('❌ Error updating action:', error);
+        showToast('❌ Error updating action. Please try again.', false);
+        hideLoading();
+        return false;
+    } finally {
+        isSaving = false;
+    }
+}
+
+// ================================================================
+// SAVE DATA - Full save (used for new evaluations)
+// ================================================================
+
 async function saveData(data) {
     if (isSaving) {
         console.log('⚠️ Save already in progress, skipping...');
@@ -1767,7 +1840,7 @@ async function saveData(data) {
             headers: {
                 'Content-Type': 'text/plain;charset=utf-8',
             },
-            body: JSON.stringify({ data: data })
+            body: JSON.stringify({ action: 'save', data: data })
         });
         
         updateProgress(70);
@@ -2007,53 +2080,23 @@ function renderTable() {
         }).join('');
     }
     
-    // Add event listeners to action dropdowns
+    // ============================================================
+    // FIXED: Action dropdown change - calls updateAction
+    // ============================================================
     document.querySelectorAll('.action-dropdown').forEach(select => {
         select.addEventListener('change', async function() {
             const chatId = this.dataset.chatid;
             const newAction = this.value;
             
-            const row = evaluations.find(e => e.chatId === chatId);
-            if (!row) {
-                alert('❌ Record not found!');
-                return;
-            }
+            // Call updateAction which does a single row update
+            const success = await updateAction(chatId, newAction);
             
-            row.action = newAction;
-            
-            showLoading('Updating Action...', 'Please wait while the action is updated');
-            updateProgress(30);
-            
-            try {
-                await saveData(evaluations);
-                updateProgress(100);
-                showToast('✅ Action updated to: ' + newAction, true);
-                this.value = newAction;
-                
-                const rowEl = this.closest('tr');
-                const tagSpan = rowEl.querySelector('.action-tag');
-                if (tagSpan) {
-                    const tagClass = newAction === 'Invalid' ? 'tag-danger' :
-                                    newAction === 'Coaching / Written Memo' ? 'tag-coaching' :
-                                    newAction === '1-Day Deduction' ? 'tag-danger' :
-                                    newAction === '2-Days Deduction + Final Warning' ? 'tag-warning' :
-                                    newAction === 'Termination' ? 'tag-termination' : 'tag-info';
-                    tagSpan.className = `action-tag ${tagClass}`;
-                    tagSpan.textContent = newAction;
+            if (!success) {
+                // Revert the dropdown on error
+                const row = evaluations.find(e => e.chatId === chatId);
+                if (row) {
+                    this.value = row.action;
                 }
-                
-                renderStats(evaluations);
-                renderCharts(evaluations);
-                renderAgentViolationChart(evaluations);
-                
-                await new Promise(resolve => setTimeout(resolve, 500));
-                hideLoading();
-                
-            } catch (error) {
-                console.error('Error updating action:', error);
-                showToast('❌ Error updating action. Please try again.', false);
-                hideLoading();
-                this.value = row.action;
             }
         });
     });
@@ -2275,7 +2318,7 @@ function populateFormFields(chatId) {
 }
 
 // ================================================================
-// 5. FIXED: SAVE EDIT ACTION (This is the fix!)
+// 5. FIXED: SAVE EDIT ACTION - Uses updateAction
 // ================================================================
 
 document.getElementById('saveEditBtn').addEventListener('click', async function() {
@@ -2292,7 +2335,6 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
     if (!row) {
         alert('❌ Record not found in evaluations!');
         console.error('❌ Record not found for chatId:', editTargetId);
-        console.log('📊 Current evaluations:', evaluations);
         return;
     }
     
@@ -2304,32 +2346,12 @@ document.getElementById('saveEditBtn').addEventListener('click', async function(
     
     console.log('🔧 Current action:', row.action, '→ New action:', newAction);
     
-    row.action = newAction;
+    // Use updateAction instead of saveData
+    const success = await updateAction(editTargetId, newAction);
     
-    showLoading('Updating Action...', 'Please wait while the action is updated');
-    updateProgress(30);
-    
-    try {
-        console.log('🔧 Saving evaluations to Google Sheets...');
-        console.log('🔧 Total records to save:', evaluations.length);
-        
-        await saveData(evaluations);
-        
-        updateProgress(100);
-        showToast('✅ Action updated to: ' + newAction, true);
-        console.log('✅ Action updated successfully!');
-        
+    if (success) {
         closeEditModal();
         renderTable();
-        
-        await new Promise(resolve => setTimeout(resolve, 500));
-        hideLoading();
-        
-    } catch (error) {
-        console.error('❌ Error updating action:', error);
-        showToast('❌ Error updating action. Please try again.', false);
-        hideLoading();
-        row.action = document.getElementById('editCurrentAction').value;
     }
 });
 
