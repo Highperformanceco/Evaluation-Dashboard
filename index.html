@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 
     <style>
+        /* All your existing styles - keeping them exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -1683,19 +1684,16 @@ function showToast(message, isSuccess = true) {
 // SHOW LOADING ON PAGE REFRESH / UNLOAD
 // ================================================================
 
-// Show loading indicator when user refreshes the page
 window.addEventListener('beforeunload', function(e) {
     showLoading('Refreshing...', 'Please wait while the page reloads');
 });
 
-// Show loading when page is being unloaded (close tab, navigate away)
 window.addEventListener('pagehide', function() {
     if (evaluations.length > 0 || formData.length > 0) {
         showLoading('Refreshing...', 'Please wait');
     }
 });
 
-// Show loading when F5 or Ctrl+R is pressed
 document.addEventListener('keydown', function(e) {
     if ((e.key === 'F5') || (e.ctrlKey && e.key === 'r')) {
         showLoading('Refreshing...', 'Please wait while the page reloads');
@@ -1941,6 +1939,10 @@ function renderStats(data) {
     }
 }
 
+// ================================================================
+// FIXED: renderTable with action dropdown that saves on change
+// ================================================================
+
 function renderTable() {
     const dateFilteredData = getFilteredData();
     const search = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1978,6 +1980,13 @@ function renderTable() {
                             row.action === '2-Days Deduction + Final Warning' ? 'tag-warning' :
                             row.action === 'Termination' ? 'tag-termination' : 'tag-info';
             const displayDate = row.cancellationDate ? new Date(row.cancellationDate).toLocaleDateString() : '—';
+            
+            // Create the action dropdown with all options
+            const actionOptions = ['Invalid', 'Coaching / Written Memo', '1-Day Deduction', '2-Days Deduction + Final Warning', 'Termination', 'Pending'];
+            const actionDropdown = actionOptions.map(opt => 
+                `<option value="${opt}" ${opt === row.action ? 'selected' : ''}>${opt}</option>`
+            ).join('');
+            
             return `
                 <tr>
                     <td>${displayDate}</td>
@@ -1987,7 +1996,11 @@ function renderTable() {
                     <td><span class="agent-badge">${row.agent}</span></td>
                     <td style="max-width:120px; font-size:11px; color:#888;">${row.violation}</td>
                     <td><span style="font-size:11px; color:#666;">${row.evaluatorComment || '—'}</span></td>
-                    <td><span class="action-tag ${tagClass}">${row.action}</span></td>
+                    <td>
+                        <select class="action-dropdown" data-chatid="${row.chatId}" style="background:#111;color:#ccc;border:1px solid #2a2a2a;border-radius:4px;padding:4px 8px;font-size:11px;font-family:inherit;outline:none;cursor:pointer;">
+                            ${actionDropdown}
+                        </select>
+                    </td>
                     <td>
                         <button class="btn-sm primary-sm" onclick="openEditModal('${row.chatId}')"><i class="fas fa-edit"></i></button>
                         ${isAdmin ? `<button class="btn-sm danger-sm" onclick="deleteRow('${row.chatId}')"><i class="fas fa-trash-alt"></i></button>` : ''}
@@ -1996,6 +2009,68 @@ function renderTable() {
             `;
         }).join('');
     }
+    
+    // ============================================================
+    // FIX: Add event listeners to action dropdowns to auto-save
+    // ============================================================
+    document.querySelectorAll('.action-dropdown').forEach(select => {
+        select.addEventListener('change', async function() {
+            const chatId = this.dataset.chatid;
+            const newAction = this.value;
+            
+            // Find the record
+            const row = evaluations.find(e => e.chatId === chatId);
+            if (!row) {
+                alert('❌ Record not found!');
+                return;
+            }
+            
+            // Update local data
+            row.action = newAction;
+            
+            // Show loading
+            showLoading('Updating Action...', 'Please wait while the action is updated');
+            updateProgress(30);
+            
+            try {
+                // Save to Google Sheets
+                await saveData(evaluations);
+                updateProgress(100);
+                showToast('✅ Action updated to: ' + newAction, true);
+                
+                // Update the dropdown in place to show the selected value
+                this.value = newAction;
+                
+                // Update the tag display if needed
+                const rowEl = this.closest('tr');
+                const tagSpan = rowEl.querySelector('.action-tag');
+                if (tagSpan) {
+                    const tagClass = newAction === 'Invalid' ? 'tag-danger' :
+                                    newAction === 'Coaching / Written Memo' ? 'tag-coaching' :
+                                    newAction === '1-Day Deduction' ? 'tag-danger' :
+                                    newAction === '2-Days Deduction + Final Warning' ? 'tag-warning' :
+                                    newAction === 'Termination' ? 'tag-termination' : 'tag-info';
+                    tagSpan.className = `action-tag ${tagClass}`;
+                    tagSpan.textContent = newAction;
+                }
+                
+                // Re-render stats and charts
+                renderStats(evaluations);
+                renderCharts(evaluations);
+                renderAgentViolationChart(evaluations);
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error updating action:', error);
+                showToast('❌ Error updating action. Please try again.', false);
+                hideLoading();
+                // Revert the dropdown to previous value on error
+                this.value = row.action;
+            }
+        });
+    });
 
     document.getElementById('rowCount').textContent = `${filtered.length} rows (${evaluations.length} total)`;
     document.getElementById('pageIndicator').textContent = `${currentPage} / ${totalPages}`;
@@ -2214,7 +2289,57 @@ function populateFormFields(chatId) {
 }
 
 // ================================================================
-// 5. EVENT LISTENERS
+// 5. FIXED: SAVE EDIT ACTION
+// ================================================================
+
+document.getElementById('saveEditBtn').addEventListener('click', async function() {
+    if (!editTargetId) {
+        alert('❌ No record selected!');
+        return;
+    }
+    
+    const row = evaluations.find(e => e.chatId === editTargetId);
+    if (!row) {
+        alert('❌ Record not found!');
+        return;
+    }
+    
+    const newAction = document.getElementById('editNewAction').value;
+    if (!newAction) {
+        alert('❌ Please select an action!');
+        return;
+    }
+    
+    row.action = newAction;
+    
+    showLoading('Updating Action...', 'Please wait while the action is updated');
+    updateProgress(30);
+    
+    try {
+        await saveData(evaluations);
+        updateProgress(100);
+        showToast('✅ Action updated successfully!', true);
+        
+        closeEditModal();
+        renderTable();
+        
+        const formRow = formData.find(e => e.chatId === editTargetId);
+        if (formRow) {
+            formRow.action = newAction;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error updating action:', error);
+        showToast('❌ Error updating action. Please try again.', false);
+        hideLoading();
+    }
+});
+
+// ================================================================
+// 6. EVENT LISTENERS
 // ================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -2373,20 +2498,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
     document.getElementById('editActionModal').addEventListener('click', function(e) {
         if (e.target === this) closeEditModal();
-    });
-
-    document.getElementById('saveEditBtn').addEventListener('click', async function() {
-        if (!editTargetId) return;
-        const row = evaluations.find(e => e.chatId === editTargetId);
-        if (!row) return;
-        row.action = document.getElementById('editNewAction').value;
-        closeEditModal();
-        await saveData(evaluations);
-        renderTable();
-        const btn = document.getElementById('saveEditBtn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
-        setTimeout(() => { btn.innerHTML = originalText; }, 1200);
     });
 
     document.getElementById('searchInput').addEventListener('input', function() { currentPage = 1; renderTable(); });
@@ -2548,7 +2659,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ================================================================
-// 6. OPEN/CLOSE FUNCTIONS
+// 7. OPEN/CLOSE FUNCTIONS
 // ================================================================
 
 function openEvalForm() {
@@ -2601,7 +2712,7 @@ window.deleteRow = async function(chatId) {
 };
 
 // ================================================================
-// 7. ACTION PLAN & MATRIX FUNCTIONS
+// 8. ACTION PLAN & MATRIX FUNCTIONS
 // ================================================================
 
 const actionPlanData = [
@@ -2640,7 +2751,7 @@ function closeMatrix() {
 }
 
 // ================================================================
-// 8. AUTO-REFRESH & INIT
+// 9. AUTO-REFRESH & INIT
 // ================================================================
 
 let lastDataHash = '';
